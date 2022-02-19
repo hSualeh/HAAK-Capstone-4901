@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import {Button,Alert} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged,signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
@@ -9,7 +9,7 @@ const history = createBrowserHistory();
 export default class login extends Component {
   constructor(props) {
     super(props);
-    this.state = { loginEmail: "", loginPassword: "" , user:null};
+    this.state = { loginEmail: "", loginPassword: "" , user:null,signError:"",showError:false};
     
   }
    
@@ -22,19 +22,28 @@ export default class login extends Component {
     // console.log("Name: " + name + "value:" + value);
   };
   signin = (event) => {
-    try {
+    
       signInWithEmailAndPassword(  
          auth,
         this.state.loginEmail,
         this.state.loginPassword
-      );
-      console.log("login"+this.state.user?.email)
-      history.push("/dashboard/"+this.state.user,
-      
-        );
-    } catch (error) {
-      console.log(error.message);
-    }
+      ).then(user =>{
+        console.log("login"+this.state.user?.email);
+        history.push("/dashboard/"+this.state.user)
+      })
+      .catch(error => {
+        let message = error.message +"..."+error.code;
+        console.log("error"+error.message);
+        if(error.code === "auth/invalid-email" || error.code === "auth/user-not-found"){
+     
+           message = "Sorry, we couldn't find user with that credentials.Please try again"
+        }
+  
+        this.setState({signError:message,showError:true});
+    
+      });
+    
+    
 
   }
   componentDidMount() {
@@ -50,13 +59,17 @@ export default class login extends Component {
         <div className="auth-inner">
         <Form>
           <h3>Sign In</h3>
+          <Alert show={this.state.showError} variant="danger" >
+          {this.state.signError}
+  </Alert>
+        
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter email"
                 name="loginEmail"
-                onChange={this.handleInput}
+                onChange={this.handleInput} required
               />
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
@@ -69,7 +82,7 @@ export default class login extends Component {
                 type="password"
                 placeholder="Password"
                 name="loginPassword"
-                onChange={this.handleInput}
+                onChange={this.handleInput} required
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">

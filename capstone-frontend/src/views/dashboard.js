@@ -2,16 +2,29 @@ import React, { Component } from "react";
 import "../styles/dashboard.css";
 import logo from "../img/logo.PNG";
 import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import ListCoursesSummary from "../components/courses/listCoursesSummary";
 import ListTodoSummary from "../components/todo/listTodoSummary";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../components/firebase-config";
+import { createBrowserHistory } from 'history';
+const history = createBrowserHistory();
 export default class dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = { user:null};
 
     
+  }
+  logout = (event) => {
+    try {
+      signOut(auth);
+      console.log("logout"+this.state.user?.email)
+      history.push("/");
+    } catch (error) {
+     this.setState({signError:error.message})
+    }
+
   }
   componentDidMount() {
     onAuthStateChanged(auth,(currentUser)=>{
@@ -39,7 +52,7 @@ export default class dashboard extends Component {
           </div>
           <div className="col-12 col-md-4 col-lg-2"></div>
           <div className="col-12 col-md-5 col-lg-8 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
-            <div className="dropdown">
+            <div className="dropdown userProfile">
               <Button
                 className="btn btn-secondary dropdown-toggle"
                 type="Button"
@@ -64,9 +77,8 @@ export default class dashboard extends Component {
                   </a>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="#">
-                    Sign out
-                  </a>
+                <Link to="/" className="dropdown-item" onClick={this.logout}> Sign out</Link>
+
                 </li>
               </ul>
             </div>

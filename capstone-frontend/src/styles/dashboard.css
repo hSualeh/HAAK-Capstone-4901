@@ -65,3 +65,7 @@ body{
     color: white;
     margin-right: 5px;
   }
+  .userProfile .dropdown-menu
+  {
+    width: 290px;
+  }
