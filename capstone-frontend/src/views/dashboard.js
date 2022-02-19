@@ -47,7 +47,7 @@ export default class dashboard extends Component {
                 data-toggle="dropdown"
                 aria-expanded="false"
               >
-                Hello, {this.user?.email}
+                Hello, {this.state.user?.email}
               </Button>
               <ul
                 className="dropdown-menu"
