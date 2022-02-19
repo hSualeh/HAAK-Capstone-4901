@@ -88,7 +88,7 @@ export default class signup extends Component {
         </Form>
         <div className="w-100  mt-2">
            Already have an account?
-            <Link to="/"> Sign in </Link>
+            <Link to="dashboard"> Sign in </Link>
           </div>
       </div>
       </div>
