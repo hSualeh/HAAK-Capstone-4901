@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
-import {Button,Alert} from "react-bootstrap";
+import {Button,Alert,  Col, Row,Container} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged,signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
+import loginbg from "../../img/login-bg.PNG";
 import { createBrowserHistory } from 'history';
 const history = createBrowserHistory();
 export default class login extends Component {
@@ -55,8 +56,10 @@ export default class login extends Component {
   render() {
     
     return (
-      <div className="auth-wrapper">
-        <div className="auth-inner">
+      <Container className="auth_container">
+  <Row>
+    <Col>  <img src={loginbg} className="signupbg" alt="sign up Background"></img></Col>
+    <Col className="auth-inner-col"> <div className="auth-inner">
         <Form>
           <h3>Sign In</h3>
           <Alert show={this.state.showError} variant="danger" >
@@ -88,16 +91,21 @@ export default class login extends Component {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Check me out" />
             </Form.Group>
+            <Form.Group className="mb-3">
             <Button variant="primary" type="button" onClick={this.signin}>
               Submit
             </Button>
+            </Form.Group>
           </Form>
           <div className="w-100  mt-2">
             Don't have an account?
             <Link to="signup"> Register </Link>
           </div>
         </div>
-      </div>
+        </Col>
+  </Row>
+ 
+</Container>
     );
   }
 }
