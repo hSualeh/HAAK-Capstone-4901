@@ -1,23 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
+import Login from './components/authentification/login';
+import Signup from './components/authentification/signup';
+import Navbar from './components/navbar/navbar';
+import Timetable from './components/timetable/timetable';
+import Assignment from './components/assignment/assignment';
+import {Routes , Route, BrowserRouter as Router} from 'react-router-dom';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Login></Login>} exact/>
+        <Route path="/signup" element={<Signup></Signup>}/>
+        <Route path="/timetable" element={<Timetable></Timetable>}/> 
+        <Route path="/assignments" element={<Assignment></Assignment>}/> 
+      </Routes>
+    </Router>
     </div>
   );
 }
