@@ -53,7 +53,7 @@ export default class forgetpassword extends Component {
             {" "}
             <div className="auth-inner">
               <Form>
-                <h3>Sign In</h3>
+                <h3>Forget password</h3>
                 <Alert show={this.state.showError} variant="danger">
                   {this.state.signError}
                  
