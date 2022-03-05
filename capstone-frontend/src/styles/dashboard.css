@@ -56,10 +56,10 @@ body{
 
   #sidebar
   {
-    background: #374151!important;
+    background: #f8f9fa!important;
   }
   #sidebar span{
-    color:white!important;
+    color:black!important;
   }
   #sidebar .fa {
     color: white;

@@ -9,7 +9,7 @@ export default class breadcrumb extends Component {
         <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
           <li className="breadcrumb-item">
-          <Link className="nav-link" to ="/dashboard">Home</Link>
+          <Link className="breadcrumb-item" to ="/dashboard">Home</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             Overview
