@@ -9,7 +9,7 @@ import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../components/firebase-config";
 import { createBrowserHistory } from 'history';
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({forceRefresh:true});
 export default class dashboard extends Component {
   constructor(props) {
     super(props);
