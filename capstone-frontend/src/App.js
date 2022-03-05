@@ -7,6 +7,7 @@ import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
 import { BrowserRouter , Routes , Route} from 'react-router-dom';
 import Dashboard from './views/dashboard';
+import Forgetpassword from './components/authentification/forgetpassword';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login></Login>} exact/>
       <Route path="/signup" element={<Signup></Signup>}/>
+      <Route path="/forgetpassword" element={<Forgetpassword></Forgetpassword>}/>
       <Route path="/dashboard" element={<Dashboard></Dashboard>} exact/>
         <Route path="/timetable" element={<Timetable></Timetable>}/> 
         <Route path="/assignments" element={<Assignment></Assignment>}/> 
