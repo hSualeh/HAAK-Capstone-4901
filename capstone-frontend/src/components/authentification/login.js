@@ -38,7 +38,7 @@ export default class login extends Component {
     )
       .then((user) => {
         console.log("login" + this.state.user?.email);
-        this.setState({ user });
+        this.setState({ user:user });
      
       })
       .catch((error) => {
@@ -62,7 +62,7 @@ export default class login extends Component {
   }
 
   render() {
-    let { user} = this.state;
+   
     return (
       
       <Container className="auth_container">
@@ -82,7 +82,8 @@ export default class login extends Component {
                 <h3>Sign In</h3>
                 <Alert show={this.state.showError} variant="danger">
                   {this.state.signError}
-                  {user && (
+                  {}
+                  {(this.state.user) &&(
           <Navigate to="/dashboard" replace={true} />
         )}
                 </Alert>

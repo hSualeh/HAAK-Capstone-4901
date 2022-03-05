@@ -7,9 +7,7 @@ import ListCoursesSummary from "../components/courses/listCoursesSummary";
 import ListTodoSummary from "../components/todo/listTodoSummary";
 import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../components/firebase-config";
-import { createBrowserHistory } from 'history';
 
-const history = createBrowserHistory({forceRefresh:true});
 export default class dashboard extends Component {
   constructor(props) {
     super(props);
@@ -20,8 +18,7 @@ export default class dashboard extends Component {
   logout = (event) => {
     try {
       signOut(auth);
-      console.log("logout"+this.state.user?.email)
-      history.push("/");
+     
     } catch (error) {
      this.setState({signError:error.message})
     }

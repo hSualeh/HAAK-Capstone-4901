@@ -5,7 +5,7 @@ import Navbar from './components/navbar/navbar';
 import Timetable from './components/timetable/timetable';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
-import { BrowserRouter , Routes , Route,useNavigate  } from 'react-router-dom';
+import { BrowserRouter , Routes , Route} from 'react-router-dom';
 import Dashboard from './views/dashboard';
 
 function App() {
