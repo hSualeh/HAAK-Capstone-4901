@@ -82,11 +82,11 @@ export default class login extends Component {
                 <h3>Sign In</h3>
                 <Alert show={this.state.showError} variant="danger">
                   {this.state.signError}
-                  {}
-                  {(this.state.user) &&(
+                 
+                </Alert>
+                {(this.state.user) &&(
           <Navigate to="/dashboard" replace={true} />
         )}
-                </Alert>
 
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email address</Form.Label>
