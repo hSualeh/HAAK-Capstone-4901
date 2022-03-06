@@ -69,3 +69,10 @@ body{
   {
     width: 290px;
   }
+
+  .courseSum .list-group-item {
+    border-left: none!important;
+    border-right: none!important;
+    border-top: none!important;
+    text-align: left;
+  }
