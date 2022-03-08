@@ -69,7 +69,7 @@ export default class dashboard extends Component {
               <div className="row my-4">
  <ListTodoSummary user={this.state.user}></ListTodoSummary>
  <ListCoursesSummary user={this.state.user}></ListCoursesSummary>
-  <div className="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+  <div className="courseSum col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
       <div className="card">
           <h5 className="card-header">Quick Links</h5>
           <div className="card-body">

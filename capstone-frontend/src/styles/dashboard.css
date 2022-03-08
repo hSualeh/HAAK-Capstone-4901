@@ -76,3 +76,8 @@ body{
     border-top: none!important;
     text-align: left;
   }
+  .courseSum .card-header {
+   
+      background-color: #5c6b7f;
+      color: white;
+  }
