@@ -32,8 +32,8 @@ export default class listCoursesSummary extends Component {
         onValue(starCountRef, (snapshot) => {
           const data = snapshot.val();
           if (data != null) {
-            const filter = data.filter(x => x.student.findIndex(y => y === this.props.user?.uid) !== -1);
-            this.setState({ listAllCourses: filter });
+          
+            this.setState({ listAllCourses: data });
          
           } else {
             this.isNodata = true;
@@ -43,17 +43,19 @@ export default class listCoursesSummary extends Component {
       
       
   render() {
-    const listCourses = this.state.listAllCourses;
+    let listCourses = this.state.listAllCourses;
+    const filterCourses = listCourses.filter(x => x.student.findIndex(y => y === this.state.user?.uid) !== -1);
+  
     return (
     
-       
+   
        <div className="courseSum col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
       <div className="card">
           <h5 className="card-header">Courses</h5>
           <div className="card-body">
-         
+       
           <ListGroup as="ol" numbered>
-          {listCourses.map((course) => (
+          {filterCourses.map((course) => (
   <ListGroup.Item
     as=""
     className="d-flex justify-content-between align-items-start"

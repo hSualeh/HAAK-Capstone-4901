@@ -32,8 +32,8 @@ export default class listTodoSummary extends Component {
         onValue(starCountRef, (snapshot) => {
           const data = snapshot.val();
           if (data != null) {
-            const filter = data.filter(x => x.student.findIndex(y => y === this.props.user?.uid) !== -1);
-            this.setState({ listAlltodos: filter });
+          //  const filter = data.filter(x => x.student.findIndex(y => y === this.props.user?.uid) !== -1);
+            this.setState({ listAlltodos: data });
          
           } else {
             this.isNodata = true;
@@ -44,6 +44,8 @@ export default class listTodoSummary extends Component {
       
   render() {
     const listtodos = this.state.listAlltodos;
+    const filterTODO = listtodos.filter(x => x.student.findIndex(y => y === this.state.user?.uid) !== -1);
+  
     return (
     
        
@@ -53,7 +55,7 @@ export default class listTodoSummary extends Component {
           <div className="card-body">
          
           <ListGroup as="ol" numbered>
-          {listtodos.map((todo) => (
+          {filterTODO.map((todo) => (
   <ListGroup.Item
     as=""
     className="d-flex justify-content-between align-items-start"
