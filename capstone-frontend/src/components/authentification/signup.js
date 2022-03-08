@@ -6,8 +6,7 @@ import { auth } from "../firebase-config";
 import "../../styles/auth.css";
 import signupbg from "../../img/signup-bg.PNG";
 import { Link,Navigate } from "react-router-dom";
-import { createBrowserHistory } from "history";
-const history = createBrowserHistory();
+
 export default class signup extends Component {
   constructor(props) {
     super(props);

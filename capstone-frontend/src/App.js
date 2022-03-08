@@ -1,12 +1,12 @@
 import './App.css';
 import Login from './components/authentification/login';
 import Signup from './components/authentification/signup';
-import Navbar from './components/navbar/navbar';
 import Timetable from './components/timetable/timetable';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
+import Profilemain from './components/profile/profilemain';
 import { BrowserRouter , Routes , Route} from 'react-router-dom';
-import Dashboard from './views/dashboard';
+import Dashboard from './components/home/dashboard';
 import Forgetpassword from './components/authentification/forgetpassword';
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
         <Route path="/timetable" element={<Timetable></Timetable>}/> 
         <Route path="/assignments" element={<Assignment></Assignment>}/> 
         <Route path="/courses" element={<Course></Course>}/> 
+        <Route path="/profile" element={<Profilemain></Profilemain>}/> 
         </Routes>
     </BrowserRouter>
     </div>

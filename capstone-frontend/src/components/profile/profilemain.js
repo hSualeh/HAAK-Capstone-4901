@@ -1,17 +1,15 @@
 import React, { Component } from "react";
-import "../styles/dashboard.css";
-import logo from "../img/logo.PNG";
+import "../../styles/dashboard.css";
+import logo from "../../img/logo.PNG";
 import { Button } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
-import ListCoursesSummary from "../components/courses/listCoursesSummary";
-import ListTodoSummary from "../components/todo/listTodoSummary";
-import { onAuthStateChanged,signOut } from "firebase/auth";
-import { auth } from "../components/firebase-config";
-import Navside from "../components/navbar/navside";
-import UserProfileDropDown from "./userProfileDropDown";
-import Breadcrumb from "./breadcrumb";
 
-export default class dashboard extends Component {
+import { onAuthStateChanged,signOut } from "firebase/auth";
+import { auth } from "../firebase-config";
+import Navside from "../navbar/navside";
+import UserProfileDropDown from "../home/userProfileDropDown";
+import Breadcrumb from "../home/breadcrumb";
+import Profile from "./profile";
+export default class profilemain extends Component {
   constructor(props) {
     super(props);
     this.state = { user:null};
@@ -67,16 +65,9 @@ export default class dashboard extends Component {
               <div className="row my-4">
                
               <div className="row my-4">
- <ListTodoSummary user={this.state.user}></ListTodoSummary>
- <ListCoursesSummary user={this.state.user}></ListCoursesSummary>
-  <div className="courseSum col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
-      <div className="card">
-          <h5 className="card-header">Quick Links</h5>
-          <div className="card-body">
-         Quick link component
-          </div>
-        </div>
-  </div>
+
+ <Profile user={this.state.user}></Profile>
+
   </div>
               </div>
             </main>

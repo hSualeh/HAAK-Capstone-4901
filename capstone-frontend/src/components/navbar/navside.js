@@ -9,7 +9,7 @@ export default class navside extends Component {
         id="sidebar"
         className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
       >
-        <div className="position-sticky pt-md-5">
+        <div className="position-sticky">
           <ul className="nav flex-column">
             <li className="nav-item">
             <Link className="nav-link" to ="/dashboard">
@@ -38,6 +38,11 @@ export default class navside extends Component {
             <li className="nav-item">
             <Link className="nav-link" to ="/tasks">
               <i className="fa fa-comments" aria-hidden="true"></i><span className="ml-2">Discussion Room</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+            <Link className="nav-link" to ="/profile">
+              <i className="fa fa-cog" aria-hidden="true"></i><span className="ml-2">Profile Settings</span>
               </Link>
             </li>
           </ul>

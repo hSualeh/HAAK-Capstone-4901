@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../styles/dashboard.css";
+import "../../styles/dashboard.css";
 
 import { Link } from "react-router-dom";
 

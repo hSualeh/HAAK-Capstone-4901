@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import "../styles/dashboard.css";
+import "../../styles/dashboard.css";
 import { Button } from "react-bootstrap";
 import { Link,Navigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { auth } from "../components/firebase-config";
+import { auth } from "../firebase-config";
 
 
 export default class userProfileDropDown extends Component {

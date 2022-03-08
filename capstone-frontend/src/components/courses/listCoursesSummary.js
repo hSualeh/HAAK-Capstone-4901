@@ -1,7 +1,7 @@
 //This component will be used in the dashboard overview
 //summary of courses list
 import React, { Component } from 'react'
-import { ListGroup,Badge } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
@@ -64,9 +64,10 @@ export default class listCoursesSummary extends Component {
       <div className="fw-bold">{course.course_code}</div>
       {course.name}
     </div>
-    <Badge bg="primary" pill>
-      14
-    </Badge>
+   
+    <i class="fa fa-bell" aria-hidden="true" title="notifications"></i>
+    <i class="fa fa-calendar-check-o" aria-hidden="true" title="Schedule"></i>
+    <i class="fa fa-cog" aria-hidden="true" title="setting"></i>
   </ListGroup.Item>
     ))}
   </ListGroup>

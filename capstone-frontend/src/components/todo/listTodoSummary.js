@@ -64,7 +64,7 @@ export default class listTodoSummary extends Component {
       <div className="fw-bold">{todo.name}</div>
       {todo.dueDate}
     </div>
-    <Badge bg="primary" pill>
+    <Badge bg="success" pill>
     {todo.dueDate}
     </Badge>
   </ListGroup.Item>
