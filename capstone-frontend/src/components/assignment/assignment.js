@@ -3,7 +3,9 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, set } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { getDatabase, ref, onValue, set, update } from "firebase/database";
+
 //Css
 import "../../styles/assignment.css";
 
@@ -20,16 +22,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+let userID = "1";
 
 export default class assignment extends Component {
   constructor(props) {
     super(props);
-
     this.maxAssignment = 0;
     this.state = {
       mode: true,
       show: false,
       listAssignment: [],
+      listCurCourses: [],
       assignmentid: "",
       classid: "",
       atitle: "",
@@ -39,7 +42,16 @@ export default class assignment extends Component {
   }
 
   componentDidMount() {
+    const auth = getAuth(app);
+
+    if (auth.currentUser == null) {
+      //window.location.href = "/";
+      userID = "1";
+    } else {
+      userID = auth.currentUser.uid;
+    }
     this.getAllAssignmentData();
+    this.getAllCourseData();
   }
 
   componentWillUnmount() {}
@@ -48,8 +60,10 @@ export default class assignment extends Component {
     const starCountRef = ref(db, "assignments");
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
+      const filter = data.filter(this.filterData);
+
       if (data != null) {
-        this.setState({ listAssignment: data });
+        this.setState({ listAssignment: filter });
         this.maxAssignment = data.length;
       } else {
         this.maxAssignment = 0;
@@ -57,18 +71,60 @@ export default class assignment extends Component {
     });
   };
 
+  getAllCourseData = () => {
+    const starCountRef = ref(db, "courses");
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+        const filter = data.filter(
+          (x) => x.student.findIndex((y) => y === userID) !== -1
+        );
+        this.setState({ listCurCourses: filter });
+      } else {
+        alert(
+          "You donot enroll any cource, please sync data with your school!"
+        );
+        window.location.href = "/courses";
+      }
+    });
+  };
+
   addAssignmentData = () => {
     if (this.state.classid === "") {
-      this.setState({classid : "1"});
+      this.setState({ classid: "1" });
     }
-    set(ref(db, "assignments/" + this.maxAssignment), {
-      aid: this.maxAssignment,
-      classid: this.state.classid,
-      description: this.state.description,
-      duedate: this.state.duedate,
-      title: this.state.atitle,
-      uid: "1",
-    });
+
+    if (this.maxAssignment !== 0) {
+      set(ref(db, "assignments/" + this.maxAssignment), {
+        aid: this.maxAssignment,
+        classid: this.state.classid,
+        description: this.state.description,
+        duedate: this.state.duedate,
+        title: this.state.atitle,
+        uid: userID,
+      });
+    } else {
+      const updates = {};
+
+      const data = {
+        aid: 0,
+        classid: this.state.classid,
+        description: this.state.description,
+        duedate: this.state.duedate,
+        title: this.state.atitle,
+        uid: userID,
+      };
+
+      updates["/assignments/0"] = data;
+
+      update(ref(db), updates)
+        .then(() => {
+          // Data saved successfully!
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   updateAssignmentData = () => {
@@ -78,7 +134,7 @@ export default class assignment extends Component {
       description: this.state.description,
       duedate: this.state.duedate,
       title: this.state.atitle,
-      uid: "1",
+      uid: userID,
     });
   };
 
@@ -102,7 +158,7 @@ export default class assignment extends Component {
     this.setState({ description: "" });
     this.setState({ duedate: "2022-01-01" });
 
-    this.setState({ show: true , mode : true});
+    this.setState({ show: true, mode: true });
   };
 
   handleShowEdit = (e) => {
@@ -124,7 +180,7 @@ export default class assignment extends Component {
       duedate: e.target.parentElement.parentElement.childNodes[4].innerText,
     });
 
-    this.setState({ show: true, mode : false });
+    this.setState({ show: true, mode: false });
   };
 
   handleInput = (e) => {
@@ -137,7 +193,7 @@ export default class assignment extends Component {
 
   render() {
     const listAssignment = this.state.listAssignment;
-    console.log(listAssignment);
+    const listCourses = this.state.listCurCourses;
     return (
       <div className="assignment-wrapper">
         <div className="assignment-inner">
@@ -200,11 +256,9 @@ export default class assignment extends Component {
                   value={this.state.classid}
                   onChange={this.handleInput}
                 >
-                  <option value="1">Class 1</option>
-                  <option value="2">Class 2</option>
-                  <option value="3">Class 3</option>
-                  <option value="4">Class 4</option>
-                  <option value="5">Class 5</option>
+                  {listCourses.map((course) => (
+                    <option value={course.mid}>{course.course_code}</option>
+                  ))}
                 </Form.Control>
                 <Form.Label>Description: </Form.Label>
                 <Form.Control
@@ -236,5 +290,9 @@ export default class assignment extends Component {
         </>
       </div>
     );
+  }
+
+  filterData(value) {
+    return value.uid === userID;
   }
 }
