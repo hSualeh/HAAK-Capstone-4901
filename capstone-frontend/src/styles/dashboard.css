@@ -97,13 +97,42 @@ body{
   {
     margin: 10px;
     width: 250px;
-    background-color: #3f51b5!important;
+    background-color: #598cbe!important;
   }
   .profile_container
   {
     text-align: left;
-    width: 70%!important;
+  
+  
+  }
+  .profile_container form
+  {
+  padding: 10px 10px 0px 10px;
+    background-color: #f2f2f2;
   }
 .profile_container .btn{
 margin: 10px;
+  }
+  .profile{
+    width: 80%!important;
+  }
+
+  .profile_container hr
+  {
+    opacity: 1;
+    height: 6px!important;
+    margin-bottom: 0px;
+    color: #83a9ce;
+  }
+
+  .breadcrumb{
+    padding-top: 10px!important;
+  }
+  .btn-act
+{
+  text-align: right;
+}
+  .btn-act .btn
+  {
+    width: 15%;
   }

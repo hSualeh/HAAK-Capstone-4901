@@ -2,15 +2,17 @@ import React, { Component } from 'react'
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row,Container } from "react-bootstrap";
 import { auth } from "../firebase-config";
-import { Link,Navigate } from "react-router-dom";
+import Listdepartment from "./listdepartment"
 
 export default class profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          registerEmail: "",
-          registerPassword: "",
-          confirm_password: "",
+          f_name: "",
+          l_name: "",
+          major_name: "",
+          dep_name : "",
+          bio_name : "",
           profileError: [],
           showError: false,
           user:null
@@ -32,6 +34,7 @@ export default class profile extends Component {
         console.log(newErrors);
         if (newErrors.length == 0) {
         
+          
         } else {
           this.setState({ profileError: newErrors, showError: true });
         }
@@ -39,8 +42,10 @@ export default class profile extends Component {
   render() {
     return (
       <div className='profile_container'>
- <Form>
+ 
             <h3>Profile Settings</h3>
+            <hr></hr>
+
             <Alert show={this.state.showError} variant="danger">
             
               <ul>
@@ -49,6 +54,7 @@ export default class profile extends Component {
       )}
     </ul>
             </Alert>
+            <Form>
             <Form.Group className="mb-3" controlId="f_name_r">
               <Form.Label>First Name</Form.Label>
               <Form.Control
@@ -71,12 +77,11 @@ export default class profile extends Component {
 
             <Form.Group className="mb-3" controlId="dep_r">
               <Form.Label>Department</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Department"
+              <Form.Select defaultValue=""  required  placeholder="Enter Department"
                 name="dep_name"
-                onChange={this.handleInput}
-              />
+                onChange={this.handleInput}>
+                  <Listdepartment></Listdepartment>
+            </Form.Select>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="major_r">
@@ -100,11 +105,11 @@ export default class profile extends Component {
               />
             </Form.Group>
 
-             <Form.Group className="mb-3">
+             <Form.Group className="mb-3 btn-act">
             <Button variant="danger" type="button" >
               Cancel
             </Button>
-            <Button variant="success" type="button" onClick={this.update}>
+            <Button variant="primary" type="button" onClick={this.update}>
               Save
             </Button>
             </Form.Group>

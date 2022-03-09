@@ -59,17 +59,16 @@ export default class profilemain extends Component {
         <div className="container-fluid">
           <div className="row">
            <Navside></Navside>
-            <main className="content">
+            <main className="profile content">
          <Breadcrumb/>
             
-              <div className="row my-4">
-               
-              <div className="row my-4">
+            
+              <div className="">
 
  <Profile user={this.state.user}></Profile>
 
   </div>
-              </div>
+            
             </main>
           </div>
         </div>
