@@ -5,9 +5,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
 import "../../styles/auth.css";
 import signupbg from "../../img/signup-bg.PNG";
-import { Link } from "react-router-dom";
-import { createBrowserHistory } from "history";
-const history = createBrowserHistory();
+import { Link,Navigate } from "react-router-dom";
+
 export default class signup extends Component {
   constructor(props) {
     super(props);
@@ -17,6 +16,8 @@ export default class signup extends Component {
       confirm_password: "",
       signError: [],
       showError: false,
+      signuppass:false,
+      user:null
     };
   }
 
@@ -41,6 +42,8 @@ export default class signup extends Component {
       )
         .then((userCredential) => {
           const user = userCredential.user;
+          this.setState({user:user});
+
         })
         .catch((error) => {
           console.log(error.code + " " + error.message);
@@ -98,6 +101,9 @@ export default class signup extends Component {
   render() {
     return (
       <Container className="auth_container">
+          {(this.state.user) &&(
+          <Navigate to="/dashboard" replace={true} />
+        )}
   <Row>
     <Col>  <img src={signupbg} className="signupbg" alt="sign up Background"></img></Col>
     <Col className="auth-inner-col"> <div className="auth-inner">

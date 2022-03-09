@@ -1,26 +1,30 @@
 import './App.css';
 import Login from './components/authentification/login';
 import Signup from './components/authentification/signup';
-import Navbar from './components/navbar/navbar';
 import Timetable from './components/timetable/timetable';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
-import {Routes , Route, BrowserRouter as Router} from 'react-router-dom';
-import Dashboard from './views/dashboard';
+import Profilemain from './components/profile/profilemain';
+import { BrowserRouter , Routes , Route} from 'react-router-dom';
+import Dashboard from './components/home/dashboard';
+import Forgetpassword from './components/authentification/forgetpassword';
+
 function App() {
   return (
     <div className="App">
-    <Router>
-    <Navbar />
-      <Routes>
+    <BrowserRouter>
+   
+    <Routes>
       <Route path="/" element={<Login></Login>} exact/>
       <Route path="/signup" element={<Signup></Signup>}/>
-      <Route path="/dashboard/:user" element={<Dashboard></Dashboard>}/>
+      <Route path="/forgetpassword" element={<Forgetpassword></Forgetpassword>}/>
+      <Route path="/dashboard" element={<Dashboard></Dashboard>} exact/>
         <Route path="/timetable" element={<Timetable></Timetable>}/> 
         <Route path="/assignments" element={<Assignment></Assignment>}/> 
         <Route path="/courses" element={<Course></Course>}/> 
-      </Routes>
-    </Router>
+        <Route path="/profile" element={<Profilemain></Profilemain>}/> 
+        </Routes>
+    </BrowserRouter>
     </div>
   );
 }
