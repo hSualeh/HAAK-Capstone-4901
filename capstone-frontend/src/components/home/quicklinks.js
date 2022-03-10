@@ -5,7 +5,7 @@ export default class quicklinks extends Component {
 
   render() {
     return (
-        <div className="courseSum col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+        <div className="courseSum col-4">
         <div className="card">
             <h5 className="card-header">Quick Links</h5>
             <div className="card-body">

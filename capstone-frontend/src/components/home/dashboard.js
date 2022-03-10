@@ -60,7 +60,7 @@ export default class dashboard extends Component {
         <div className="container-fluid">
           <div className="row">
            <Navside></Navside>
-            <main className="content">
+            <main className="content col">
          <Breadcrumb/>
             
               <div className="row my-4">
