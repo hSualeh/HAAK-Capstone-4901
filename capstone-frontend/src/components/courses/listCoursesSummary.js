@@ -92,11 +92,7 @@ export default class listCoursesSummary extends Component {
 
                     <Modal.Body>API FUNCTION TODO</Modal.Body>
                   </Modal>
-                  <i
-                    class="fa fa-calendar-check-o"
-                    aria-hidden="true"
-                    title="Schedule"
-                  ></i>
+                 
                   <i
                     class="fa fa-cog"
                     aria-hidden="true"
