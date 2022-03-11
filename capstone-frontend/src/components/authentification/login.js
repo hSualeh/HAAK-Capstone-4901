@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
 import { Link,Navigate } from "react-router-dom";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged,setPersistence,signInWithEmailAndPassword,browserSessionPersistence } from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
 
@@ -20,6 +20,36 @@ export default class login extends Component {
 
     };
   }
+  loadsignin = (e) => {
+
+  setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+     signInWithEmailAndPassword(auth, this.state.loginEmail, this.state.loginPassword)
+     .then((user) => {
+      console.log("login" + this.state.user?.email);
+      this.setState({ user:user });
+   
+    })
+    .catch((error) => {
+      let message = error.message + "..." + error.code;
+      console.log("error" + error.message);
+      if (
+        error.code === "auth/invalid-email" ||
+        error.code === "auth/user-not-found"
+      ) {
+        message =
+          "Sorry, we couldn't find user with that credentials.Please try again";
+      }
+
+      this.setState({ signError: message, showError: true });
+    });
+  })
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+  };
 
   handleInput = (e) => {
     const name = e.target.name;
@@ -31,12 +61,10 @@ export default class login extends Component {
   };
 
   signin = () => {
-    signInWithEmailAndPassword(
-      auth,
-      this.state.loginEmail,
-      this.state.loginPassword
-    )
-      .then((user) => {
+    setPersistence(auth, browserSessionPersistence)
+    .then(() => {
+       signInWithEmailAndPassword(auth, this.state.loginEmail, this.state.loginPassword)
+       .then((user) => {
         console.log("login" + this.state.user?.email);
         this.setState({ user:user });
      
@@ -51,14 +79,22 @@ export default class login extends Component {
           message =
             "Sorry, we couldn't find user with that credentials.Please try again";
         }
-
+  
         this.setState({ signError: message, showError: true });
       });
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
+    
   };
   componentDidMount() {
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });
     });
+
   }
 
   render() {
