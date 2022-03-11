@@ -20,36 +20,6 @@ export default class login extends Component {
 
     };
   }
-  loadsignin = (e) => {
-
-  setPersistence(auth, browserSessionPersistence)
-  .then(() => {
-     signInWithEmailAndPassword(auth, this.state.loginEmail, this.state.loginPassword)
-     .then((user) => {
-      console.log("login" + this.state.user?.email);
-      this.setState({ user:user });
-   
-    })
-    .catch((error) => {
-      let message = error.message + "..." + error.code;
-      console.log("error" + error.message);
-      if (
-        error.code === "auth/invalid-email" ||
-        error.code === "auth/user-not-found"
-      ) {
-        message =
-          "Sorry, we couldn't find user with that credentials.Please try again";
-      }
-
-      this.setState({ signError: message, showError: true });
-    });
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
-  };
 
   handleInput = (e) => {
     const name = e.target.name;
