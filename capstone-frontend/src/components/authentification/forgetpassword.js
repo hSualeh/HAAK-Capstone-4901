@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
 import { Link,Navigate } from "react-router-dom";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
+
+
+
 
 
 export default class forgetpassword extends Component {
@@ -12,8 +15,7 @@ export default class forgetpassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginEmail: "",
-      loginPassword: "",
+      email: "",
       user: null,
       signError: "",
       showError: false,
@@ -29,12 +31,33 @@ export default class forgetpassword extends Component {
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
   };
+  
 
-  forgetpassword = () => {
-    //TODO
+forgetpassword = () => {
+  getAuth();
+  console.log(this.state.email)
+  sendPasswordResetEmail(auth,this.state.email)
+  .then(() => {
+    console.log("Email is successfully sent!");
+  })
+  .catch((error) => {
+    console.log("Email failed!");
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
   };
- 
 
+//popup for email sent confirmation
+/*
+emailconfirmationPopup = (Popup.register)({
+  title: 'Email Confirmation',
+  content: 'We have sent an email to reset your password on the email to registered with',
+  buttons:{
+    right: ['ok']
+  }
+});
+Popup.queue(emailconfirmationPopup);
+*/
   render() {
    
     return (
@@ -67,7 +90,7 @@ export default class forgetpassword extends Component {
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
-                    name="loginEmail"
+                    name="email"
                     onChange={this.handleInput}
                     required
                   />
