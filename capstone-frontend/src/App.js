@@ -2,6 +2,7 @@ import './App.css';
 import Login from './components/authentification/login';
 import Signup from './components/authentification/signup';
 import CourseScheduleMain from './components/timetable/courseScheduleMain';
+import TodoMain from './components/todo/todoMain';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
 import Profilemain from './components/profile/profilemain';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/assignments" element={<Assignment></Assignment>}/> 
         <Route path="/courses" element={<Course></Course>}/> 
         <Route path="/profile" element={<Profilemain></Profilemain>}/> 
+        <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
         </Routes>
     </BrowserRouter>
     </div>
