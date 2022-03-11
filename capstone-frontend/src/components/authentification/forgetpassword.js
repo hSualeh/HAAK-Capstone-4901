@@ -43,7 +43,7 @@ forgetpassword = () => {
   .catch((error) => {
     console.log("Email failed!");
     const errorCode = error.code;
-    const arrorMessage = error.message;
+    const errorMessage = error.message;
   });
   };
 
