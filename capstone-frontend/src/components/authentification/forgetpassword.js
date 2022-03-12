@@ -45,13 +45,13 @@ forgetpassword = () => {
     })
     .catch((error) => {
       console.log("Email failed!");
-      this.setState({showError : true,listErrors:"Email failed!"});
+      this.setState({showError : true,success : false,listErrors:"Email failed!"});
       const errorCode = error.code;
       const errorMessage = error.message;
     });
   }
   else{
-    this.setState({showError : true,listErrors:"Email is required!"});
+    this.setState({showError : true,success : false,listErrors:"Email is required!"});
   }
   
   };
