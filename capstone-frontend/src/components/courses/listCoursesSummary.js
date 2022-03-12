@@ -81,6 +81,7 @@ export default class listCoursesSummary extends Component {
                     onClick={() =>
                       this.openModal(course.course_code, "notification")
                     }
+                    Style="cursor: pointer;"
                   ></i>
                    <Modal
                     show={this.state.openedDialog === course.course_code && this.state.actionType === "notification"}
@@ -98,6 +99,7 @@ export default class listCoursesSummary extends Component {
                     aria-hidden="true"
                     title="setting"
                     onClick={() => this.openModal(course.course_code, "detail")}
+                    Style="cursor: pointer;"
                   ></i>
                   <Modal
                     show={this.state.openedDialog === course.course_code && this.state.actionType === "detail"}
