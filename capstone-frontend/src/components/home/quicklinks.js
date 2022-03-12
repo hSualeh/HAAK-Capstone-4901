@@ -14,7 +14,7 @@ export default class quicklinks extends Component {
     <Button onClick={()=> window.open("http://catalog.unt.edu/", "_blank")} className="quicklink_btn" variant="secondary" size="md">
    <i class="fa fa-university" aria-hidden="true"></i> UNT Courses Catalog
     </Button>
-    <Button onClick={()=> window.open("https://my.unt.edu/", "_blank")} className="quicklink_btn" variant="secondary" size="md">
+    <Button onClick={()=> window.open("https://registrar.unt.edu/registration-guides-by-semester", "_blank")} className="quicklink_btn" variant="secondary" size="md">
     <i class="fa fa-graduation-cap" aria-hidden="true"></i>  Registration Calendar
     </Button>
     <Button onClick={()=> window.open("https://transportation.unt.edu/parking-permits", "_blank")} className="quicklink_btn" variant="secondary" size="md">
