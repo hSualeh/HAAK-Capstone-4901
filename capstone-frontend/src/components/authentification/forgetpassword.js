@@ -17,9 +17,9 @@ export default class forgetpassword extends Component {
     this.state = {
       email: "",
       user: null,
-      signError: "",
       showError: false,
-
+      success : false,
+      listErrors : ""
     };
   }
 
@@ -35,29 +35,28 @@ export default class forgetpassword extends Component {
 
 forgetpassword = () => {
   getAuth();
-  console.log(this.state.email)
-  sendPasswordResetEmail(auth,this.state.email)
-  .then(() => {
-    console.log("Email is successfully sent!");
-  })
-  .catch((error) => {
-    console.log("Email failed!");
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
+  if(this.state.email != "")
+  {
+    console.log(this.state.email)
+    sendPasswordResetEmail(auth,this.state.email)
+    .then(() => {
+      this.setState({success : true,showError : false});
+      console.log("Email is successfully sent!");
+    })
+    .catch((error) => {
+      console.log("Email failed!");
+      this.setState({showError : true,listErrors:"Email failed!"});
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
+  }
+  else{
+    this.setState({showError : true,listErrors:"Email is required!"});
+  }
+  
   };
 
-//popup for email sent confirmation
-/*
-emailconfirmationPopup = (Popup.register)({
-  title: 'Email Confirmation',
-  content: 'We have sent an email to reset your password on the email to registered with',
-  buttons:{
-    right: ['ok']
-  }
-});
-Popup.queue(emailconfirmationPopup);
-*/
+
   render() {
    
     return (
@@ -78,7 +77,11 @@ Popup.queue(emailconfirmationPopup);
               <Form>
                 <h3>Forget password</h3>
                 <Alert show={this.state.showError} variant="danger">
-                  {this.state.signError}
+                  {this.state.listErrors}
+                
+                </Alert>
+                <Alert show={this.state.success} variant="success">
+                Email is successfully sent
                  
                 </Alert>
                 {(this.state.user) &&(
