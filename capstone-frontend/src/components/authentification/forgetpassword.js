@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
 import { Link,Navigate } from "react-router-dom";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
+
+
+
 
 
 export default class forgetpassword extends Component {
@@ -12,12 +15,11 @@ export default class forgetpassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginEmail: "",
-      loginPassword: "",
+      email: "",
       user: null,
-      signError: "",
       showError: false,
-
+      success : false,
+      listErrors : ""
     };
   }
 
@@ -29,11 +31,31 @@ export default class forgetpassword extends Component {
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
   };
+  
 
-  forgetpassword = () => {
-    //TODO
+forgetpassword = () => {
+  getAuth();
+  if(this.state.email != "")
+  {
+    console.log(this.state.email)
+    sendPasswordResetEmail(auth,this.state.email)
+    .then(() => {
+      this.setState({success : true,showError : false});
+      console.log("Email is successfully sent!");
+    })
+    .catch((error) => {
+      console.log("Email failed!");
+      this.setState({showError : true,success : false,listErrors:"Email failed!"});
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
+  }
+  else{
+    this.setState({showError : true,success : false,listErrors:"Email is required!"});
+  }
+  
   };
- 
+
 
   render() {
    
@@ -55,7 +77,11 @@ export default class forgetpassword extends Component {
               <Form>
                 <h3>Forget password</h3>
                 <Alert show={this.state.showError} variant="danger">
-                  {this.state.signError}
+                  {this.state.listErrors}
+                
+                </Alert>
+                <Alert show={this.state.success} variant="success">
+                Email is successfully sent
                  
                 </Alert>
                 {(this.state.user) &&(
@@ -67,7 +93,7 @@ export default class forgetpassword extends Component {
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
-                    name="loginEmail"
+                    name="email"
                     onChange={this.handleInput}
                     required
                   />

@@ -1,7 +1,8 @@
 import './App.css';
 import Login from './components/authentification/login';
 import Signup from './components/authentification/signup';
-import Timetable from './components/timetable/timetable';
+import CourseScheduleMain from './components/timetable/courseScheduleMain';
+import TodoMain from './components/todo/todoMain';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
 import Profilemain from './components/profile/profilemain';
@@ -19,10 +20,11 @@ function App() {
       <Route path="/signup" element={<Signup></Signup>}/>
       <Route path="/forgetpassword" element={<Forgetpassword></Forgetpassword>}/>
       <Route path="/dashboard" element={<Dashboard></Dashboard>} exact/>
-        <Route path="/timetable" element={<Timetable></Timetable>}/> 
+        <Route path="/timetable" element={<CourseScheduleMain></CourseScheduleMain>}/> 
         <Route path="/assignments" element={<Assignment></Assignment>}/> 
         <Route path="/courses" element={<Course></Course>}/> 
         <Route path="/profile" element={<Profilemain></Profilemain>}/> 
+        <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
         </Routes>
     </BrowserRouter>
     </div>
