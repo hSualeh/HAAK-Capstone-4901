@@ -5,6 +5,7 @@ import CourseScheduleMain from './components/timetable/courseScheduleMain';
 import TodoMain from './components/todo/todoMain';
 import Course from './components/courses/course';
 import Assignment from './components/assignment/assignment';
+import AssignmentMain from './components/assignment/assignmentMain';
 import Profilemain from './components/profile/profilemain';
 import { BrowserRouter , Routes , Route} from 'react-router-dom';
 import Dashboard from './components/home/dashboard';
@@ -25,6 +26,7 @@ function App() {
         <Route path="/courses" element={<Course></Course>}/> 
         <Route path="/profile" element={<Profilemain></Profilemain>}/> 
         <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
+        <Route path="/assignmentsMain" element={<AssignmentMain></AssignmentMain>}/> 
         </Routes>
     </BrowserRouter>
     </div>

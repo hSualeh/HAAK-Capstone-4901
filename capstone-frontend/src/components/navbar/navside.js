@@ -19,7 +19,21 @@ export default class navside extends Component {
             <li className="nav-item">
             <Link className="nav-link" to ="/timetable">
               <i className="fa fa-calendar" aria-hidden="true"></i>
-              <span className="ml-2">Courses Schedule</span>
+              <span className="ml-2">Courses</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+               <Link className="nav-link" to ="/timetable">
+              <i className="fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span className="ml-2"> 
+                  Courses Schedule
+             </span>
+             </Link>
+            </li>
+            <li className="nav-item">
+            <Link className="nav-link" to ="/assignmentsMain">
+              <i className="fa fa-book" aria-hidden="true"></i>
+              <span className="ml-2">Assignments</span>
               </Link>
             </li>
             <li className="nav-item">
@@ -27,14 +41,7 @@ export default class navside extends Component {
               <i className="fa fa-list-alt" aria-hidden="true"></i> <span className="ml-2">TODO</span>
               </Link>
             </li>
-            <li className="nav-item">
-               <Link className="nav-link" to ="/timetable">
-              <i className="fa fa-calendar-check-o" aria-hidden="true"></i>
-                <span className="ml-2"> 
-                  Timetable
-             </span>
-             </Link>
-            </li>
+           
             <li className="nav-item">
             <Link className="nav-link" to ="/tasks">
               <i className="fa fa-comments" aria-hidden="true"></i><span className="ml-2">Discussion Room</span>

@@ -8,8 +8,8 @@ import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
-
-export default class todoMain extends Component {
+import Assignments from "./assignment";
+export default class assignmentMain extends Component {
   constructor(props) {
     super(props);
     this.state = { user: null };
@@ -57,8 +57,8 @@ export default class todoMain extends Component {
               <Breadcrumb />
 
               <div className="">
-            MAIN BODY of task page Here IN Progress
-            - Please create separate components then call it Here
+      <Assignments></Assignments>
+      
               </div>
             </main>
           </div>
