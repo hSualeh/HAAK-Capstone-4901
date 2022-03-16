@@ -37,7 +37,7 @@ export default class dashboard extends Component {
       
       <div>
         
-        <nav className="navbar navbar-light bg-light p-3">
+        <nav className="navbar bg-light p-3">
           <div className="d-flex col-12 col-md-3 col-lg-2 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
             <img src={logo} className="logo" alt="Portal logo"></img>
             <Button
