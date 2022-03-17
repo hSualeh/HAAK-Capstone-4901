@@ -1,7 +1,7 @@
 //This component will be used in the dashboard overview
 //summary of courses list
 import React, { Component } from "react";
-import { ListGroup, Modal } from "react-bootstrap";
+import { ListGroup, Modal, Badge } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
@@ -70,53 +70,113 @@ export default class listCoursesSummary extends Component {
                   className="d-flex justify-content-between align-items-start"
                 >
                   <div className="ms-2 me-auto">
-                    <div className="fw-bold">{course.course_code}</div>
-                    {course.name}
+                    <div className="fw-bold">{course.name}</div>
                   </div>
 
                   <i
                     class="fa fa-bell"
                     aria-hidden="true"
                     title="notifications"
-                    onClick={() =>
-                      this.openModal(course.course_code, "notification")
-                    }
+                    onClick={() => this.openModal(course.cid, "notification")}
                     Style="cursor: pointer;"
                   ></i>
-                   <Modal
-                    show={this.state.openedDialog === course.course_code && this.state.actionType === "notification"}
+                  <Modal
+                    show={
+                      this.state.openedDialog === course.cid &&
+                      this.state.actionType === "notification"
+                    }
                     onHide={this.closeModal}
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title>Notification for {course.course_code}</Modal.Title>
+                      <Modal.Title>
+                        Notification for {course.course_code}
+                      </Modal.Title>
                     </Modal.Header>
 
                     <Modal.Body>API FUNCTION TODO</Modal.Body>
                   </Modal>
-                 
+
                   <i
                     class="fa fa-cog"
                     aria-hidden="true"
                     title="setting"
-                    onClick={() => this.openModal(course.course_code, "detail")}
+                    onClick={() => this.openModal(course.cid, "detail")}
                     Style="cursor: pointer;"
                   ></i>
                   <Modal
-                    show={this.state.openedDialog === course.course_code && this.state.actionType === "detail"}
+                    show={
+                      this.state.openedDialog === course.cid &&
+                      this.state.actionType === "detail"
+                    }
                     onHide={this.closeModal}
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title>{course.course_code}</Modal.Title>
+                      <Modal.Title>Course Detail </Modal.Title>
                     </Modal.Header>
 
                     <Modal.Body>
-                    <table responsive> 
-                      <tr><td><strong className="me-auto">Course Name :</strong></td><td>{course.name}</td></tr>
-                      <tr><td><strong className="me-auto">Meeting Date :</strong></td><td>{course.meeting_Dates}</td></tr>
-                      <tr><td><strong className="me-auto">Days :</strong></td><td>{course.Days}</td></tr>
-                      <tr><td><strong className="me-auto">Times :</strong></td><td>{course.Times}</td></tr>
-                      <tr><td><strong className="me-auto">Location :</strong></td><td>{course.location}</td></tr>
-                      </table>  
+                      <table responsive>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Type :</strong>
+                          </td>
+                          <td>
+                            {" "}
+                            <Badge bg="success" pill>
+                              {course.type}
+                            </Badge>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Course Name :</strong>
+                          </td>
+                          <td>{course.name}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Meeting Date :</strong>
+                          </td>
+                          <td>{course.meeting_Dates}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Days :</strong>
+                          </td>
+                          <td>{course.Days}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Times :</strong>
+                          </td>
+                          <td>{course.Times}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Section :</strong>
+                          </td>
+                          <td>{course.section}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Session :</strong>
+                          </td>
+                          <td>{course.session}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Room Number :</strong>
+                          </td>
+                          <td>{course.roomNumber}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong className="me-auto">Location :</strong>
+                          </td>
+                          <td>{course.location}</td>
+                        </tr>
+                      </table>
                     </Modal.Body>
                   </Modal>
                 </ListGroup.Item>
