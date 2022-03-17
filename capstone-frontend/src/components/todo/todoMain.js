@@ -429,6 +429,7 @@ export default class todo extends React.PureComponent {
           (appointment) =>
             editingAppointment && appointment.id === editingAppointment.id
         )[0] || addedAppointment;
+
       const cancelAppointment = () => {
         if (isNewAppointment) {
           this.setState({
@@ -641,11 +642,26 @@ export default class todo extends React.PureComponent {
               </div>
             </main>
             <h1> appointments </h1>
-            <ul>
-              {appointments.map((task) => {
-                return <li>{task[0]}</li>;
-              })}
-            </ul>
+            {this.state.data.map((task) => (
+              <li key={task.id}>
+                {task.id +
+                  " " +
+                  " " +
+                  task.title +
+                  " " +
+                  " " +
+                  task.location +
+                  " " +
+                  " " +
+                  task.notes +
+                  " " +
+                  " " +
+                  task.startDate.toString() +
+                  " " +
+                  " " +
+                  task.endDate.toString()}
+              </li>
+            ))}
           </div>
         </div>
       </div>
