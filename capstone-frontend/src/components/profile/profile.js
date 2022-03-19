@@ -87,11 +87,11 @@ export default class profile extends Component {
     this.setState({ dep_name: this.state.saveData.department });
     this.setState({ bio_name: this.state.saveData.bio });
     this.setState({ token: this.state.saveData.token });
-    
+
     this.setState({
       showError: false,
       showSaveOk: false,
-      showCancel: true
+      showCancel: true,
     });
   };
 
@@ -104,14 +104,14 @@ export default class profile extends Component {
         profileError: newErrors,
         showError: false,
         showSaveOk: true,
-        showCancel: false
+        showCancel: false,
       });
     } else {
       this.setState({
         profileError: newErrors,
         showError: true,
         showSaveOk: false,
-        showCancel: false
+        showCancel: false,
       });
       return;
     }
