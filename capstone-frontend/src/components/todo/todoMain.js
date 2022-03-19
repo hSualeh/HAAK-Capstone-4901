@@ -152,6 +152,7 @@ class todoContainer extends React.PureComponent {
 
   commitAppointment(type) {
     const { commitChanges } = this.props;
+
     const appointment = {
       ...this.getAppointmentData(),
       ...this.getAppointmentChanges(),
@@ -381,6 +382,7 @@ export default class todo extends React.PureComponent {
 
   componentDidUpdate() {
     this.appointmentForm.update();
+    this.update(); // updating database
   }
 
   onEditingAppointmentChange(editingAppointment) {
@@ -445,7 +447,6 @@ export default class todo extends React.PureComponent {
         this.setDeletedAppointmentId(deleted);
         this.toggleConfirmationVisible();
       }
-      this.update();
       return { data, addedAppointment: {} };
     });
   }
@@ -469,16 +470,28 @@ export default class todo extends React.PureComponent {
     if (this.state.user == null) {
       return;
     }
-    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data != null) {
-      } else {
-        this.isNodata = true;
-      }
-    });
+    while (i < this.state.data.length) {
+      const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data != null) {
+          /*
+          this.setState({ f_name: data.firstName });
+          this.setState({ l_name: data.lastName });
+          this.setState({ major_name: data.major });
+          this.setState({ dep_name: data.department });
+          this.setState({ bio_name: data.bio });
+          this.setState({ token: data.token });
+          this.setState({ saveData: data });
+          /
+        } else {
+          this.isNodata = true;
+        }
+      });
+    }
   };
   */
+
   /*
   handleInput = (e) => {
     const name = e.target.name;
@@ -492,20 +505,20 @@ export default class todo extends React.PureComponent {
 
   update() {
     const updates = {};
-
     var i = 0;
-    while (i < appointments.length) {
+    while (i < this.state.data.length) {
       const userData = {
-        id: appointments[i].id,
-        title: appointments[i].title,
-        location: appointments[i].location,
-        notes: appointments[i].notes,
-        startDate: appointments[i].startDate,
-        endDate: appointments[i].endDate,
+        id: this.state.data[i].id,
+        title: this.state.data[i].title,
+        location: this.state.data[i].location,
+        notes: this.state.data[i].notes,
+        startDate: this.state.data[i].startDate,
+        endDate: this.state.data[i].endDate,
       };
 
-      updates["/todo/" + this.state.user.uid + "/" + appointments[i].id] =
+      updates["/todo/" + this.state.user.uid + "/" + this.state.data[i].id] =
         userData;
+      i++;
     }
     update(ref(getDatabase()), updates)
       .then(() => {
@@ -637,11 +650,6 @@ export default class todo extends React.PureComponent {
                 </Paper>
               </div>
             </main>
-            <Form.Group className="mb-3 btn-act">
-              <Button variant="primary" type="button" onClick={this.update}>
-                Save
-              </Button>
-            </Form.Group>
             <h1> appointments </h1>
             {this.state.data.map((task) => (
               <li key={task.id}>
