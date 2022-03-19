@@ -121,12 +121,7 @@ class todoContainer extends React.PureComponent {
 
     this.state = {
       saveData: null,
-      a_tasks: [],
       appointmentChanges: {},
-      profileError: [],
-      showError: false,
-      showSaveOk: false,
-      showCancel: false,
       user: null,
     };
 
@@ -141,6 +136,7 @@ class todoContainer extends React.PureComponent {
     };
 
     this.changeAppointment = this.changeAppointment.bind(this);
+
     this.commitAppointment = this.commitAppointment.bind(this);
   }
 
@@ -171,78 +167,6 @@ class todoContainer extends React.PureComponent {
       appointmentChanges: {},
     });
   }
-
-  logout = (event) => {
-    try {
-      signOut(auth);
-    } catch (error) {
-      this.setState({ signError: error.message });
-    }
-  };
-
-  componentDidMount() {
-    onAuthStateChanged(auth, (currentUser) => {
-      this.setState({ user: currentUser });
-    });
-  }
-
-  getUserTasks = () => {
-    if (this.state.user == null) {
-      return;
-    }
-    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data != null) {
-      } else {
-        this.isNodata = true;
-      }
-    });
-  };
-
-  handleInput = (e) => {
-    const name = e.target.name;
-
-    const value = e.target.value;
-
-    this.setState({ [name]: value });
-    // console.log("Name: " + name + "value:" + value);
-  };
-
-  update = (event) => {
-    let newErrors = this.findFormErrors();
-    this.setState({ profileError: newErrors });
-
-    if (newErrors.length == 0) {
-      this.setState({
-        profileError: newErrors,
-        showError: false,
-        showSaveOk: true,
-        showCancel: false,
-      });
-    } else {
-      this.setState({
-        profileError: newErrors,
-        showError: true,
-        showSaveOk: false,
-        showCancel: false,
-      });
-      return;
-    }
-
-    const updates = {};
-    const userData = {};
-
-    updates["/todo/" + this.state.user.uid] = userData;
-
-    update(ref(getDatabase()), updates)
-      .then(() => {
-        // Data saved successfully!
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   render() {
     const {
@@ -406,14 +330,19 @@ export default class todo extends React.PureComponent {
     };
 
     this.toggleConfirmationVisible = this.toggleConfirmationVisible.bind(this);
+
     this.commitDeletedAppointment = this.commitDeletedAppointment.bind(this);
+
     this.toggleEditingFormVisibility =
       this.toggleEditingFormVisibility.bind(this);
 
     this.commitChanges = this.commitChanges.bind(this);
+
     this.onEditingAppointmentChange =
       this.onEditingAppointmentChange.bind(this);
+
     this.onAddedAppointmentChange = this.onAddedAppointmentChange.bind(this);
+
     this.appointmentForm = connectProps(todoContainer, () => {
       const {
         editingFormVisible,
@@ -516,8 +445,75 @@ export default class todo extends React.PureComponent {
         this.setDeletedAppointmentId(deleted);
         this.toggleConfirmationVisible();
       }
+      this.update();
       return { data, addedAppointment: {} };
     });
+  }
+
+  logout = (event) => {
+    try {
+      signOut(auth);
+    } catch (error) {
+      this.setState({ signError: error.message });
+    }
+  };
+
+  componentDidMount() {
+    onAuthStateChanged(auth, (currentUser) => {
+      this.setState({ user: currentUser });
+    });
+  }
+
+  /*
+  getUserTasks = () => {
+    if (this.state.user == null) {
+      return;
+    }
+    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+      } else {
+        this.isNodata = true;
+      }
+    });
+  };
+  */
+  /*
+  handleInput = (e) => {
+    const name = e.target.name;
+
+    const value = e.target.value;
+
+    this.setState({ [name]: value });
+    // console.log("Name: " + name + "value:" + value);
+  };
+  */
+
+  update() {
+    const updates = {};
+
+    var i = 0;
+    while (i < appointments.length) {
+      const userData = {
+        id: appointments[i].id,
+        title: appointments[i].title,
+        location: appointments[i].location,
+        notes: appointments[i].notes,
+        startDate: appointments[i].startDate,
+        endDate: appointments[i].endDate,
+      };
+
+      updates["/todo/" + this.state.user.uid + "/" + appointments[i].id] =
+        userData;
+    }
+    update(ref(getDatabase()), updates)
+      .then(() => {
+        // Data saved successfully!
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -641,6 +637,11 @@ export default class todo extends React.PureComponent {
                 </Paper>
               </div>
             </main>
+            <Form.Group className="mb-3 btn-act">
+              <Button variant="primary" type="button" onClick={this.update}>
+                Save
+              </Button>
+            </Form.Group>
             <h1> appointments </h1>
             {this.state.data.map((task) => (
               <li key={task.id}>
