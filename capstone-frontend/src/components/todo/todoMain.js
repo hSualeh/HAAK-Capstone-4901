@@ -465,15 +465,22 @@ export default class todo extends React.PureComponent {
     });
   }
 
+  /*
   getUserTasks = () => {
     if (this.state.user == null) {
       return;
     }
-
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("length" + data.length);
       if (data != null) {
+        var i = 0;
+        //while (i < data.length) {
+        //console.log("title" + data[i].title);
+        //i++;
+        //}
+        //console.log(toString("getData: " + data.title));
         /*
           this.setState({ f_name: data.firstName });
           this.setState({ l_name: data.lastName });
@@ -482,20 +489,11 @@ export default class todo extends React.PureComponent {
           this.setState({ bio_name: data.bio });
           this.setState({ token: data.token });
           this.setState({ saveData: data });
-          */
+          */ /*
       } else {
         this.isNodata = true;
       }
     });
-  };
-  */*
-  handleInput = (e) => {
-    const name = e.target.name;
-
-    const value = e.target.value;
-
-    this.setState({ [name]: value });
-    // console.log("Name: " + name + "value:" + value);
   };
   */
 
