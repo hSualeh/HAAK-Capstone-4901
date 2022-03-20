@@ -279,7 +279,7 @@ export default class todo extends Component  {
   };
   componentDidUpdate() {
     this.appointmentForm.update();
-    this.update(); // updating database
+    //this.update(); // updating database
    // this.getUserTasks();
   }
 

@@ -10,15 +10,13 @@ import Navside from "../navbar/navside";
 
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
-import Todo from "./todo.js"
-export default class todo extends Component  {
+import Todo from "./todo.js";
+export default class todo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-     
-      user :null
+      user: null,
     };
-
   }
   logout = (event) => {
     try {
@@ -32,15 +30,11 @@ export default class todo extends Component  {
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });
     });
-  };
-  
+  }
 
-  
   render() {
-   
     return (
       <div>
-
         <nav className="navbar bg-light p-3">
           <div className="d-flex col-12 col-md-3 col-lg-2 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
             <img src={logo} className="logo" alt="Portal logo"></img>
@@ -69,8 +63,8 @@ export default class todo extends Component  {
               <div className="tasks_container">
                 <h3>Add Task : In progress</h3>
                 <hr></hr>
-             
-              <Todo user={this.state.user}> </Todo>
+
+                <Todo user={this.state.user}> </Todo>
               </div>
             </main>
           </div>
