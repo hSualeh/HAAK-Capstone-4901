@@ -12,7 +12,7 @@ export default class breadcrumb extends Component {
           <Link className="breadcrumb-item" to ="/dashboard">Home</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
-            Overview
+            {this.props.currentpage}
           </li>
         </ol>
       </nav>

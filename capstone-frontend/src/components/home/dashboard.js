@@ -61,7 +61,7 @@ export default class dashboard extends Component {
           <div className="row">
            <Navside></Navside>
             <main className="content col">
-         <Breadcrumb/>
+         <Breadcrumb currentpage="Overview"/>
             
               <div className="row my-4">
                

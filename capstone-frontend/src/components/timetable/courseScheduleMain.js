@@ -54,7 +54,7 @@ export default class profilemain extends Component {
           <div className="row">
             <Navside></Navside>
             <main className="profile content">
-              <Breadcrumb />
+              <Breadcrumb  currentpage="Courses"/>
 
               <div className="">
                 <Timetable user={this.state.user}></Timetable>

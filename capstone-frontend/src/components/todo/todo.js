@@ -279,51 +279,42 @@ export default class todo extends Component  {
   };
   componentDidUpdate() {
     this.appointmentForm.update();
-    //this.update(); // updating database
-   // this.getUserTasks();
+    this.update(); // updating database
+   
   }
-
-  /*getUserTasks = () => {
-    if (this.state.user == null) {
-      return;
-    }
-    const starCountRef = ref(getDatabase(), "todo/D9TQSlz0D2ct4JVRxj6prGmk4Ck2");
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data != null) {
-        this.state.data = data;
-        
-      } else {
-        this.isNodata = true;
-      }
-    });
-  };*/
 
   update() {
     const updates = {};
     var i = 0;
-    while (i < this.state.data.length) {
-      const userData = {
-        id: this.state.data[i].id,
-        title: this.state.data[i].title,
-        location: this.state.data[i].location,
-        notes: this.state.data[i].notes,
-        startDate: this.state.data[i].startDate,
-        endDate: this.state.data[i].endDate,
-      };
-
-      updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
-        userData;
-      i++;
+    try{
+        while (i < this.state.data.length) {
+            const userData = {
+              id: this.state.data[i].id,
+              title: this.state.data[i].title,
+              location: this.state.data[i].location,
+              notes: this.state.data[i].notes,
+              startDate: this.state.data[i].startDate,
+              endDate: this.state.data[i].endDate,
+            };
+      
+            updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
+              userData;
+            i++;
+          }
+          update(ref(getDatabase()), updates)
+            .then(() => {
+             console.log("Data saved successfully!")
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+       
     }
-    update(ref(getDatabase()), updates)
-      .then(() => {
-        // Data saved successfully!
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+    catch(error){
+console.log("PRoblem updating tasks")
+
+    }
+     }
 
   render() {
     const {

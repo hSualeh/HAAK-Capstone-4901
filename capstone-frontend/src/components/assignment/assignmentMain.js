@@ -54,7 +54,7 @@ export default class assignmentMain extends Component {
           <div className="row">
             <Navside></Navside>
             <main className="profile content">
-              <Breadcrumb />
+              <Breadcrumb currentpage="Assignments" />
 
               <div className="">
       <Assignments></Assignments>

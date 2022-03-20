@@ -54,7 +54,7 @@ export default class profilemain extends Component {
           <div className="row">
             <Navside></Navside>
             <main className="profile content">
-              <Breadcrumb />
+              <Breadcrumb currentpage="Profile Settings"/>
 
               <div className="">
                 <Profile user={this.state.user}></Profile>
