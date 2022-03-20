@@ -1,8 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
-import { Button, Alert, Container } from "react-bootstrap";
-import Form from "react-bootstrap/Form";
+import { Button } from "react-bootstrap";
 
 import { getDatabase, ref, onValue, update } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -25,7 +24,6 @@ import {
   Appointments,
   AppointmentForm,
   AppointmentTooltip,
-  ConfirmationDialog,
   DragDropProvider,
   EditRecurrenceMenu,
   AllDayPanel,
@@ -39,7 +37,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import DevButton from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -380,11 +377,6 @@ export default class todo extends React.PureComponent {
     });
   }
 
-  componentDidUpdate() {
-    this.appointmentForm.update();
-    this.update(); // updating database
-  }
-
   onEditingAppointmentChange(editingAppointment) {
     this.setState({ editingAppointment });
   }
@@ -465,7 +457,12 @@ export default class todo extends React.PureComponent {
     });
   }
 
-  /*
+  componentDidUpdate() {
+    this.appointmentForm.update();
+    this.update(); // updating database
+    this.getUserTasks();
+  }
+
   getUserTasks = () => {
     if (this.state.user == null) {
       return;
@@ -473,29 +470,13 @@ export default class todo extends React.PureComponent {
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("length" + data.length);
       if (data != null) {
-        var i = 0;
-        //while (i < data.length) {
-        //console.log("title" + data[i].title);
-        //i++;
-        //}
-        //console.log(toString("getData: " + data.title));
-        /*
-          this.setState({ f_name: data.firstName });
-          this.setState({ l_name: data.lastName });
-          this.setState({ major_name: data.major });
-          this.setState({ dep_name: data.department });
-          this.setState({ bio_name: data.bio });
-          this.setState({ token: data.token });
-          this.setState({ saveData: data });
-          */ /*
+        this.state.data = data;
       } else {
         this.isNodata = true;
       }
     });
   };
-  */
 
   update() {
     const updates = {};
@@ -644,27 +625,6 @@ export default class todo extends React.PureComponent {
                 </Paper>
               </div>
             </main>
-            <h1> appointments </h1>
-            {this.state.data.map((task) => (
-              <li key={task.id}>
-                {task.id +
-                  " " +
-                  " " +
-                  task.title +
-                  " " +
-                  " " +
-                  task.location +
-                  " " +
-                  " " +
-                  task.notes +
-                  " " +
-                  " " +
-                  task.startDate.toString() +
-                  " " +
-                  " " +
-                  task.endDate.toString()}
-              </li>
-            ))}
           </div>
         </div>
       </div>
