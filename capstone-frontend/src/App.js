@@ -9,6 +9,7 @@ import Profilemain from './components/profile/profilemain';
 import { BrowserRouter , Routes , Route} from 'react-router-dom';
 import Dashboard from './components/home/dashboard';
 import Forgetpassword from './components/authentification/forgetpassword';
+import Resetpassword from './components/authentification/resetpassword';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/profile" element={<Profilemain></Profilemain>}/> 
         <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
         <Route path="/assignments/:id" element={<AssignmentMain></AssignmentMain>}/>
+        <Route path="/resetpassword" element={<Resetpassword></Resetpassword>}/>
         </Routes>
     </BrowserRouter>
     </div>
