@@ -15,7 +15,6 @@ export default class course extends Component {
     this.isNodata = false;
 
     this.state = {
-    
       mode: true,
       formShow: false,
       listAllCourses: [],
@@ -74,12 +73,13 @@ export default class course extends Component {
         this.setState({ listAllCourses: allData });
         this.setState({ listCurCourses: filter });
 
-        this.maxCourse = Math.max.apply(
-          Math,
-          allData.map(function (o) {
-            return o.id;
-          })
-        ) + 1;
+        this.maxCourse =
+          Math.max.apply(
+            Math,
+            allData.map(function (o) {
+              return o.id;
+            })
+          ) + 1;
       } else {
         this.isNodata = true;
 
@@ -107,7 +107,12 @@ export default class course extends Component {
   };
 
   handleClose = (e) => {
-    this.setState({ formShow: false, showError: false, showConfirm: false, showMessage: false });
+    this.setState({
+      formShow: false,
+      showError: false,
+      showConfirm: false,
+      showMessage: false,
+    });
     e.target.blur();
   };
 
@@ -181,24 +186,23 @@ export default class course extends Component {
   };
 
   handleSync = (e) => {
-      let listCourses = this.state.listAllCourses;
-      let uid = this.state.user.uid;
-      let isNodata = this.isNodata;
-      let   maxCourse = this.maxCourse ;
-
+    let listCourses = this.state.listAllCourses;
+    let uid = this.state.user.uid;
+    let isNodata = this.isNodata;
+    let maxCourse = this.maxCourse;
 
     e.target.blur();
     const requestOptions = {
       method: "GET",
-      mode: 'cors',
+      mode: "cors",
       Headers: {
         "Access-Control-Allow-Origin": "https://localhost:3000",
-        "Access-Control-Allow-Methods":"GET",
+        "Access-Control-Allow-Methods": "GET",
         "Access-Control-Allow-Headers":
           "Origin, X-Requested-With, Content-Type, Accept",
       },
     };
-    
+
     fetch(
       "/api/v1/courses/?enrollment_state=active&access_token=" +
         this.state.token,
@@ -206,16 +210,15 @@ export default class course extends Component {
     )
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Network response was not OK');
+          throw new Error("Network response was not OK");
         }
         return res.json();
-      
       })
-     .then(function(data) {
-        const items = data;
-        console.log(items);
+      .then(
+        function (data) {
+          const items = data;
+          console.log(items);
 
-    
           const updates = {};
 
           data.map((courseData) => {
@@ -226,18 +229,19 @@ export default class course extends Component {
               cid: courseData.id,
               name: courseData.name,
               student: [],
-              session: "",
-              section: "",
+              course_code: courseData.course_code,
+              course_format: courseData.course_format,
               roomNumber: "",
-              meeting_Dates: "",
+              meeting_Dates: courseData.start_at +" - " + courseData.end_at,
+
               type: "Canvas",
             };
 
-            const temp = courseData.name.split(" ");
-          //  requestData.session = temp[1].split(".")[0];
-           // requestData.section = temp[1].split(".")[1];
+          //  const temp = courseData.course_code.split(" ");
+            //  requestData.session = temp[1].split(".")[0];
+            // requestData.section = temp[1].split(".")[1];
             // check course is existed
-            const fResultCourse =  listCourses.filter(
+            const fResultCourse = listCourses.filter(
               (x) => x.cid === courseData.id
             );
 
@@ -376,7 +380,6 @@ export default class course extends Component {
       showConfirm: false,
     });
 
-
     this.handleShowMsg("The selected data has been removed!");
   };
 
@@ -387,7 +390,7 @@ export default class course extends Component {
 
     this.setState({ [name]: value });
   };
-  
+
   handleShowMsg(msg) {
     this.setState({ message: msg, showMessage: true });
   }
@@ -416,7 +419,12 @@ export default class course extends Component {
               Add Course
             </Button>
             {this.state.showSync ? (
-              <Button variant="primary" size="sm" className="btn-s" onClick={this.handleSync}>
+              <Button
+                variant="primary"
+                size="sm"
+                className="btn-s"
+                onClick={this.handleSync}
+              >
                 Sync with UNT
               </Button>
             ) : null}
@@ -432,7 +440,7 @@ export default class course extends Component {
                 Name
               </th>
               <th scope="col" className="t-col-1">
-                Section
+                Course Code
               </th>
               <th scope="col" className="t-col-1">
                 Room Number
@@ -441,7 +449,7 @@ export default class course extends Component {
                 Meeting Dates
               </th>
               <th scope="col" className="t-col-1">
-                Session
+              Course format
               </th>
               <th scope="col" className="t-col-1"></th>
             </tr>
@@ -450,11 +458,13 @@ export default class course extends Component {
             {listCourses.map((course) => (
               <tr key={course.id}>
                 <td scope="row">{course.id}</td>
-                <td><Link to={`/assignments/`+course.id} >{course.name}</Link></td>
-                <td>{course.section}</td>
+                <td>
+                  <Link to={`/assignments/` + course.id}>{course.name}</Link>
+                </td>
+                <td>{course.course_Code}</td>
                 <td>{course.roomNumber}</td>
                 <td>{course.meeting_Dates}</td>
-                <td>{course.session}</td>
+                <td>{course.course_format}</td>
                 <td scope="col">
                   <Button
                     variant="primary"
@@ -493,54 +503,74 @@ export default class course extends Component {
                 </Alert>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">Name:<text className="required">(*)</text> </Form.Label>
-                <Col sm="9"><Form.Control
-                  type="text"
-                  name="fName"
-                  onChange={this.handleInput}
-                  value={this.state.fName}
-                  placeholder="Name input"
-                /></Col>
+                <Form.Label column sm="3">
+                  Name:<text className="required">(*)</text>{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    name="fName"
+                    onChange={this.handleInput}
+                    value={this.state.fName}
+                    placeholder="Name input"
+                  />
+                </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">Section:<text className="required">(*)</text> </Form.Label>
-                <Col sm="9"><Form.Control
-                  type="text"
-                  name="fSection"
-                  onChange={this.handleInput}
-                  value={this.state.fSection}
-                  placeholder="Section input"
-                /></Col>
+                <Form.Label column sm="3">
+                  Section:<text className="required">(*)</text>{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    name="fSection"
+                    onChange={this.handleInput}
+                    value={this.state.fSection}
+                    placeholder="Section input"
+                  />
+                </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">Room Number:<text className="required">(*)</text> </Form.Label>
-                <Col sm="9"><Form.Control
-                  type="text"
-                  name="fRNumber"
-                  onChange={this.handleInput}
-                  value={this.state.fRNumber}
-                  placeholder="Room Number input"
-                /></Col>
+                <Form.Label column sm="3">
+                  Room Number:<text className="required">(*)</text>{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    name="fRNumber"
+                    onChange={this.handleInput}
+                    value={this.state.fRNumber}
+                    placeholder="Room Number input"
+                  />
+                </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">Meeting Date:<text className="required">(*)</text> </Form.Label>
-                <Col sm="9"><Form.Control
-                  type="date"
-                  name="fMDates"
-                  timeFormat="dd-MM-yyyy"
-                  onChange={this.handleInput}
-                  value={this.state.fMDates}
-                /></Col>
+                <Form.Label column sm="3">
+                  Meeting Date:<text className="required">(*)</text>{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="date"
+                    name="fMDates"
+                    timeFormat="dd-MM-yyyy"
+                    onChange={this.handleInput}
+                    value={this.state.fMDates}
+                  />
+                </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">Session:<text className="required">(*)</text> </Form.Label>
-                <Col sm="9"><Form.Control
-                  type="text"
-                  name="fSession"
-                  onChange={this.handleInput}
-                  value={this.state.fSession}
-                  placeholder="Session input"
-                /></Col>
+                <Form.Label column sm="3">
+                Course format:<text className="required">(*)</text>{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    name="fSession"
+                    onChange={this.handleInput}
+                    value={this.state.fSession}
+                    placeholder="Session input"
+                  />
+                </Col>
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
