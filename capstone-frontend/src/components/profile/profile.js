@@ -206,16 +206,7 @@ export default class profile extends Component {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="major_r">
-            <Form.Label>UNT System's Token</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter UNT System's Token"
-              name="token"
-              value={this.state.token}
-              onChange={this.handleInput}
-            />
-          </Form.Group>
+         
 
           <Form.Group className="mb-3" controlId="bio_r">
             <Form.Label>Biography</Form.Label>
