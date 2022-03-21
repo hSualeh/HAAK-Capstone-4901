@@ -15,6 +15,7 @@ export default class course extends Component {
     this.isNodata = false;
 
     this.state = {
+    
       mode: true,
       formShow: false,
       listAllCourses: [],
@@ -180,28 +181,44 @@ export default class course extends Component {
   };
 
   handleSync = (e) => {
+      let listCourses = this.state.listAllCourses;
+      let uid = this.state.user.uid;
+      let isNodata = this.isNodata;
+      let   maxCourse = this.maxCourse ;
+
+
     e.target.blur();
     const requestOptions = {
       method: "GET",
-      mode: "cors",
+      mode: 'cors',
       Headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://localhost:3000",
+        "Access-Control-Allow-Methods":"GET",
         "Access-Control-Allow-Headers":
           "Origin, X-Requested-With, Content-Type, Accept",
       },
     };
+    
     fetch(
-      "https://unt.instructure.com/api/v1/courses/?enrollment_state=active&access_token=" +
+      "/api/v1/courses/?enrollment_state=active&access_token=" +
         this.state.token,
       requestOptions
     )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          const listCourses = this.state.listAllCourses;
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not OK');
+        }
+        return res.json();
+      
+      })
+     .then(function(data) {
+        const items = data;
+        console.log(items);
+
+    
           const updates = {};
 
-          result.map((courseData) => {
+          data.map((courseData) => {
             let isSkip = false;
 
             let requestData = {
@@ -216,29 +233,29 @@ export default class course extends Component {
               type: "Canvas",
             };
 
-            const temp = courseData.course_code.split(" ");
-            requestData.session = temp[1].split(".")[0];
-            requestData.section = temp[1].split(".")[1];
+            const temp = courseData.name.split(" ");
+          //  requestData.session = temp[1].split(".")[0];
+           // requestData.section = temp[1].split(".")[1];
             // check course is existed
-            const fResultCourse = listCourses.filter(
+            const fResultCourse =  listCourses.filter(
               (x) => x.cid === courseData.id
             );
 
             if (fResultCourse.length !== 0) {
               isSkip = true;
             } else {
-              requestData.student.push(this.state.user.uid);
+              requestData.student.push(uid);
             }
 
             if (isSkip === false) {
-              if (this.isNodata === true) {
+              if (isNodata === true) {
                 updates["/courses/" + 0] = requestData;
-                this.maxCourse = 1;
-                this.isNodata = false;
+                maxCourse = 1;
+                isNodata = false;
               } else {
-                requestData.id = this.maxCourse;
-                updates["/courses/" + this.maxCourse] = requestData;
-                this.maxCourse++;
+                requestData.id = maxCourse;
+                updates["/courses/" + maxCourse] = requestData;
+                maxCourse++;
               }
             }
           });
