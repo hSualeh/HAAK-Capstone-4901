@@ -1,29 +1,13 @@
 import React, { Component } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getDatabase, ref, onValue, set, update } from "firebase/database";
-//Css
-import "../../styles/course.css";
+import { Button, Alert, Col, Row, Container } from "react-bootstrap";
+import { auth } from "../firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
+import { getDatabase, ref, onValue, update, remove } from "firebase/database";
+import { Link } from "react-router-dom";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBlFW1iZlyuKtZNAURkJiRSBaVK2fyaEMc",
-  authDomain: "coursemanagmentportal.firebaseapp.com",
-  databaseURL: "https://coursemanagmentportal-default-rtdb.firebaseio.com",
-  projectId: "coursemanagmentportal",
-  storageBucket: "coursemanagmentportal.appspot.com",
-  messagingSenderId: "300067894635",
-  appId: "1:300067894635:web:424f4aff1e0661d253482e",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-let userID = "1";
-
-export default class assignment extends Component {
+export default class course extends Component {
   constructor(props) {
     super(props);
 
@@ -32,71 +16,171 @@ export default class assignment extends Component {
 
     this.state = {
       mode: true,
-      show: false,
+      formShow: false,
       listAllCourses: [],
       listCurCourses: [],
       syncData: [],
+      fID: "",
+      fName: "",
+      fSection: "",
+      fRNumber: "",
+      fMDates: "",
+      fSession: "",
+      user: null,
+      profileError: [],
+      showError: false,
+      courseData: null,
+      token: "",
+      showSync: false,
+      showError: false,
+      showConfirm: false,
+      showMessage: false,
+      message: "",
     };
   }
 
   componentDidMount() {
-    const auth = getAuth(app);
-    if (auth.currentUser === null) {
-      //window.location.href = "/";
-      userID = "1";
-    } else {
-      userID = auth.currentUser.uid;
-    }
+    onAuthStateChanged(auth, (currentUser) => {
+      this.setState({ user: currentUser });
 
-    this.getAllCourseData();
+      this.getAllCourseData();
+      this.getUNTToken();
+    });
   }
 
   componentWillUnmount() {}
 
   getAllCourseData = () => {
-    const starCountRef = ref(db, "courses");
+    const starCountRef = ref(getDatabase(), "courses");
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
-        const filter = data.filter(x => x.student.findIndex(y => y === userID) !== -1);
-        this.setState({ listAllCourses: data });
+        let allData = [];
+        let filter = [];
+
+        for (var key of Object.keys(data)) {
+          allData.push(data[key]);
+
+          const check = data[key].student.filter(
+            (x) => x === this.state.user.uid
+          );
+
+          if (check.length !== 0) {
+            filter.push(data[key]);
+          }
+        }
+
+        this.setState({ listAllCourses: allData });
         this.setState({ listCurCourses: filter });
-        
-        this.maxCourse = data.length;
+
+        this.maxCourse = Math.max.apply(
+          Math,
+          allData.map(function (o) {
+            return o.id;
+          })
+        ) + 1;
       } else {
         this.isNodata = true;
+
+        let allData = [];
+        let filter = [];
+
+        this.setState({ listAllCourses: allData });
+        this.setState({ listCurCourses: filter });
       }
     });
   };
 
-  updateAssignmentData = () => {
-    set(ref(db, "assignments/" + this.state.assignmentid), {
-      aid: this.state.assignmentid,
-      classid: this.state.classid,
-      description: this.state.description,
-      duedate: this.state.duedate,
-      title: this.state.atitle,
-      uid: "1",
+  getUNTToken = () => {
+    if (this.state.user == null) {
+      return;
+    }
+    const starCountRef = ref(getDatabase(), "users/" + this.state.user.uid);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+        this.setState({ token: data.token });
+        if (data.token !== "") this.setState({ showSync: true });
+      }
     });
   };
 
   handleClose = (e) => {
-    this.setState({ show: false });
+    this.setState({ formShow: false, showError: false, showConfirm: false, showMessage: false });
+    e.target.blur();
+  };
+
+  handleShowConfirm = (e) => {
+    let id = "";
+
+    if (e.target.innerHTML !== "") {
+      id = e.target.parentElement.parentElement.childNodes[0].innerText;
+    } else {
+      id =
+        e.target.parentElement.parentElement.parentElement.childNodes[0]
+          .innerText;
+    }
+
+    this.setState({ fID: id });
+
+    this.setState({
+      showConfirm: true,
+      message: "Want to delete!",
+    });
   };
 
   handleSubmitForm = (e) => {
-    if (e.target.innerText === "Save") {
-      this.updateAssignmentData();
+    let newErrors = this.findFormErrors();
+    this.setState({ profileError: newErrors });
+
+    if (newErrors.length == 0) {
+      this.setState({
+        profileError: newErrors,
+        showError: false,
+      });
     } else {
-      this.addAssignmentData();
+      this.setState({
+        profileError: newErrors,
+        showError: true,
+      });
+
+      return;
     }
-    this.setState({ show: false });
+
+    if (e.target.innerText === "Save") {
+      this.updateCourse();
+    } else {
+      this.createNewCourse();
+    }
+
+    e.target.blur();
+    this.setState({ formShow: false });
+    this.handleShowMsg("Save successfully!");
   };
 
-  handleShowAdd = (e) => {
-    const token =
-      "9082~TQsKgb46KJw9l6ziIt5Y0Jc7U1j8ZMor7l5xQiKaH8ZjKz5i91c7j1slQI82rRzCF"; // API Token
+  findFormErrors = () => {
+    const newErrors = [];
+    // Email errors
+    if (!this.state.fName || this.state.fName === "")
+      newErrors.push("Name cannot be blank!");
 
+    if (!this.state.fSection || this.state.fSection === "")
+      newErrors.push("Section cannot be blank!");
+
+    if (!this.state.fRNumber || this.state.fRNumber === "")
+      newErrors.push("Room Number cannot be blank!");
+
+    if (!this.state.fMDates || this.state.fMDates === "")
+      newErrors.push("Meeting Date cannot be blank!");
+
+    if (!this.state.fSession || this.state.fSession === "")
+      newErrors.push("Session cannot be blank!");
+
+    return newErrors;
+  };
+
+  handleSync = (e) => {
+    e.target.blur();
     const requestOptions = {
       method: "GET",
       mode: "cors",
@@ -107,7 +191,8 @@ export default class assignment extends Component {
       },
     };
     fetch(
-      "https://unt.instructure.com/api/v1/courses/?enrollment_state=active&access_token=9082~TQsKgb46KJw9l6ziIt5Y0Jc7U1j8ZMor7l5xQiKaH8ZjKz5i91c7j1slQI82rRzC",
+      "https://unt.instructure.com/api/v1/courses/?enrollment_state=active&access_token=" +
+        this.state.token,
       requestOptions
     )
       .then((res) => res.json())
@@ -117,81 +202,105 @@ export default class assignment extends Component {
           const updates = {};
 
           result.map((courseData) => {
-            let curIndex = -1;
             let isSkip = false;
-            
+
             let requestData = {
-              mid:0,
-              id: courseData.id,
+              id: 0,
+              cid: courseData.id,
               name: courseData.name,
-              course_code: courseData.course_code,
-              start_at: courseData.start_at,
-              end_at: courseData.end_at,
-              time_zone: courseData.time_zone,
               student: [],
+              session: "",
+              section: "",
+              roomNumber: "",
+              meeting_Dates: "",
+              type: "Canvas",
             };
 
+            const temp = courseData.course_code.split(" ");
+            requestData.session = temp[1].split(".")[0];
+            requestData.section = temp[1].split(".")[1];
             // check course is existed
             const fResultCourse = listCourses.filter(
-              (x) => x.id === courseData.id
+              (x) => x.cid === courseData.id
             );
 
             if (fResultCourse.length !== 0) {
-              // check student is enrolled
-              const fResultStudent = fResultCourse[0].student.filter(
-                (x) => x === userID
-              );
-
-              if (fResultStudent.length === 0) {
-                requestData.student = fResultCourse[0].student;
-                requestData.student.push(userID);
-              } else {
-                isSkip = true;
-              }
-              
-              curIndex = listCourses.findIndex(x => x.id === fResultCourse[0].id);
+              isSkip = true;
             } else {
-              requestData.student.push(userID);
+              requestData.student.push(this.state.user.uid);
             }
+
             if (isSkip === false) {
-              if (curIndex === -1) {
-                if (this.isNodata === true) {
-                  updates["/courses/" + 0] = requestData;
-                  this.maxCourse = 1;
-                  this.isNodata = false;
-                } else {
-                  requestData.mid = this.maxCourse;
-                  updates["/courses/" + this.maxCourse] = requestData;
-                  this.maxCourse++;
-                }
+              if (this.isNodata === true) {
+                updates["/courses/" + 0] = requestData;
+                this.maxCourse = 1;
+                this.isNodata = false;
               } else {
-                requestData.mid = curIndex;
-                updates["/courses/" + curIndex] = requestData;
+                requestData.id = this.maxCourse;
+                updates["/courses/" + this.maxCourse] = requestData;
+                this.maxCourse++;
               }
             }
           });
 
-          update(ref(db), updates);
+          update(ref(getDatabase()), updates);
+
+          this.handleShowMsg("Sync successfully!");
         },
         (error) => {
+          this.handleShowMsg("Sync fail!");
           console.log(error);
         }
       );
   };
 
-  createNewCourse(courseData) {
-    // // Get a key for a new Post.
-    // const newPostKey = push(child(ref(db), "courses")).key;
+  createNewCourse() {
+    let cID = 0;
 
-    const updates = {};
     if (this.isNodata === true) {
-      updates["/courses/" + 0] = courseData;
+      cID = 0;
       this.isNodata = false;
     } else {
-      updates["/courses/" + this.maxCourse] = courseData;
+      cID = this.maxCourse;
+      this.maxCourse = this.maxCourse + 1;
     }
 
-    update(ref(db), updates)
+    const courseData = {
+      id: cID,
+      name: this.state.fName,
+      session: this.state.fSession,
+      section: this.state.fSection,
+      roomNumber: this.state.fRNumber,
+      meeting_Dates: this.state.fMDates,
+      type: "Manual",
+      student: [this.state.user.uid],
+    };
+
+    const updates = {};
+    updates["/courses/" + cID] = courseData;
+
+    update(ref(getDatabase()), updates)
+      .then(() => {
+        // Data saved successfully!
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  updateCourse() {
+    let courseData = this.state.courseData;
+
+    courseData.name = this.state.fName;
+    courseData.session = this.state.fSession;
+    courseData.section = this.state.fSection;
+    courseData.roomNumber = this.state.fRNumber;
+    courseData.meeting_Dates = this.state.fMDates;
+
+    const updates = {};
+    updates["/courses/" + this.state.fID] = courseData;
+
+    update(ref(getDatabase()), updates)
       .then(() => {
         // Data saved successfully!
       })
@@ -201,25 +310,57 @@ export default class assignment extends Component {
   }
 
   handleShowEdit = (e) => {
-    //Load data from table
-    this.setState({
-      assignmentid:
-        e.target.parentElement.parentElement.childNodes[0].innerText,
+    let id = "";
+    if (e.target.innerHTML !== "") {
+      id = e.target.parentElement.parentElement.childNodes[0].innerText;
+    } else {
+      id =
+        e.target.parentElement.parentElement.parentElement.childNodes[0]
+          .innerText;
+    }
+
+    const starCountRef = ref(getDatabase(), "courses/" + id);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+        this.setState({
+          fID: id,
+          fName: data.name,
+          fSection: data.section,
+          fRNumber: data.roomNumber,
+          fSession: data.session,
+          fMDates: data.meeting_Dates,
+        });
+        this.setState({ courseData: data });
+      } else {
+        this.isNodata = true;
+      }
     });
+    e.target.blur();
+    this.setState({ formShow: true, mode: false, showError: false });
+  };
+
+  handleDelete = (e) => {
+    let id = "";
+
+    if (e.target.innerHTML !== "") {
+      id = e.target.parentElement.parentElement.childNodes[0].innerText;
+    } else {
+      id =
+        e.target.parentElement.parentElement.parentElement.childNodes[0]
+          .innerText;
+    }
+
+    remove(ref(getDatabase(), "courses/" + this.state.fID));
+
+    e.target.blur();
+
     this.setState({
-      classid: e.target.parentElement.parentElement.childNodes[1].innerText,
-    });
-    this.setState({
-      atitle: e.target.parentElement.parentElement.childNodes[2].innerText,
-    });
-    this.setState({
-      description: e.target.parentElement.parentElement.childNodes[3].innerText,
-    });
-    this.setState({
-      duedate: e.target.parentElement.parentElement.childNodes[4].innerText,
+      showConfirm: false,
     });
 
-    this.setState({ show: true, mode: false });
+
+    this.handleShowMsg("The selected data has been removed!");
   };
 
   handleInput = (e) => {
@@ -229,37 +370,205 @@ export default class assignment extends Component {
 
     this.setState({ [name]: value });
   };
+  
+  handleShowMsg(msg) {
+    this.setState({ message: msg, showMessage: true });
+  }
+
+  handleShowAdd = (e) => {
+    this.setState({
+      fID: "",
+      fName: "",
+      fSection: "",
+      fRNumber: "",
+      fMDates: "",
+      fSession: "",
+    });
+    e.target.blur();
+    this.setState({ formShow: true, mode: true, showError: false });
+  };
 
   render() {
     const listCourses = this.state.listCurCourses;
 
     return (
-      <div className="assignment-wrapper">
-        <div className="assignment-inner">
-          <div className="header-function">
-            <Button variant="primary" onClick={this.handleShowAdd}>
-              Sync with School
+      <div className="content">
+        <div className="content">
+          <div className="content course-function">
+            <Button variant="primary" size="sm" onClick={this.handleShowAdd}>
+              Add Course
             </Button>
+            {this.state.showSync ? (
+              <Button variant="primary" size="sm" className="btn-s" onClick={this.handleSync}>
+                Sync with UNT
+              </Button>
+            ) : null}
           </div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Class Code</th>
-                <th scope="col">Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {listCourses.map((course) => (
-                <tr key={course.id}>
-                  <th scope="row">{course.id}</th>
-                  <td>{course.course_code}</td>
-                  <td>{course.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col" className="t-col-0">
+                ID
+              </th>
+              <th scope="col" className="t-col-3">
+                Name
+              </th>
+              <th scope="col" className="t-col-1">
+                Section
+              </th>
+              <th scope="col" className="t-col-1">
+                Room Number
+              </th>
+              <th scope="col" className="t-col-2">
+                Meeting Dates
+              </th>
+              <th scope="col" className="t-col-1">
+                Session
+              </th>
+              <th scope="col" className="t-col-1"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {listCourses.map((course) => (
+              <tr key={course.id}>
+                <td scope="row">{course.id}</td>
+                <td><Link to={`/assignments/`+course.id} >{course.name}</Link></td>
+                <td>{course.section}</td>
+                <td>{course.roomNumber}</td>
+                <td>{course.meeting_Dates}</td>
+                <td>{course.session}</td>
+                <td scope="col">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={this.handleShowEdit}
+                  >
+                    <i className="fa fa-edit"></i>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={this.handleShowConfirm}
+                    size="sm"
+                  >
+                    <i className="fa fa-trash"></i>
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <>
+          <Modal show={this.state.formShow} onHide={this.handleClose} size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>
+                {this.state.mode ? "Couse Add" : "Course Edit"}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group>
+                <Alert show={this.state.showError} variant="danger">
+                  <ul>
+                    {this.state.profileError.map((error_V) => (
+                      <li key={error_V}>{error_V}</li>
+                    ))}
+                  </ul>
+                </Alert>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">Name:<text className="required">(*)</text> </Form.Label>
+                <Col sm="9"><Form.Control
+                  type="text"
+                  name="fName"
+                  onChange={this.handleInput}
+                  value={this.state.fName}
+                  placeholder="Name input"
+                /></Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">Section:<text className="required">(*)</text> </Form.Label>
+                <Col sm="9"><Form.Control
+                  type="text"
+                  name="fSection"
+                  onChange={this.handleInput}
+                  value={this.state.fSection}
+                  placeholder="Section input"
+                /></Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">Room Number:<text className="required">(*)</text> </Form.Label>
+                <Col sm="9"><Form.Control
+                  type="text"
+                  name="fRNumber"
+                  onChange={this.handleInput}
+                  value={this.state.fRNumber}
+                  placeholder="Room Number input"
+                /></Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">Meeting Date:<text className="required">(*)</text> </Form.Label>
+                <Col sm="9"><Form.Control
+                  type="date"
+                  name="fMDates"
+                  timeFormat="dd-MM-yyyy"
+                  onChange={this.handleInput}
+                  value={this.state.fMDates}
+                /></Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">Session:<text className="required">(*)</text> </Form.Label>
+                <Col sm="9"><Form.Control
+                  type="text"
+                  name="fSession"
+                  onChange={this.handleInput}
+                  value={this.state.fSession}
+                  placeholder="Session input"
+                /></Col>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={this.handleSubmitForm}>
+                {this.state.mode ? "Add" : "Save"}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+        <>
+          <Modal show={this.state.showConfirm} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirming</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>{this.state.message}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                No
+              </Button>
+              <Button variant="primary" onClick={this.handleDelete}>
+                Yes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+        <>
+          <Modal show={this.state.showMessage} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Message</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>{this.state.message}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={this.handleClose}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
       </div>
     );
   }

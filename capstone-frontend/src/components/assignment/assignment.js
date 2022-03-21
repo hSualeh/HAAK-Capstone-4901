@@ -1,186 +1,264 @@
 import React, { Component } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getDatabase, ref, onValue, set, update } from "firebase/database";
-
-//Css
-import "../../styles/assignment.css";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBlFW1iZlyuKtZNAURkJiRSBaVK2fyaEMc",
-  authDomain: "coursemanagmentportal.firebaseapp.com",
-  databaseURL: "https://coursemanagmentportal-default-rtdb.firebaseio.com",
-  projectId: "coursemanagmentportal",
-  storageBucket: "coursemanagmentportal.appspot.com",
-  messagingSenderId: "300067894635",
-  appId: "1:300067894635:web:424f4aff1e0661d253482e",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-let userID = "1";
+import { Button, Alert, Table, Col, Row } from "react-bootstrap";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase-config";
+import { getDatabase, ref, onValue, update, remove } from "firebase/database";
+import { Link } from "react-router-dom";
 
 export default class assignment extends Component {
   constructor(props) {
     super(props);
     this.maxAssignment = 0;
+    this.isNodata = true;
     this.state = {
       mode: true,
       show: false,
+      showSync: false,
+      showConfirm: false,
+      showMessage: false,
+      message: "",
       listAssignment: [],
-      listCurCourses: [],
-      assignmentid: "",
-      classid: "",
-      atitle: "",
-      description: "",
-      duedate: "2022-01-01",
+      fid: "",
+      fStatus: "Not completed",
+      fName: "",
+      fType: "Quiz",
+      fDescription: "",
+      fDuedate: "2022-01-01",
+      user: null,
+      couseData: null,
+      assignmentData: null,
+      showSync: false,
+      token: "",
+      showError: false,
+      agnError: [],
     };
+
+    this.couseID = window.location.href.split("//")[1].split("/")[2];
   }
 
   componentDidMount() {
-    const auth = getAuth(app);
+    onAuthStateChanged(auth, (currentUser) => {
+      this.setState({ user: currentUser });
 
-    if (auth.currentUser == null) {
-      //window.location.href = "/";
-      userID = "1";
-    } else {
-      userID = auth.currentUser.uid;
-    }
-    this.getAllAssignmentData();
-    this.getAllCourseData();
+      this.getAllAssignmentData();
+      this.getCourseData();
+      this.getUNTToken();
+    });
   }
 
   componentWillUnmount() {}
 
   getAllAssignmentData = () => {
-    const starCountRef = ref(db, "assignments");
+    const starCountRef = ref(getDatabase(), "assignments");
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
-      const filter = data.filter(this.filterData);
+      let allData = [];
+      let filter = [];
 
       if (data != null) {
+        this.isNodata = false;
+        for (var key of Object.keys(data)) {
+          allData.push(data[key]);
+          if (data[key].cid == this.couseID && data[key].uid == this.state.user.uid) {
+            filter.push(data[key]);
+          }
+        }
+
+        this.maxAssignment =
+          Math.max.apply(
+            Math,
+            allData.map(function (o) {
+              return o.id;
+            })
+          ) + 1;
+
         this.setState({ listAssignment: filter });
-        this.maxAssignment = data.length;
       } else {
+        this.isNodata = true;
         this.maxAssignment = 0;
+        this.setState({ listAssignment: filter });
       }
     });
   };
 
-  getAllCourseData = () => {
-    const starCountRef = ref(db, "courses");
+  getCourseData = () => {
+    const starCountRef = ref(getDatabase(), "courses/" + this.couseID);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
-        const filter = data.filter(
-          (x) => x.student.findIndex((y) => y === userID) !== -1
-        );
-        this.setState({ listCurCourses: filter });
-      } else {
-        alert(
-          "You donot enroll any cource, please sync data with your school!"
-        );
-        window.location.href = "/courses";
+        this.setState({ couseData: data });
+      }
+    });
+  };
+
+  getUNTToken = () => {
+    if (this.state.user == null) {
+      return;
+    }
+    const starCountRef = ref(getDatabase(), "users/" + this.state.user.uid);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+        this.setState({ token: data.token });
+        if (data.token !== "" && this.state.couseData.type=== "Canvas") this.setState({ showSync: true });
       }
     });
   };
 
   addAssignmentData = () => {
-    if (this.state.classid === "") {
-      this.setState({ classid: "1" });
-    }
+    let cID = 0;
 
-    if (this.maxAssignment !== 0) {
-      set(ref(db, "assignments/" + this.maxAssignment), {
-        aid: this.maxAssignment,
-        classid: this.state.classid,
-        description: this.state.description,
-        duedate: this.state.duedate,
-        title: this.state.atitle,
-        uid: userID,
-      });
+    if (this.isNodata === true) {
+      cID = 0;
+      this.isNodata = false;
     } else {
-      const updates = {};
-
-      const data = {
-        aid: 0,
-        classid: this.state.classid,
-        description: this.state.description,
-        duedate: this.state.duedate,
-        title: this.state.atitle,
-        uid: userID,
-      };
-
-      updates["/assignments/0"] = data;
-
-      update(ref(db), updates)
-        .then(() => {
-          // Data saved successfully!
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      cID = this.maxAssignment;
+      this.maxAssignment = this.maxAssignment + 1;
     }
+
+    const assignmentData = {
+      id: cID,
+      cid: this.couseID,
+      name: this.state.fName,
+      status: this.state.fStatus,
+      type: this.state.fType,
+      duedate: this.state.fDuedate,
+      description: this.state.fDescription,
+      uid: this.state.user.uid,
+      untid: "",
+    };
+
+    const updates = {};
+    updates["/assignments/" + cID] = assignmentData;
+
+    update(ref(getDatabase()), updates)
+      .then(() => {
+        // Data saved successfully!
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   updateAssignmentData = () => {
-    set(ref(db, "assignments/" + this.state.assignmentid), {
-      aid: this.state.assignmentid,
-      classid: this.state.classid,
-      description: this.state.description,
-      duedate: this.state.duedate,
-      title: this.state.atitle,
-      uid: userID,
+    let assignmentData = this.state.assignmentData;
+
+    assignmentData.name = this.state.fName;
+    assignmentData.status = this.state.fStatus;
+    assignmentData.type = this.state.fType;
+    assignmentData.description = this.state.fDescription;
+    assignmentData.duedate = this.state.fDuedate;
+
+    const updates = {};
+    updates["/assignments/" + this.state.fid] = assignmentData;
+
+    update(ref(getDatabase()), updates)
+      .then(() => {
+        // Data saved successfully!
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  handleShowMsg(msg) {
+    this.setState({ message: msg, showMessage: true });
+  }
+
+  handleClose = (e) => {
+    this.setState({
+      show: false,
+      showError: false,
+      showConfirm: false,
+      showMessage: false,
     });
   };
 
-  handleClose = (e) => {
-    this.setState({ show: false });
-  };
-
   handleSubmitForm = (e) => {
+    let newErrors = this.findFormErrors();
+
+    if (newErrors.length == 0) {
+      this.setState({
+        agnError: newErrors,
+        showError: false,
+      });
+    } else {
+      this.setState({
+        agnError: newErrors,
+        showError: true,
+      });
+
+      return;
+    }
+
     if (e.target.innerText === "Save") {
       this.updateAssignmentData();
     } else {
       this.addAssignmentData();
     }
+
+    e.target.blur();
     this.setState({ show: false });
+
+    this.handleShowMsg("Save successfully!");
+  };
+
+  findFormErrors = () => {
+    const newErrors = [];
+    // Email errors
+    if (!this.state.fName || this.state.fName === "")
+      newErrors.push("Name cannot be blank!");
+
+    if (!this.state.fDuedate || this.state.fDuedate === "")
+      newErrors.push("Due Date cannot be blank!");
+
+    return newErrors;
   };
 
   handleShowAdd = (e) => {
-    this.setState({ assignmentid: "" });
-    this.setState({ classid: "" });
-    this.setState({ atitle: "" });
-    this.setState({ description: "" });
-    this.setState({ duedate: "2022-01-01" });
+    this.setState({
+      fid: "",
+      fStatus: "Not completed",
+      fName: "",
+      fType: "Quiz",
+      fDescription: "",
+      fDuedate: "2022-01-01",
+    });
 
-    this.setState({ show: true, mode: true });
+    this.setState({ show: true, mode: true, showError: false });
   };
 
   handleShowEdit = (e) => {
     //Load data from table
-    this.setState({
-      assignmentid:
-        e.target.parentElement.parentElement.childNodes[0].innerText,
-    });
-    this.setState({
-      classid: e.target.parentElement.parentElement.childNodes[1].innerText,
-    });
-    this.setState({
-      atitle: e.target.parentElement.parentElement.childNodes[2].innerText,
-    });
-    this.setState({
-      description: e.target.parentElement.parentElement.childNodes[3].innerText,
-    });
-    this.setState({
-      duedate: e.target.parentElement.parentElement.childNodes[4].innerText,
+    let id = "";
+    if (e.target.innerHTML !== "") {
+      id = e.target.parentElement.parentElement.childNodes[0].innerText;
+    } else {
+      id =
+        e.target.parentElement.parentElement.parentElement.childNodes[0]
+          .innerText;
+    }
+
+    const starCountRef = ref(getDatabase(), "assignments/" + id);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data != null) {
+        this.setState({
+          fid: id,
+          fName: data.name,
+          fStatus: data.status,
+          fType: data.type,
+          fDescription: data.description,
+          fDuedate: data.duedate,
+        });
+        this.setState({ assignmentData: data });
+      }
     });
 
-    this.setState({ show: true, mode: false });
+    e.target.blur();
+    this.setState({ show: true, mode: false, showError: false });
   };
 
   handleInput = (e) => {
@@ -191,92 +269,325 @@ export default class assignment extends Component {
     this.setState({ [name]: value });
   };
 
+  handleShowConfirm = (e) => {
+    let id = "";
+
+    if (e.target.innerHTML !== "") {
+      id = e.target.parentElement.parentElement.childNodes[0].innerText;
+    } else {
+      id =
+        e.target.parentElement.parentElement.parentElement.childNodes[0]
+          .innerText;
+    }
+
+    this.setState({ fid: id });
+
+    this.setState({
+      showConfirm: true,
+      message: "Want to delete!",
+    });
+  };
+
+  handleSync = (e) => {
+    e.target.blur();
+    let isError = false;
+    const requestOptions = {
+      method: "GET",
+      mode: "cors",
+      Headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept",
+      },
+    };
+    fetch(
+      "https://unt.instructure.com/api/v1/courses/" +
+        this.state.couseData.cid +
+        "/assignments?access_token=" +
+        this.state.token,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          const listAssignment = this.state.listAssignment;
+          const updates = {};
+
+          result.map((asgn) => {
+            let isSkip = false;
+
+            let requestData = {
+              id: 0,
+              cid: this.couseID,
+              name: asgn.name,
+              status: "Not completed",
+              type: "etc",
+              duedate: asgn.due_at,
+              description: asgn.description,
+              uid: this.state.user.uid,
+              untid: asgn.id,
+            };
+
+            if (asgn.has_submitted_submissions === true) {
+              requestData.status = "Completed";
+            }
+
+            if (asgn.is_quiz_assignment === true) {
+              requestData.type = "Quiz";
+            }
+
+            if (asgn.due_at == null || asgn.due_at === "") {
+              requestData.duedate = "2022-12-31";
+            } else {
+              requestData.duedate = asgn.due_at.substring(0, 10);
+            }
+
+            if (asgn.description != null && asgn.description !== "") {
+              const fist = asgn.description.indexOf("<p>");
+              const last = asgn.description.lastIndexOf("</p>");
+
+              requestData.description = asgn.description
+                .substring(fist, last)
+                .replaceAll("<p>", "");
+              requestData.description = requestData.description.replaceAll(
+                "</p>",
+                ""
+              );
+              requestData.description = requestData.description.replaceAll(
+                "/n",
+                ""
+              );
+            }
+
+            // check Assignment is existed
+            const fResultAsgn = listAssignment.filter(
+              (x) => x.untid === asgn.id
+            );
+
+            if (fResultAsgn.length !== 0) {
+              isSkip = true;
+            }
+
+            if (isSkip === false) {
+              if (this.isNodata === true) {
+                updates["/assignments/" + 0] = requestData;
+                this.maxAssignment = 1;
+                this.isNodata = false;
+              } else {
+                requestData.id = this.maxAssignment;
+                updates["/assignments/" + this.maxAssignment] = requestData;
+                this.maxAssignment++;
+              }
+            }
+          });
+
+          update(ref(getDatabase()), updates);
+        },
+        (error) => {
+          this.isError = true;
+          console.log(error);
+        }
+      );
+
+    if (isError) {
+      this.handleShowMsg("Sync fail!");
+    } else {
+      this.handleShowMsg("Sync successfully!");
+    }
+  };
+
+  handleDelete = (e) => {
+    remove(ref(getDatabase(), "assignments/" + this.state.fid));
+
+    e.target.blur();
+
+    this.setState({
+      showConfirm: false,
+    });
+
+    this.handleShowMsg("The selected data has been removed!");
+  };
+
   render() {
     const listAssignment = this.state.listAssignment;
-    const listCourses = this.state.listCurCourses;
+
     return (
-      <div className="assignment-wrapper">
-        <div className="assignment-inner">
-          <div className="header-function">
-            <Button variant="primary" onClick={this.handleShowAdd}>
+      <div className="content">
+        <div className="content">
+          <div className="assignment-intro">
+            Couse Name :{" "}
+            {this.state.couseData == null ? "" : this.state.couseData.name}
+          </div>
+          <div className="assignment-function">
+            <Button variant="primary" size="sm" onClick={this.handleShowAdd}>
               Add
             </Button>
+            {this.state.showSync ? (
+              <Button
+                variant="primary"
+                size="sm"
+                className="btn-s"
+                onClick={this.handleSync}
+              >
+                Sync with UNT
+              </Button>
+            ) : null}
+            <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`} >Back</Link>
           </div>
-          <table className="table">
+          <Table className="table" responsive="sm">
             <thead>
               <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Class</th>
-                <th scope="col">Title</th>
-                <th scope="col">Descriptions</th>
-                <th scope="col">Due Dates</th>
-                <th scope="col"></th>
+                <th scope="col" className="t-col-id">
+                  ID
+                </th>
+                <th scope="col" className="t-col-type">
+                  Type
+                </th>
+                <th scope="col" className="t-col-name">
+                  Name
+                </th>
+                <th scope="col" className="t-col-des">
+                  Descriptions
+                </th>
+                <th scope="col" className="t-col-status">
+                  Status
+                </th>
+                <th scope="col" className="t-col-dd">
+                  Due Dates
+                </th>
+                <th scope="col" className="t-col-func"></th>
               </tr>
             </thead>
             <tbody>
               {listAssignment.map((asgn) => (
-                <tr key={asgn.aid}>
-                  <th scope="row">{asgn.aid}</th>
-                  <td>{asgn.classid}</td>
-                  <td>{asgn.title}</td>
-                  <td>{asgn.description}</td>
-                  <td>{asgn.duedate}</td>
-                  <td>
-                    <Button variant="primary" onClick={this.handleShowEdit}>
-                      Edit
+                <tr key={asgn.id}>
+                  <th scope="row" className="t-col-id">
+                    {asgn.id}
+                  </th>
+                  <td className="t-col-type">{asgn.type}</td>
+                  <td className="t-col-name">{asgn.name}</td>
+                  {/* <td className="t-col-des wrapcontent">{ asgn.description }</td> */}
+                  <td className="t-col-des wrapcontent">
+                    <div
+                      dangerouslySetInnerHTML={{ __html: asgn.description }}
+                    />
+                  </td>
+                  <td className="t-col-status">{asgn.status}</td>
+                  <td className="t-col-dd">{asgn.duedate}</td>
+                  <td className="t-col-func">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={this.handleShowEdit}
+                    >
+                      <i className="fa fa-edit"></i>
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={this.handleShowConfirm}
+                      size="sm"
+                    >
+                      <i className="fa fa-trash"></i>
                     </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         </div>
         <>
-          <Modal show={this.state.show} onHide={this.handleClose}>
+          <Modal show={this.state.show} onHide={this.handleClose} size="lg">
             <Modal.Header closeButton>
               <Modal.Title>
-                {this.state.mode ? "Assignment Add" : "Assignment Save"}
+                {this.state.mode ? "Assignment Add" : "Assignment Edit"}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group>
-                <Form.Label>Title: </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="atitle"
-                  onChange={this.handleInput}
-                  value={this.state.atitle}
-                  placeholder="Title input"
-                  required
-                />
-                <Form.Label>Class: </Form.Label>
-                <Form.Control
-                  as="select"
-                  name="classid"
-                  value={this.state.classid}
-                  onChange={this.handleInput}
-                >
-                  {listCourses.map((course) => (
-                    <option value={course.mid}>{course.course_code}</option>
-                  ))}
-                </Form.Control>
-                <Form.Label>Description: </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="description"
-                  onChange={this.handleInput}
-                  value={this.state.description}
-                  placeholder="Description input"
-                  required="true"
-                />
-                <Form.Label>Due date: </Form.Label>
-                <Form.Control
-                  type="date"
-                  name="duedate"
-                  onChange={this.handleInput}
-                  value={this.state.duedate}
-                />
-              </Form.Group>
+              <Form>
+                <Form.Group as={Row} className="mb-3">
+                  <Alert show={this.state.showError} variant="danger">
+                    <ul>
+                      {this.state.agnError.map((error_V) => (
+                        <li key={error_V}>{error_V}</li>
+                      ))}
+                    </ul>
+                  </Alert>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm="2">
+                    Name:<text className="required">(*)</text>
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control
+                      type="text"
+                      name="fName"
+                      onChange={this.handleInput}
+                      value={this.state.fName}
+                      placeholder="Name input"
+                    />
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm="2">
+                    Status:<text className="required">(*)</text>
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control
+                      as="select"
+                      name="fStatus"
+                      value={this.state.fStatus}
+                      onChange={this.handleInput}
+                    >
+                      <option value="Not completed">Not completed</option>
+                      <option value="In progress">In progress</option>
+                      <option value="Completed">Completed</option>
+                    </Form.Control>
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm="2">
+                    Type:<text className="required">(*)</text>
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control
+                      as="select"
+                      name="fType"
+                      value={this.state.fType}
+                      onChange={this.handleInput}
+                    >
+                      <option value="Quiz">Quiz</option>
+                      <option value="Discussion">Discussion</option>
+                      <option value="Homework">Homework</option>
+                      <option value="Extra Credit">Extra Credit</option>
+                      <option value="etc">etc</option>
+                    </Form.Control>
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm="2">
+                    Due date:<text className="required">(*)</text>
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control
+                      type="date"
+                      name="fDuedate"
+                      onChange={this.handleInput}
+                      value={this.state.fDuedate}
+                    />
+                  </Col>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Description: </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="fDescription"
+                    className="txt"
+                    onChange={this.handleInput}
+                    value={this.state.fDescription}
+                    placeholder="Description input"
+                  />
+                </Form.Group>
+              </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.handleClose}>
@@ -288,11 +599,40 @@ export default class assignment extends Component {
             </Modal.Footer>
           </Modal>
         </>
+        <>
+          <Modal show={this.state.showConfirm} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirming</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>{this.state.message}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                No
+              </Button>
+              <Button variant="primary" onClick={this.handleDelete}>
+                Yes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+        <>
+          <Modal show={this.state.showMessage} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Message</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>{this.state.message}</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={this.handleClose}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
       </div>
     );
-  }
-
-  filterData(value) {
-    return value.uid === userID;
   }
 }

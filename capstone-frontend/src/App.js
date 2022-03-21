@@ -3,8 +3,7 @@ import Login from './components/authentification/login';
 import Signup from './components/authentification/signup';
 import CourseScheduleMain from './components/timetable/courseScheduleMain';
 import TodoMain from './components/todo/todoMain';
-import Course from './components/courses/course';
-import Assignment from './components/assignment/assignment';
+import CourseMain from './components/courses/courseMain';
 import AssignmentMain from './components/assignment/assignmentMain';
 import Profilemain from './components/profile/profilemain';
 import { BrowserRouter , Routes , Route} from 'react-router-dom';
@@ -22,11 +21,10 @@ function App() {
       <Route path="/forgetpassword" element={<Forgetpassword></Forgetpassword>}/>
       <Route path="/dashboard" element={<Dashboard></Dashboard>} exact/>
         <Route path="/timetable" element={<CourseScheduleMain></CourseScheduleMain>}/> 
-        <Route path="/assignments" element={<Assignment></Assignment>}/> 
-        <Route path="/courses" element={<Course></Course>}/> 
+        <Route path="/courses" element={<CourseMain></CourseMain>}/> 
         <Route path="/profile" element={<Profilemain></Profilemain>}/> 
         <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
-        <Route path="/assignmentsMain" element={<AssignmentMain></AssignmentMain>}/> 
+        <Route path="/assignments/:id" element={<AssignmentMain></AssignmentMain>}/>
         </Routes>
     </BrowserRouter>
     </div>

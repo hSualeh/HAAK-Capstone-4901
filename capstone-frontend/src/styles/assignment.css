@@ -1,47 +1,51 @@
-body {
-  background: #ffffff !important;
-  min-height: 100vh;
-  display: flex;
-  font-weight: 400;
-  font-family: "Fira Sans", sans-serif;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-label,
-span {
-  font-weight: 500;
-  font-family: "Fira Sans", sans-serif;
-}
-body,
-html,
-.App,
-#root,
-.assignment-wrapper {
-  width: 100%;
-  height: 100%;
-}
-.navbar-light {
-  background-color: #e5e6e7;
-  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
-}
-.assignment-wrapper {
-  justify-content: center;
-  flex-direction: column;
-  text-align: left;
-}
-.assignment-inner {
-  width: 90%;
-  margin: auto;
-  padding: 40px 55px 45px 55px;
-  border-radius: 15px;
-  transition: all 0.3s;
-}
-.header-function {
-  float: right;
-  margin: auto;
+.assignment {
+  width: 82%!important;
+  min-height: 800px;
 }
 
+.assignment-intro {
+  float: left;
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.assignment-function {
+  float: right;
+}
+
+.btn-s{
+  margin-left: 5px;
+}
+.t-col-id{
+  width: 5%;
+}
+.t-col-type .t-col-status{
+  width: 10%;
+}
+.t-col-des{
+  width: 40%;
+  max-width: 200px;
+}
+.t-col-name{
+  width: 25%;
+}
+.t-col-dd {
+  width: 10%;
+}
+.t-col-func {
+  width: 10%;
+}
+
+.wrapcontent {
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txt{
+  min-height: 80px !important;
+}
+
+.required{
+  color: red;
+}
