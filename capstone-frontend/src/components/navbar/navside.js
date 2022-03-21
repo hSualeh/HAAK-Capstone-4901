@@ -17,7 +17,7 @@ export default class navside extends Component {
               </Link>
             </li>
             <li className="nav-item">
-            <Link className="nav-link" to ="/timetable">
+            <Link className="nav-link" to ="/courses">
               <i className="fa fa-calendar" aria-hidden="true"></i>
               <span className="ml-2">Courses</span>
               </Link>
@@ -30,12 +30,12 @@ export default class navside extends Component {
              </span>
              </Link>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
             <Link className="nav-link" to ="/assignmentsMain">
               <i className="fa fa-book" aria-hidden="true"></i>
               <span className="ml-2">Assignments</span>
               </Link>
-            </li>
+            </li> */}
             <li className="nav-item">
             <Link className="nav-link" to ="/tasks">
               <i className="fa fa-list-alt" aria-hidden="true"></i> <span className="ml-2">TODO</span>

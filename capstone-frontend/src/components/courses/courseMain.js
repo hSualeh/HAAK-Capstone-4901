@@ -6,12 +6,12 @@ import { Button } from "react-bootstrap";
 import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
-import Assignment from "../assignment/assignment"
+import Course from "../courses/course"
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
-import "../../styles/assignment.css";
+import "../../styles/course.css";
 
-export default class assignmentMain extends Component {
+export default class profilemain extends Component {
   constructor(props) {
     super(props);
     this.state = { user: null };
@@ -55,11 +55,11 @@ export default class assignmentMain extends Component {
         <div className="container-fluid">
           <div className="row">
             <Navside></Navside>
-            <main className="assignment content">
-              <Breadcrumb currentpage="Assignments"/>
+            <main className="course">
+              <Breadcrumb currentpage="Courses" />
 
               <div className="content">
-                <Assignment/>
+                <Course/>
               </div>
             </main>
           </div>

@@ -74,9 +74,6 @@ export default class profile extends Component {
     if (!this.state.dep_name || this.state.dep_name === "")
       newErrors.push("Department cannot be blank!");
 
-    if (!this.state.token || this.state.token === "")
-      newErrors.push("UNT System's Token cannot be blank!");
-
     return newErrors;
   };
 
@@ -87,11 +84,11 @@ export default class profile extends Component {
     this.setState({ dep_name: this.state.saveData.department });
     this.setState({ bio_name: this.state.saveData.bio });
     this.setState({ token: this.state.saveData.token });
-
+    
     this.setState({
       showError: false,
       showSaveOk: false,
-      showCancel: true,
+      showCancel: true
     });
   };
 
@@ -104,14 +101,14 @@ export default class profile extends Component {
         profileError: newErrors,
         showError: false,
         showSaveOk: true,
-        showCancel: false,
+        showCancel: false
       });
     } else {
       this.setState({
         profileError: newErrors,
         showError: true,
         showSaveOk: false,
-        showCancel: false,
+        showCancel: false
       });
       return;
     }
