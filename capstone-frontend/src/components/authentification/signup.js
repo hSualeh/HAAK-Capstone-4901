@@ -80,6 +80,10 @@ export default class signup extends Component {
     else if (this.state.registerPassword.length < 7)
     newErrors.push( "Password cannot be less than 7!");
 
+    //Sprint 2 
+    //Add capslock criteria for password
+    //Hira is responsible for this task.
+
     if (
       typeof this.state.registerPassword !== "undefined" &&
       typeof this.state.confirm_password !== "undefined"
