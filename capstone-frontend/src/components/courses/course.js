@@ -186,7 +186,7 @@ export default class course extends Component {
   };
 
   handleSync = (e) => {
-    let listCourses = this.state.listAllCourses;
+    let listCourses = this.state.listCurCourses;
     let uid = this.state.user.uid;
     let isNodata = this.isNodata;
     let maxCourse = this.maxCourse;
