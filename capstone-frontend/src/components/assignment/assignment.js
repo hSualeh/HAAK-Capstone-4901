@@ -301,7 +301,7 @@ export default class assignment extends Component {
       },
     };
     fetch(
-      "https://unt.instructure.com/api/v1/courses/" +
+      "/api/v1/courses/" +
         this.state.couseData.cid +
         "/assignments?access_token=" +
         this.state.token,

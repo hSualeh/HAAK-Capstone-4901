@@ -5,6 +5,7 @@ import { ListGroup, Modal, Badge } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
+import AssignmentNotificationByCourse from "../assignment/assignmentNotificationByCourse";
 export default class listCoursesSummary extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +16,16 @@ export default class listCoursesSummary extends Component {
       showHide: false,
       listAllCourses: [],
       user: this.props.user,
+      listAssignment: [],
+      assignmentData: null,
+      showbell: false,
     };
   }
   componentDidMount() {
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });
+      this.getAllCourseData();
     });
-    this.getAllCourseData();
   }
   getAllCourseData = () => {
     console.log(this.props.user);
@@ -51,9 +55,32 @@ export default class listCoursesSummary extends Component {
   handleModalShowHide() {
     this.setState({ showHide: !this.state.showHide });
   }
+  showNotificationForCourse = (courseID) => {
+    const starCountRef = ref(getDatabase(), "assignments");
+    let uid = this.state.user.uid;
+    let showbell = false;
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      let allData = [];
 
+      if (data != null) {
+        for (var key of Object.keys(data)) {
+          allData.push(data[key]);
+          if (
+            data[key].cid == courseID &&
+            data[key].uid == uid &&
+            data[key].status == "Not completed"
+          ) {
+            showbell = true;
+          }
+        }
+      }
+    });
+    return showbell;
+  };
   render() {
     let listCourses = this.state.listAllCourses;
+    let showbell = this.state.showbell;
     const filterCourses = listCourses.filter(
       (x) => x.student.findIndex((y) => y === this.state.user?.uid) !== -1
     );
@@ -73,29 +100,38 @@ export default class listCoursesSummary extends Component {
                     <div className="fw-bold">{course.name}</div>
                   </div>
 
-                  <i
-                    class="fa fa-bell"
-                    aria-hidden="true"
-                    title="notifications"
-                    onClick={() => this.openModal(course.cid, "notification")}
-                    Style="cursor: pointer;"
-                  ></i>
-                  <Modal
-                    show={
-                      this.state.openedDialog === course.cid &&
-                      this.state.actionType === "notification"
-                    }
-                    onHide={this.closeModal}
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title>
-                        Notification for {course.course_code}
-                      </Modal.Title>
-                    </Modal.Header>
+                  {this.showNotificationForCourse(course.id) ? (
+                    <div>
+                      <i
+                        class="fa fa-bell"
+                        aria-hidden="true"
+                        title="notifications"
+                        onClick={() =>
+                          this.openModal(course.cid, "notification")
+                        }
+                        Style="cursor: pointer;"
+                      ></i>
+                      <Modal
+                        show={
+                          this.state.openedDialog === course.cid &&
+                          this.state.actionType === "notification"
+                        }
+                        onHide={this.closeModal}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>
+                            Notification for {course.course_code}
+                          </Modal.Title>
+                        </Modal.Header>
 
-                    <Modal.Body>API FUNCTION TODO</Modal.Body>
-                  </Modal>
-
+                        <Modal.Body>
+                          <AssignmentNotificationByCourse
+                            courseid={course.id}
+                          ></AssignmentNotificationByCourse>
+                        </Modal.Body>
+                      </Modal>
+                    </div>
+                  ) : null}
                   <i
                     class="fa fa-cog"
                     aria-hidden="true"
