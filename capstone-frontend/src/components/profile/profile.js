@@ -5,6 +5,7 @@ import { getDatabase, ref, onValue, update } from "firebase/database";
 import Listdepartment from "./listdepartment";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
+import { Tabs, Tab} from "react-bootstrap";
 
 export default class profile extends Component {
   constructor(props) {
@@ -135,6 +136,7 @@ export default class profile extends Component {
   };
 
   render() {
+    
     return (
       <div className="profile_container">
         <h3>Profile Settings</h3>
@@ -156,80 +158,116 @@ export default class profile extends Component {
             ))}
           </ul>
         </Alert>
+      
+        <Tabs defaultActiveKey="General Information" id="uncontrolled-tab">
+        <Tab eventKey="general information" title="General Information">
         <Form>
-          <Form.Group className="mb-3" controlId="f_name_r">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type="text"
-              required
-              placeholder="Enter First Name"
-              name="f_name"
-              value={this.state.f_name}
-              onChange={this.handleInput}
-            />
-          </Form.Group>
+        
+        <Form.Group className="mb-3" controlId="f_name_r">
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
+            type="text"
+            required
+            placeholder="Enter First Name"
+            name="f_name"
+            value={this.state.f_name}
+            onChange={this.handleInput}
+          />
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="l_name_r">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type="text"
-              required
-              placeholder="Enter Last Name"
-              name="l_name"
-              value={this.state.l_name}
-              onChange={this.handleInput}
-            />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="l_name_r">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            type="text"
+            required
+            placeholder="Enter Last Name"
+            name="l_name"
+            value={this.state.l_name}
+            onChange={this.handleInput}
+          />
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="dep_r">
-            <Form.Label>Department</Form.Label>
-            <Form.Select
-              defaultValue=""
-              required
-              placeholder="Enter Department"
-              name="dep_name"
-              value={this.state.dep_name}
-              onChange={this.handleInput}
-            >
-              <Listdepartment></Listdepartment>
-            </Form.Select>
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="dep_r">
+          <Form.Label>Department</Form.Label>
+          <Form.Select
+            defaultValue=""
+            required
+            placeholder="Enter Department"
+            name="dep_name"
+            value={this.state.dep_name}
+            onChange={this.handleInput}
+          >
+            <Listdepartment></Listdepartment>
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="major_r">
-            <Form.Label>Major</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Major"
-              name="major_name"
-              value={this.state.major_name}
-              onChange={this.handleInput}
-            />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="major_r">
+          <Form.Label>Major</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Major"
+            name="major_name"
+            value={this.state.major_name}
+            onChange={this.handleInput}
+          />
+        </Form.Group>
 
-         
+       
 
-          <Form.Group className="mb-3" controlId="bio_r">
-            <Form.Label>Biography</Form.Label>
-            <Form.Control
-              as="textarea"
-              style={{ height: "100px" }}
-              placeholder="Enter Biography"
-              name="bio_name"
-              value={this.state.bio_name}
-              onChange={this.handleInput}
-            />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="bio_r">
+          <Form.Label>Biography</Form.Label>
+          <Form.Control
+            as="textarea"
+            style={{ height: "100px" }}
+            placeholder="Enter Biography"
+            name="bio_name"
+            value={this.state.bio_name}
+            onChange={this.handleInput}
+          />
+        </Form.Group>
 
-          <Form.Group className="mb-3 btn-act">
-            <Button variant="danger" type="button" onClick={this.cancel}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="button" onClick={this.update}>
-              Save
-            </Button>
-          </Form.Group>
-        </Form>
-      </div>
+        <Form.Group className="mb-3 btn-act">
+          <Button variant="danger" type="button" onClick={this.cancel}>
+            Cancel
+          </Button>
+          <Button variant="primary" type="button" onClick={this.update}>
+            Save
+          </Button>
+        </Form.Group>
+      </Form>
+        </Tab>
+
+      <Tab eventKey="integration" title="Integration">
+      <Form.Group className="mb-3" controlId="canvas_key">
+          <Form.Label>Canvas Key</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Canvas Key"
+            name="canvas_key"
+            value={this.state.canvas_key}
+            onChange={this.handleInput}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3 btn-act">
+          <Button variant="danger" type="button" onClick={this.cancel}>
+            Cancel
+          </Button>
+          <Button variant="primary" type="button" onClick={this.update}>
+            Save
+          </Button>
+        </Form.Group>
+      
+      </Tab>
+
+    </Tabs>
+
+        
+  </div>
+
+
+
+
     );
   }
 }
