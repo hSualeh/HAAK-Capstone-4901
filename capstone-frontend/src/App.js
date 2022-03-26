@@ -23,7 +23,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard></Dashboard>} exact/>
         <Route path="/timetable" element={<CourseScheduleMain></CourseScheduleMain>}/> 
         <Route path="/courses" element={<CourseMain></CourseMain>}/> 
-        <Route path="/profile" element={<Profilemain></Profilemain>}/> 
+        <Route path="/profile/:tabID" element={<Profilemain></Profilemain>}/> 
         <Route path="/tasks" element={<TodoMain></TodoMain>}/> 
         <Route path="/assignments/:id" element={<AssignmentMain></AssignmentMain>}/>
         <Route path="/resetpassword" element={<Resetpassword></Resetpassword>}/>

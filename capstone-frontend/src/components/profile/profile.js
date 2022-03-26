@@ -159,8 +159,8 @@ export default class profile extends Component {
           </ul>
         </Alert>
       
-        <Tabs defaultActiveKey="General Information" id="uncontrolled-tab">
-        <Tab eventKey="general information" title="General Information">
+        <Tabs defaultActiveKey={this.props.tabID== 2 ? "integration" : "general_information"  } id="uncontrolled-tab">
+        <Tab eventKey="general_information" title="General Information">
         <Form>
         
         <Form.Group className="mb-3" controlId="f_name_r">
