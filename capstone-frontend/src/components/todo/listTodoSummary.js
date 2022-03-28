@@ -71,15 +71,18 @@ export default class listTodoSummary extends Component {
                 >
                   <div className="ms-2 me-auto">
                   <div className="fw-bold"><i
-                    class="fa fa-tasks"
+                    class="fa fa-dot-circle-o"
                     aria-hidden="true"
                     title="detail"
                   
-                  ></i><a  onClick={() => this.openModal(todo.id, "detail")}  Style="cursor: pointer;text-decoration: underline;">{todo.title}</a></div>
-                  <Badge bg="info">
-                    From: {format(new Date(todo.startDate), "yyyy/MM/dd kk:mm:ss")}
-                   
-                    - To :{format(new Date(todo.endDate), "yyyy/MM/dd kk:mm:ss")}
+                  ></i><a  onClick={() => this.openModal(todo.id, "detail")}  Style="cursor: pointer;">{todo.title}</a></div>
+                  <Badge bg = "success">
+                  <i
+                    class="fa fa-clock-o"
+                    aria-hidden="true"
+                    title="detail"
+                  
+                  ></i>{format(new Date(todo.endDate), "yyyy/MM/dd kk:mm:ss")}
                   </Badge>
                
                   </div>

@@ -40,8 +40,8 @@ body{
     color: #0d6efd;
   }
   .logo{
-    width: 187px;
-    height: 50px;
+   
+    height: 40px;
   }
   @media (min-width: 992px) {
  
@@ -96,7 +96,7 @@ body{
   {
     margin: 10px;
     width: 95%;
-    background-color: #598cbe!important;
+   
   }
   .profile_container
   {
@@ -107,21 +107,22 @@ body{
   .profile_container form
   {
   padding: 10px 10px 0px 10px;
-    background-color: #f2f2f2;
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
   }
 .profile_container .btn{
 margin: 10px;
   }
   .profile{
-    width: 80%!important;
+    width: 75%!important;
   }
 
   .profile_container hr
   {
-    opacity: 1;
-    height: 6px!important;
-    margin-bottom: 0px;
-    color: #83a9ce;
+
+    margin-bottom: 30px;
+   
   }
 
   .breadcrumb{

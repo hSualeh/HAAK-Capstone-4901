@@ -48,11 +48,12 @@ export default class navside extends Component {
               </Link>
             </li>
             <li className="nav-item">
-            <Link className="nav-link" to ="/profile">
+            <Link className="nav-link" to ="/profile/1">
               <i className="fa fa-cog" aria-hidden="true"></i><span className="ml-2">Profile Settings</span>
               </Link>
             </li>
           </ul>
+          
         </div>
       </nav>
     )
