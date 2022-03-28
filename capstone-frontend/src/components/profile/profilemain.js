@@ -2,17 +2,20 @@ import React, { Component } from "react";
 import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
 import { Button } from "react-bootstrap";
-
 import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
 import Profile from "./profile";
-export default class profilemain extends Component {
+
+
+
+export default  class profilemain extends Component {
   constructor(props) {
     super(props);
     this.state = { user: null };
+   
   }
   logout = (event) => {
     try {
@@ -22,12 +25,15 @@ export default class profilemain extends Component {
     }
   };
   componentDidMount() {
+
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });
+    
     });
   }
 
   render() {
+    const tab_id=this.state.tabid
     return (
       <div>
         <nav className="navbar bg-light p-3">

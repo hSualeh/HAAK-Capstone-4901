@@ -6,10 +6,15 @@ import Listdepartment from "./listdepartment";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { Tabs, Tab} from "react-bootstrap";
+import { useParams } from 'react-router-dom';
 
-export default class profile extends Component {
+function withParams(Component) {
+  return props => <Component {...props} params={useParams()} />;
+}
+class profile extends Component {
   constructor(props) {
     super(props);
+    this.handleSelect = this.handleSelect.bind(this);
     this.state = {
       saveData: null,
       f_name: "",
@@ -23,13 +28,18 @@ export default class profile extends Component {
       showSaveOk: false,
       showCancel: false,
       user: null,
+      tabid: this.props.tabid
     };
   }
 
   componentDidMount() {
+   
+    let { id } = this.props.params;
     onAuthStateChanged(auth, (currentUser) => {
+      this.setState({ tabid: id });
       this.setState({ user: currentUser });
       this.getUserProfile();
+    
     });
   }
 
@@ -134,17 +144,21 @@ export default class profile extends Component {
         console.log(error);
       });
   };
-
+  handleSelect(key) {
+   
+    this.setState({ tabid:key });
+  }
   render() {
-    
+   
     return (
       <div className="profile_container">
         <h3><i class="fa fa-bars" aria-hidden="true"></i> Profile Settings</h3>
        
        <hr></hr>
-      
-        <Tabs defaultActiveKey={this.props.tabID== 2 ? "integration" : "general_information"  } id="uncontrolled-tab">
-        <Tab eventKey="general_information" title="General Information">
+     
+       
+        <Tabs  activeKey={this.state.tabid}   onSelect={this.handleSelect} id="uncontrolled-tab">
+        <Tab eventKey="1" title="General Information">
         <Form>
         <Alert show={this.state.showCancel} variant="success">
          Data has been reset!
@@ -234,7 +248,7 @@ export default class profile extends Component {
       </Form>
         </Tab>
 
-      <Tab eventKey="integration" title="Integration">
+      <Tab eventKey="2" title="Integration">
       <Alert  variant="success" Style="margin-top: 26px;">
       <Alert.Heading>Notes</Alert.Heading>
       <p>Request an API token</p>
@@ -280,3 +294,5 @@ export default class profile extends Component {
     );
   }
 }
+
+export default withParams(profile);
