@@ -33,7 +33,7 @@ export default  class profilemain extends Component {
   }
 
   render() {
-    const tab_id=this.state.tabid
+  
     return (
       <div>
         <nav className="navbar bg-light p-3">
