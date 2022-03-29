@@ -24,6 +24,8 @@ export default class profile extends Component {
       showCancel: false,
       user: null,
     };
+
+    this.tabID = window.location.href.split("//")[1].split("/")[2];
   }
 
   componentDidMount() {
@@ -139,21 +141,19 @@ export default class profile extends Component {
     
     return (
       <div className="profile_container">
-
-      <Tabs defaultActiveKey="General Information" id="uncontrolled-tab">
-        <Tab eventKey="general information" title="General Information">
-        
-        <h3>Profile Settings</h3>
-        <hr></hr>
+        <h3><i className="fa fa-bars" aria-hidden="true"></i> Profile Settings</h3>
+       
+       <hr></hr>
+      
+        <Tabs defaultActiveKey={this.tabID== 2 ? "integration" : "general_information"  } id="uncontrolled-tab">
+        <Tab eventKey="general_information" title="General Information">
+        <Form>
         <Alert show={this.state.showCancel} variant="success">
-          <ul>
-            <li>Data has been reset!</li>
-          </ul>
+         Data has been reset!
+         
         </Alert>
         <Alert show={this.state.showSaveOk} variant="success">
-          <ul>
-            <li>Save successfully!</li>
-          </ul>
+        Profile settings Saved successfully! 
         </Alert>
         <Alert show={this.state.showError} variant="danger">
           <ul>
@@ -162,10 +162,6 @@ export default class profile extends Component {
             ))}
           </ul>
         </Alert>
-      
-        
-        <Form>
-        
         <Form.Group className="mb-3" controlId="f_name_r">
           <Form.Label>First Name</Form.Label>
           <Form.Control
@@ -241,13 +237,25 @@ export default class profile extends Component {
         </Tab>
 
       <Tab eventKey="integration" title="Integration">
-      <Form.Group className="mb-3" controlId="canvas_key">
+      <Alert  variant="success" style={{marginTop: "26px"}}>
+      <Alert.Heading>Notes</Alert.Heading>
+      <p>Request an API token</p>
+         <ul>
+        <li> Log into Canvas and, on the left, click Account.</li>
+<li>In the resulting Account menu, click Settings.</li>
+<li>Click New Access Token.</li>
+<li>In the Canvas API Token Request form, fill out all required information. ...</li>
+<li>Once you've filled out the form, click Submit.</li>
+         </ul>
+         <p>Please copy the token created to the textbox below, click save once you are done</p>
+        </Alert>
+      <Form.Group className="mb-3" controlId="token">
           <Form.Label>Canvas Key</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Canvas Key"
-            name="canvas_key"
-            value={this.state.canvas_key}
+            name="token"
+            value={this.state.token}
             onChange={this.handleInput}
           />
         </Form.Group>

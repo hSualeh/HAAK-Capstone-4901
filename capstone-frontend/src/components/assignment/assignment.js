@@ -15,7 +15,7 @@ export default class assignment extends Component {
     this.state = {
       mode: true,
       show: false,
-      showSync: false,
+      showSync: true,
       showConfirm: false,
       showMessage: false,
       message: "",
@@ -25,11 +25,11 @@ export default class assignment extends Component {
       fName: "",
       fType: "Quiz",
       fDescription: "",
-      fDuedate: "2022-01-01",
+      fDuedate: "",
+      fDuetime: "",
       user: null,
       couseData: null,
       assignmentData: null,
-      showSync: false,
       token: "",
       showError: false,
       agnError: [],
@@ -61,7 +61,10 @@ export default class assignment extends Component {
         this.isNodata = false;
         for (var key of Object.keys(data)) {
           allData.push(data[key]);
-          if (data[key].cid == this.couseID && data[key].uid == this.state.user.uid) {
+          if (
+            data[key].cid == this.couseID &&
+            data[key].uid == this.state.user.uid
+          ) {
             filter.push(data[key]);
           }
         }
@@ -102,7 +105,8 @@ export default class assignment extends Component {
       const data = snapshot.val();
       if (data != null) {
         this.setState({ token: data.token });
-        if (data.token !== "" && this.state.couseData.type=== "Canvas") this.setState({ showSync: true });
+        if (this.state.couseData.type === "Manual")
+          this.setState({ showSync: false });
       }
     });
   };
@@ -124,7 +128,7 @@ export default class assignment extends Component {
       name: this.state.fName,
       status: this.state.fStatus,
       type: this.state.fType,
-      duedate: this.state.fDuedate,
+      duedate: this.setDueDate(),
       description: this.state.fDescription,
       uid: this.state.user.uid,
       untid: "",
@@ -149,7 +153,7 @@ export default class assignment extends Component {
     assignmentData.status = this.state.fStatus;
     assignmentData.type = this.state.fType;
     assignmentData.description = this.state.fDescription;
-    assignmentData.duedate = this.state.fDuedate;
+    assignmentData.duedate = this.setDueDate();
 
     const updates = {};
     updates["/assignments/" + this.state.fid] = assignmentData;
@@ -211,7 +215,12 @@ export default class assignment extends Component {
     if (!this.state.fName || this.state.fName === "")
       newErrors.push("Name cannot be blank!");
 
-    if (!this.state.fDuedate || this.state.fDuedate === "")
+    if (
+      !this.state.fDuedate ||
+      this.state.fDuedate === "" ||
+      !this.state.fDuetime ||
+      this.state.fDuetime === ""
+    )
       newErrors.push("Due Date cannot be blank!");
 
     return newErrors;
@@ -224,7 +233,8 @@ export default class assignment extends Component {
       fName: "",
       fType: "Quiz",
       fDescription: "",
-      fDuedate: "2022-01-01",
+      fDuedate: "",
+      fDuetime: "",
     });
 
     this.setState({ show: true, mode: true, showError: false });
@@ -251,8 +261,8 @@ export default class assignment extends Component {
           fStatus: data.status,
           fType: data.type,
           fDescription: data.description,
-          fDuedate: data.duedate,
         });
+        this.getDuedate(data.duedate);
         this.setState({ assignmentData: data });
       }
     });
@@ -291,6 +301,7 @@ export default class assignment extends Component {
   handleSync = (e) => {
     e.target.blur();
     let isError = false;
+
     const requestOptions = {
       method: "GET",
       mode: "cors",
@@ -300,6 +311,12 @@ export default class assignment extends Component {
           "Origin, X-Requested-With, Content-Type, Accept",
       },
     };
+
+    if (this.state.token === "") {
+      window.location.replace("/profile/2");
+      return;
+    }
+
     fetch(
       "/api/v1/courses/" +
         this.state.couseData.cid +
@@ -307,7 +324,13 @@ export default class assignment extends Component {
         this.state.token,
       requestOptions
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not OK");
+          this.isError = true;
+        }
+        return res.json();
+      })
       .then(
         (result) => {
           const listAssignment = this.state.listAssignment;
@@ -337,9 +360,11 @@ export default class assignment extends Component {
             }
 
             if (asgn.due_at == null || asgn.due_at === "") {
-              requestData.duedate = "2022-12-31";
-            } else {
-              requestData.duedate = asgn.due_at.substring(0, 10);
+              const datePattern = "YYYY-12-31T00:00:00Z";
+              requestData.duedate = datePattern.replace(
+                "YYYY",
+                new Date().getFullYear()
+              );
             }
 
             if (asgn.description != null && asgn.description !== "") {
@@ -408,6 +433,54 @@ export default class assignment extends Component {
     this.handleShowMsg("The selected data has been removed!");
   };
 
+  setDueDate() {
+    var startTime = new Date(this.state.fDuedate + " " + this.state.fDuetime);
+
+    return startTime.toISOString();
+  }
+
+  getDuedate(meetingTime) {
+    var startTime = new Date(meetingTime);
+
+    const sMonth = startTime.getMonth() + 1 + "";
+    const sDate = startTime.getDate() + "";
+    const sHours = startTime.getHours() + "";
+    const sMin = startTime.getMinutes() + "";
+
+    this.setState({
+      fDuedate:
+        startTime.getFullYear() +
+        "-" +
+        sMonth.padStart(2, 0) +
+        "-" +
+        sDate.padStart(2, 0),
+      fDuetime: sHours.padStart(2, 0) + ":" + sMin.padStart(2, 0),
+    });
+  }
+
+  displayTime(time) {
+    var startTime = new Date(time);
+    var strStart = "";
+
+    const sMonth = startTime.getMonth() + 1 + "";
+    const sDate = startTime.getDate() + "";
+    const sHours = startTime.getHours() + "";
+    const sMin = startTime.getMinutes() + "";
+
+    strStart =
+      startTime.getFullYear() +
+      "-" +
+      sMonth.padStart(2, 0) +
+      "-" +
+      sDate.padStart(2, 0).padStart(2, 0) +
+      " " +
+      sHours.padStart(2, 0) +
+      ":" +
+      sMin.padStart(2, 0);
+
+    return strStart;
+  }
+
   render() {
     const listAssignment = this.state.listAssignment;
 
@@ -432,7 +505,9 @@ export default class assignment extends Component {
                 Sync with UNT
               </Button>
             ) : null}
-            <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`} >Back</Link>
+            <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
+              Back
+            </Link>
           </div>
           <Table className="table" responsive="sm">
             <thead>
@@ -473,7 +548,7 @@ export default class assignment extends Component {
                     />
                   </td>
                   <td className="t-col-status">{asgn.status}</td>
-                  <td className="t-col-dd">{asgn.duedate}</td>
+                  <td className="t-col-dd">{this.displayTime(asgn.duedate)}</td>
                   <td className="t-col-func">
                     <Button
                       variant="primary"
@@ -567,12 +642,20 @@ export default class assignment extends Component {
                   <Form.Label column sm="2">
                     Due date:<text className="required">(*)</text>
                   </Form.Label>
-                  <Col sm="10">
+                  <Col sm="6">
                     <Form.Control
                       type="date"
                       name="fDuedate"
                       onChange={this.handleInput}
                       value={this.state.fDuedate}
+                    />
+                  </Col>
+                  <Col sm="4">
+                    <Form.Control
+                      type="time"
+                      name="fDuetime"
+                      onChange={this.handleInput}
+                      value={this.state.fDuetime}
                     />
                   </Col>
                 </Form.Group>

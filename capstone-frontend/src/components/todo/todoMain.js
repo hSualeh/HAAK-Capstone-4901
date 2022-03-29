@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
-import { Button,Alert } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 
 import { getDatabase, ref, onValue, update } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -59,19 +59,24 @@ export default class todo extends Component {
           <div className="row">
             <Navside></Navside>
             <main className="profile content">
-              <Breadcrumb  currentpage="TODO"/>
+              <Breadcrumb currentpage="TODO" />
+              <h3 Style="text-align: left;">
+                <i class="fa fa-bars" aria-hidden="true"></i> Manage Tasks
+              </h3>
+
+              <hr></hr>
               <div className="tasks_container">
                 <div className="card">
-                  <h5 className="card-header">Manage Tasks</h5>
                   <div className="card-body">
-                  <Alert variant="success">
-  <Alert.Heading>Hey, nice to see you</Alert.Heading>
-  <p>
-    Aww yeah, you successfully read this important alert message. This example
-    text is going to run a bit longer so that you can see how spacing within an
-    alert works with this kind of content.
-  </p>
- </Alert>
+                    <Alert variant="success">
+                      <Alert.Heading>Hey, nice to see you</Alert.Heading>
+                      <p>
+                        Aww yeah, you successfully read this important alert
+                        message. This example text is going to run a bit longer
+                        so that you can see how spacing within an alert works
+                        with this kind of content.
+                      </p>
+                    </Alert>
                     <Todo user={this.state.user}> </Todo>
                   </div>
                 </div>

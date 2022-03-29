@@ -1,11 +1,12 @@
 //This component will be used in the dashboard overview
 //summary of todos list
 import React, { Component } from "react";
-import { ListGroup, Badge, Modal } from "react-bootstrap";
+import { ListGroup, Badge, Modal, Form ,Row,Col} from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 export default class listTodoSummary extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +24,6 @@ export default class listTodoSummary extends Component {
       this.setState({ user: currentUser });
       this.getAlltodoData();
     });
-   
   }
   getAlltodoData = () => {
     console.log(this.state.user?.email);
@@ -54,34 +54,67 @@ export default class listTodoSummary extends Component {
   handleModalShowHide() {
     this.setState({ showHide: !this.state.showHide });
   }
+  sortTasks = (listtodos) => {
+    //sort tasks by due date and limit number of tasks to 5 items
+    let list_todo_tmp = listtodos.sort((a, b) =>
+      a.endDate
+        .split("/")
+        .reverse()
+        .join()
+        .localeCompare(b.endDate.split("/").reverse().join())
+    );
+    let list_todo = list_todo_tmp.slice(0, 5);
+    return list_todo;
+  };
 
+  handleSelect(iscomplete) {
+   
+    this.setState({ complete:iscomplete });
+  }
   render() {
-    const listtodos = this.state.listAlltodos;
+    const listtodos_uns = this.state.listAlltodos;
+    const listtodos = this.sortTasks(listtodos_uns);
 
     return (
       <div className="courseSum col-4">
         <div className="card">
           <h5 className="card-header">TODO</h5>
           <div className="card-body">
-            <ListGroup as="ol" numbered>
+            <ListGroup as="ol" className="list-group list-group-numbered">
               {listtodos.map((todo) => (
                 <ListGroup.Item
                   as=""
-                  className="d-flex justify-content-between align-items-start"
+                  className="list-group-item d-flex justify-content-between align-items-start"
                 >
                   <div className="ms-2 me-auto">
-                  <div className="fw-bold"><i
-                    class="fa fa-tasks"
-                    aria-hidden="true"
-                    title="detail"
-                  
-                  ></i><a  onClick={() => this.openModal(todo.id, "detail")}  Style="cursor: pointer;text-decoration: underline;">{todo.title}</a></div>
-                  <Badge bg="info">
-                    From: {format(new Date(todo.startDate), "yyyy/MM/dd kk:mm:ss")}
-                   
-                    - To :{format(new Date(todo.endDate), "yyyy/MM/dd kk:mm:ss")}
-                  </Badge>
-               
+                    <div className="fw-bold">
+                      {" "}
+                      <a
+                        onClick={() => this.openModal(todo.id, "detail")}
+                        Style="cursor: pointer;"
+                      >
+                        {todo.title}
+                      </a>
+                    </div>
+                    <Row>
+                    <Col sm="3">
+           
+                        {" "}
+                        <Form.Check type="switch" id="custom-switch" checked={todo.Status == 1 ? 'checked' : ''}/>
+                      </Col>
+                      <Col sm="9">
+                        {" "}
+                        <Badge bg={todo.Status == 1 ? 'success' : 'light'} text={todo.Status == 1 ? '' : 'dark'}>
+                          <i
+                            class="fa fa-clock-o"
+                            aria-hidden="true"
+                            title="detail"
+                          ></i>
+                          {format(new Date(todo.endDate), "yyyy/MM/dd")}
+                        </Badge>
+                      </Col>
+                    
+                    </Row>
                   </div>
                   <Modal
                     show={
@@ -90,13 +123,12 @@ export default class listTodoSummary extends Component {
                     }
                     onHide={this.closeModal}
                   >
-                  <Modal.Header closeButton>
+                    <Modal.Header closeButton>
                       <Modal.Title>Task Detail </Modal.Title>
                     </Modal.Header>
 
                     <Modal.Body>
                       <table responsive>
-                       
                         <tr>
                           <td>
                             <strong className="me-auto"> Title :</strong>
@@ -127,15 +159,13 @@ export default class listTodoSummary extends Component {
                           </td>
                           <td>{todo.notes}</td>
                         </tr>
-                        
-                       
                       </table>
                     </Modal.Body>
                   </Modal>
-               
                 </ListGroup.Item>
               ))}
             </ListGroup>
+            <Link className="more-link" to ="/tasks" >More</Link>
           </div>
         </div>
       </div>
