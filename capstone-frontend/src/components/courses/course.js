@@ -17,21 +17,23 @@ export default class course extends Component {
     this.state = {
       mode: true,
       formShow: false,
-      listAllCourses: [],
       listCurCourses: [],
       syncData: [],
       fID: "",
       fName: "",
-      fSection: "",
+
       fRNumber: "",
       fMDates: "",
-      fSession: "",
+      fMTime: "",
+      fMFDates: "",
+      fMFTime: "",      
+      fCourseCode: "",
       user: null,
       profileError: [],
       showError: false,
       courseData: null,
       token: "",
-      showSync: false,
+      showSync: true,
       showError: false,
       showConfirm: false,
       showMessage: false,
@@ -69,8 +71,6 @@ export default class course extends Component {
             filter.push(data[key]);
           }
         }
-
-        this.setState({ listAllCourses: allData });
         this.setState({ listCurCourses: filter });
 
         this.maxCourse =
@@ -82,11 +82,7 @@ export default class course extends Component {
           ) + 1;
       } else {
         this.isNodata = true;
-
-        let allData = [];
         let filter = [];
-
-        this.setState({ listAllCourses: allData });
         this.setState({ listCurCourses: filter });
       }
     });
@@ -101,7 +97,6 @@ export default class course extends Component {
       const data = snapshot.val();
       if (data != null) {
         this.setState({ token: data.token });
-        if (data.token !== "") this.setState({ showSync: true });
       }
     });
   };
@@ -113,7 +108,6 @@ export default class course extends Component {
       showConfirm: false,
       showMessage: false,
     });
-    e.target.blur();
   };
 
   handleShowConfirm = (e) => {
@@ -170,16 +164,29 @@ export default class course extends Component {
     if (!this.state.fName || this.state.fName === "")
       newErrors.push("Name cannot be blank!");
 
-    if (!this.state.fSection || this.state.fSection === "")
-      newErrors.push("Section cannot be blank!");
-
     if (!this.state.fRNumber || this.state.fRNumber === "")
       newErrors.push("Room Number cannot be blank!");
 
-    if (!this.state.fMDates || this.state.fMDates === "")
+    if (
+      !this.state.fMDates ||
+      this.state.fMDates === "" ||
+      !this.state.fMTime ||
+      this.state.fMTime === "" ||
+      !this.state.fMFDates ||
+      this.state.fMFDates === "" ||
+      !this.state.fMFTime ||
+      this.state.fMFTime === ""
+    )
       newErrors.push("Meeting Date cannot be blank!");
+    else {
+      var startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
+      var endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
 
-    if (!this.state.fSession || this.state.fSession === "")
+      if (startTime > endTime) {
+        newErrors.push("Start Date is greater then End Date!");
+      }
+    }
+    if (!this.state.fCourseCode || this.state.fCourseCode === "")
       newErrors.push("Session cannot be blank!");
 
     return newErrors;
@@ -190,6 +197,12 @@ export default class course extends Component {
     let uid = this.state.user.uid;
     let isNodata = this.isNodata;
     let maxCourse = this.maxCourse;
+    let isError = false;
+
+    if (this.state.token === "") {
+      window.location.replace("/profile/2");
+      return;
+    }
 
     e.target.blur();
     const requestOptions = {
@@ -202,77 +215,79 @@ export default class course extends Component {
           "Origin, X-Requested-With, Content-Type, Accept",
       },
     };
+    try {
+      fetch(
+        "/api/v1/courses/?enrollment_state=active&access_token=" +
+          this.state.token,
+        requestOptions
+      )
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not OK");
+            this.isError = true;
+          }
+          return res.json();
+        })
+        .then(
+          function (data) {
+            const items = data;
+            console.log(items);
 
-    fetch(
-      "/api/v1/courses/?enrollment_state=active&access_token=" +
-        this.state.token,
-      requestOptions
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not OK");
-        }
-        return res.json();
-      })
-      .then(
-        function (data) {
-          const items = data;
-          console.log(items);
+            const updates = {};
 
-          const updates = {};
+            data.map((courseData) => {
+              let isSkip = false;
 
-          data.map((courseData) => {
-            let isSkip = false;
+              let requestData = {
+                id: 0,
+                cid: courseData.id,
+                name: courseData.name,
+                student: [],
+                course_code: courseData.course_code,
+                roomNumber: "",
+                meeting_Dates: courseData.start_at + " - " + courseData.end_at,
+                type: "Canvas",
+              };
 
-            let requestData = {
-              id: 0,
-              cid: courseData.id,
-              name: courseData.name,
-              student: [],
-              course_code: courseData.course_code,
-              course_format: courseData.course_format,
-              roomNumber: "",
-              meeting_Dates: courseData.start_at +" - " + courseData.end_at,
+              const fResultCourse = listCourses.filter(
+                (x) => x.cid === courseData.id
+              );
 
-              type: "Canvas",
-            };
-
-          //  const temp = courseData.course_code.split(" ");
-            //  requestData.session = temp[1].split(".")[0];
-            // requestData.section = temp[1].split(".")[1];
-            // check course is existed
-            const fResultCourse = listCourses.filter(
-              (x) => x.cid === courseData.id
-            );
-
-            if (fResultCourse.length !== 0) {
-              isSkip = true;
-            } else {
-              requestData.student.push(uid);
-            }
-
-            if (isSkip === false) {
-              if (isNodata === true) {
-                updates["/courses/" + 0] = requestData;
-                maxCourse = 1;
-                isNodata = false;
+              if (fResultCourse.length !== 0) {
+                isSkip = true;
               } else {
-                requestData.id = maxCourse;
-                updates["/courses/" + maxCourse] = requestData;
-                maxCourse++;
+                requestData.student.push(uid);
               }
-            }
-          });
 
-          update(ref(getDatabase()), updates);
+              if (isSkip === false) {
+                if (isNodata === true) {
+                  updates["/courses/" + 0] = requestData;
+                  maxCourse = 1;
+                  isNodata = false;
+                } else {
+                  requestData.id = maxCourse;
+                  updates["/courses/" + maxCourse] = requestData;
+                  maxCourse++;
+                }
+              }
+            });
 
-          this.handleShowMsg("Sync successfully!");
-        },
-        (error) => {
-          this.handleShowMsg("Sync fail!");
-          console.log(error);
-        }
-      );
+            update(ref(getDatabase()), updates);
+          },
+          (error) => {
+            this.isError = true;
+
+            console.log(error);
+          }
+        );
+    } catch {
+      this.isError = true;
+    }
+    if (this.isError === true) {
+      this.handleShowMsg("Sync fail!");
+    } else {
+      this.handleShowMsg("Sync successfully!");
+    }
   };
 
   createNewCourse() {
@@ -289,10 +304,9 @@ export default class course extends Component {
     const courseData = {
       id: cID,
       name: this.state.fName,
-      session: this.state.fSession,
-      section: this.state.fSection,
+      course_code: this.state.fCourseCode,
       roomNumber: this.state.fRNumber,
-      meeting_Dates: this.state.fMDates,
+      meeting_Dates: this.setMTDate(),
       type: "Manual",
       student: [this.state.user.uid],
     };
@@ -313,10 +327,9 @@ export default class course extends Component {
     let courseData = this.state.courseData;
 
     courseData.name = this.state.fName;
-    courseData.session = this.state.fSession;
-    courseData.section = this.state.fSection;
+    courseData.course_code = this.state.fCourseCode;
     courseData.roomNumber = this.state.fRNumber;
-    courseData.meeting_Dates = this.state.fMDates;
+    courseData.meeting_Dates = this.setMTDate();
 
     const updates = {};
     updates["/courses/" + this.state.fID] = courseData;
@@ -347,14 +360,13 @@ export default class course extends Component {
         this.setState({
           fID: id,
           fName: data.name,
-          fSection: data.section,
+          fCourseCode: data.course_code,
           fRNumber: data.roomNumber,
-          fSession: data.session,
-          fMDates: data.meeting_Dates,
         });
+
+        this.getMTDate(data.meeting_Dates);
+
         this.setState({ courseData: data });
-      } else {
-        this.isNodata = true;
       }
     });
     e.target.blur();
@@ -373,6 +385,8 @@ export default class course extends Component {
     }
 
     remove(ref(getDatabase(), "courses/" + this.state.fID));
+
+    this.removeAllAssignmentData(this.state.fID);
 
     e.target.blur();
 
@@ -407,6 +421,135 @@ export default class course extends Component {
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
   };
+
+  setMTDate() {
+    var startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
+    var endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
+
+    return startTime.toISOString() + " - " + endTime.toISOString();
+  }
+
+  getMTDate(meetingTime) {
+    const atime = meetingTime.split(" ");
+    let endTime = "";
+    var startTime = new Date(atime[0]);
+    var eTime = new Date();
+
+    if (atime[2] === "null") {
+      endTime = "";
+    } else {
+      endTime = "1";
+      var eTime = new Date(atime[2]);
+    }
+
+    const sMonth = startTime.getMonth() + 1 + "";
+    const sDate = startTime.getDate() + "";
+    const sHours = startTime.getHours() + "";
+    const sMin = startTime.getMinutes() + "";
+
+    this.setState({
+      fMDates:
+        startTime.getFullYear() +
+        "-" +
+        sMonth.padStart(2, 0) +
+        "-" +
+        sDate.padStart(2, 0),
+      fMTime: sHours.padStart(2, 0) + ":" + sMin.padStart(2, 0),
+    });
+
+    if (endTime === "") {
+      this.setState({
+        fMFDates: "",
+        fMFTime: "",
+      });
+    } else {
+      const eMonth = eTime.getMonth() + 1 + "";
+      const eDate = eTime.getDate() + "";
+      const eHours = eTime.getHours() + "";
+      const eMin = eTime.getMinutes() + "";
+
+      this.setState({
+        fMFDates:
+          eTime.getFullYear() +
+          "-" +
+          eMonth.padStart(2, 0) +
+          "-" +
+          eDate.padStart(2, 0),
+        fMFTime: eHours.padStart(2, 0) + ":" + eMin.padStart(2, 0),
+      });
+    }
+  }
+
+  displayTime(time) {
+    const atime = time.split(" ");
+    let endTime = "";
+    var startTime = new Date(atime[0]);
+    var strStart = "";
+
+    const sMonth = startTime.getMonth() + 1 + "";
+    const sDate = startTime.getDate() + "";
+    const sHours = startTime.getHours() + "";
+    const sMin = startTime.getMinutes() + "";
+
+    strStart =
+      startTime.getFullYear() +
+      "-" +
+      sMonth.padStart(2, 0) +
+      "-" +
+      sDate.padStart(2, 0).padStart(2, 0) +
+      " " +
+      sHours.padStart(2, 0) +
+      ":" +
+      sMin.padStart(2, 0);
+
+    if (atime[2] === "null") {
+      endTime = "No End Time";
+    } else {
+      var eTime = new Date(atime[2]);
+
+      const eMonth = eTime.getMonth() + 1 + "";
+      const eDate = eTime.getDate() + "";
+      const eHours = eTime.getHours() + "";
+      const eMin = eTime.getMinutes() + "";
+
+      endTime =
+        eTime.getFullYear() +
+        "-" +
+        eMonth.padStart(2, 0) +
+        "-" +
+        eDate.padStart(2, 0) +
+        " " +
+        eHours.padStart(2, 0) +
+        ":" +
+        eMin.padStart(2, 0);
+    }
+
+    return strStart + " - " + endTime;
+  }
+
+  removeAllAssignmentData(couseID) {
+    const starCountRef = ref(getDatabase(), "assignments");
+    let filter = [];
+
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (data != null) {
+        for (var key of Object.keys(data)) {
+          if (
+            data[key].cid == couseID &&
+            data[key].uid == this.state.user.uid
+          ) {
+            filter.push(data[key]);
+          }
+        }
+      }
+    });
+
+    filter.map((asgn) => {
+      remove(ref(getDatabase(), "assignments/" + asgn.id));
+    });
+  }
 
   render() {
     const listCourses = this.state.listCurCourses;
@@ -449,7 +592,7 @@ export default class course extends Component {
                 Meeting Dates
               </th>
               <th scope="col" className="t-col-1">
-              Course format
+                Course format
               </th>
               <th scope="col" className="t-col-1"></th>
             </tr>
@@ -461,10 +604,10 @@ export default class course extends Component {
                 <td>
                   <Link to={`/assignments/` + course.id}>{course.name}</Link>
                 </td>
-                <td>{course.course_Code}</td>
+                <td>{course.course_code}</td>
                 <td>{course.roomNumber}</td>
-                <td>{course.meeting_Dates}</td>
-                <td>{course.course_format}</td>
+                <td>{this.displayTime(course.meeting_Dates)}</td>
+                <td>{course.type === "Canvas" ? "Campus" : "Online"}</td>
                 <td scope="col">
                   <Button
                     variant="primary"
@@ -518,15 +661,15 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Section:<text className="required">(*)</text>{" "}
+                  Course Code:<text className="required">(*)</text>{" "}
                 </Form.Label>
                 <Col sm="9">
                   <Form.Control
                     type="text"
-                    name="fSection"
+                    name="fCourseCode"
                     onChange={this.handleInput}
-                    value={this.state.fSection}
-                    placeholder="Section input"
+                    value={this.state.fCourseCode}
+                    placeholder="Course Code input"
                   />
                 </Col>
               </Form.Group>
@@ -546,29 +689,43 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Meeting Date:<text className="required">(*)</text>{" "}
+                  Meeting Start Date:<text className="required">(*)</text>{" "}
                 </Form.Label>
-                <Col sm="9">
+                <Col sm="3">
                   <Form.Control
                     type="date"
                     name="fMDates"
-                    timeFormat="dd-MM-yyyy"
                     onChange={this.handleInput}
                     value={this.state.fMDates}
+                  />
+                </Col>
+                <Col sm="2">
+                  <Form.Control
+                    type="time"
+                    name="fMTime"
+                    onChange={this.handleInput}
+                    value={this.state.fMTime}
                   />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                Course format:<text className="required">(*)</text>{" "}
+                  Meeting End Date:<text className="required">(*)</text>{" "}
                 </Form.Label>
-                <Col sm="9">
+                <Col sm="3">
                   <Form.Control
-                    type="text"
-                    name="fSession"
+                    type="date"
+                    name="fMFDates"
                     onChange={this.handleInput}
-                    value={this.state.fSession}
-                    placeholder="Session input"
+                    value={this.state.fMFDates}
+                  />
+                </Col>
+                <Col sm="2">
+                  <Form.Control
+                    type="time"
+                    name="fMFTime"
+                    onChange={this.handleInput}
+                    value={this.state.fMFTime}
                   />
                 </Col>
               </Form.Group>
