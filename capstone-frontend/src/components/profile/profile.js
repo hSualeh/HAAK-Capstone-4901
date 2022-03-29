@@ -6,15 +6,10 @@ import Listdepartment from "./listdepartment";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { Tabs, Tab} from "react-bootstrap";
-import { useParams } from 'react-router-dom';
 
-function withParams(Component) {
-  return props => <Component {...props} params={useParams()} />;
-}
-class profile extends Component {
+export default class profile extends Component {
   constructor(props) {
     super(props);
-    this.handleSelect = this.handleSelect.bind(this);
     this.state = {
       saveData: null,
       f_name: "",
@@ -28,18 +23,15 @@ class profile extends Component {
       showSaveOk: false,
       showCancel: false,
       user: null,
-      tabid: this.props.tabid
     };
+
+    this.tabID = window.location.href.split("//")[1].split("/")[2];
   }
 
   componentDidMount() {
-   
-    let { id } = this.props.params;
     onAuthStateChanged(auth, (currentUser) => {
-      this.setState({ tabid: id });
       this.setState({ user: currentUser });
       this.getUserProfile();
-    
     });
   }
 
@@ -144,21 +136,17 @@ class profile extends Component {
         console.log(error);
       });
   };
-  handleSelect(key) {
-   
-    this.setState({ tabid:key });
-  }
+
   render() {
-   
+    
     return (
       <div className="profile_container">
-        <h3><i class="fa fa-bars" aria-hidden="true"></i> Profile Settings</h3>
+        <h3><i className="fa fa-bars" aria-hidden="true"></i> Profile Settings</h3>
        
        <hr></hr>
-     
-       
-        <Tabs  activeKey={this.state.tabid}   onSelect={this.handleSelect} id="uncontrolled-tab">
-        <Tab eventKey="1" title="General Information">
+      
+        <Tabs defaultActiveKey={this.tabID== 2 ? "integration" : "general_information"  } id="uncontrolled-tab">
+        <Tab eventKey="general_information" title="General Information">
         <Form>
         <Alert show={this.state.showCancel} variant="success">
          Data has been reset!
@@ -248,8 +236,8 @@ class profile extends Component {
       </Form>
         </Tab>
 
-      <Tab eventKey="2" title="Integration">
-      <Alert  variant="success" Style="margin-top: 26px;">
+      <Tab eventKey="integration" title="Integration">
+      <Alert  variant="success" style={{marginTop: "26px"}}>
       <Alert.Heading>Notes</Alert.Heading>
       <p>Request an API token</p>
          <ul>
@@ -261,13 +249,13 @@ class profile extends Component {
          </ul>
          <p>Please copy the token created to the textbox below, click save once you are done</p>
         </Alert>
-      <Form.Group className="mb-3" controlId="canvas_key">
+      <Form.Group className="mb-3" controlId="token">
           <Form.Label>Canvas Key</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Canvas Key"
-            name="canvas_key"
-            value={this.state.canvas_key}
+            name="token"
+            value={this.state.token}
             onChange={this.handleInput}
           />
         </Form.Group>
@@ -294,5 +282,3 @@ class profile extends Component {
     );
   }
 }
-
-export default withParams(profile);
