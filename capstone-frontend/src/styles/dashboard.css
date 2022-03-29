@@ -89,8 +89,9 @@ body{
   }
   .courseSum .card-header {
    
-      background-color: #183149;
-      color: white;
+    background-color: rgba(0,0,0,.03);
+    color: black;
+    text-transform: uppercase;
   }
   .quicklink_btn
   {
@@ -135,4 +136,7 @@ margin: 10px;
   .btn-act .btn
   {
     width: 15%;
+  }
+  .more-link{
+    float: right;
   }
