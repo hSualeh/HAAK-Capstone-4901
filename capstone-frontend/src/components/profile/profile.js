@@ -139,6 +139,10 @@ export default class profile extends Component {
     
     return (
       <div className="profile_container">
+
+      <Tabs defaultActiveKey="General Information" id="uncontrolled-tab">
+        <Tab eventKey="general information" title="General Information">
+        
         <h3>Profile Settings</h3>
         <hr></hr>
         <Alert show={this.state.showCancel} variant="success">
@@ -159,8 +163,7 @@ export default class profile extends Component {
           </ul>
         </Alert>
       
-        <Tabs defaultActiveKey="General Information" id="uncontrolled-tab">
-        <Tab eventKey="general information" title="General Information">
+        
         <Form>
         
         <Form.Group className="mb-3" controlId="f_name_r">
