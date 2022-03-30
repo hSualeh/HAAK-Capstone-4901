@@ -4,7 +4,7 @@ import { Button, Alert, Col, Row,Container } from "react-bootstrap";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
 import "../../styles/auth.css";
-import signupbg from "../../img/signup-bg.PNG";
+import loginbg from "../../img/login-bg.PNG";
 import { Link,Navigate } from "react-router-dom";
 
 export default class signup extends Component {
@@ -109,7 +109,11 @@ export default class signup extends Component {
           <Navigate to="/dashboard" replace={true} />
         )}
   <Row>
-    <Col>  <img src={signupbg} className="signupbg" alt="sign up Background"></img></Col>
+    <Col className="bg">  <img
+              src={loginbg}
+              className="signupbg"
+              alt="sign up Background"
+            ></img></Col>
     <Col className="auth-inner-col"> <div className="auth-inner">
           <Form>
             <h3>Sign up</h3>

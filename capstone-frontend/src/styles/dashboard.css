@@ -140,3 +140,7 @@ margin: 10px;
   .more-link{
     float: right;
   }
+  .auth_container .bg
+  {
+    background: #183149;
+  }

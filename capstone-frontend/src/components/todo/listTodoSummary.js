@@ -3,20 +3,21 @@
 import React, { Component } from "react";
 import { ListGroup, Badge, Modal, Form ,Row,Col} from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { auth } from "../firebase-config";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 export default class listTodoSummary extends Component {
   constructor(props) {
     super(props);
-
+   
     this.state = {
       openedDialog: -1,
       actionType: "",
       showHide: false,
       listAlltodos: [],
       user: this.props.user,
+ 
     };
   }
   componentDidMount() {
@@ -32,12 +33,33 @@ export default class listTodoSummary extends Component {
       const dt = snapshot.val();
       if (dt != null) {
         this.setState({ listAlltodos: dt });
-        console.log(dt);
+       
       } else {
         this.isNodata = true;
       }
     });
   };
+  updatestatus  = (id,todoData,checked) =>  {
+  console.log("change status" + id);
+    todoData.status = (checked==0 ? 1:0);
+    console.log(todoData)
+    
+    const updates = {};
+    if(this.state.user?.uid !="")
+    {
+      console.log("/todo/" + this.state.user?.uid+"/"+id);
+      updates["/todo/" + this.state.user?.uid+"/"+id] = todoData;
+
+      update(ref(getDatabase()), updates)
+        .then(() => {
+         console.log("Data saved successfully!");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    
+  }
   openModal = (course, actionType) => {
     this.setState({
       openedDialog: course,
@@ -88,23 +110,24 @@ export default class listTodoSummary extends Component {
                 >
                   <div className="ms-2 me-auto">
                     <div className="fw-bold">
+                  
                       {" "}
                       <a
                         onClick={() => this.openModal(todo.id, "detail")}
                         Style="cursor: pointer;"
                       >
-                        {todo.title}
+                        {todo.title} 
                       </a>
                     </div>
                     <Row>
                     <Col sm="3">
-           
+                   
                         {" "}
-                        <Form.Check type="switch" id="custom-switch" checked={todo.Status == 1 ? 'checked' : ''}/>
+                        <Form.Check type="switch" id="custom-switch"  checked={todo.status == 1 ? 'checked':''} onClick={() => this.updatestatus(todo.id,todo,todo.status)}/>
                       </Col>
                       <Col sm="9">
                         {" "}
-                        <Badge bg={todo.Status == 1 ? 'success' : 'light'} text={todo.Status == 1 ? '' : 'dark'}>
+                        <Badge bg={todo.status == 1 ? 'success' : 'light'} text={todo.status == 1 ? '' : 'dark'}>
                           <i
                             class="fa fa-clock-o"
                             aria-hidden="true"

@@ -63,12 +63,12 @@ forgetpassword = () => {
       
       <Container className="auth_container">
         <Row>
-          <Col>
+          <Col className="bg">
             {" "}
             <img
               src={loginbg}
               className="signupbg"
-              alt="sign up Background"
+              alt="forgetpassword Background"
             ></img>
           </Col>
           <Col className="auth-inner-col">

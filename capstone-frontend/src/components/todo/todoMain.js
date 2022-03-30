@@ -11,6 +11,7 @@ import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
 import Todo from "./todo.js";
+import Todonotification from "./todonotification";
 export default class todo extends Component {
   constructor(props) {
     super(props);
@@ -68,14 +69,13 @@ export default class todo extends Component {
               <div className="tasks_container">
                 <div className="card">
                   <div className="card-body">
-                    <Alert variant="success">
-                      <Alert.Heading>Hey, nice to see you</Alert.Heading>
-                      <p>
-                        Aww yeah, you successfully read this important alert
-                        message. This example text is going to run a bit longer
-                        so that you can see how spacing within an alert works
-                        with this kind of content.
+                    <Alert variant="danger">
+                      <Alert.Heading>Notification</Alert.Heading>
+                      <p Style="text-align: left;">
+                      <i class="fa fa-bullhorn" aria-hidden="true"></i> Due soon…
+                     
                       </p>
+                      <Todonotification></Todonotification>
                     </Alert>
                     <Todo user={this.state.user}> </Todo>
                   </div>

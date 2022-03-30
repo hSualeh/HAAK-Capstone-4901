@@ -63,12 +63,12 @@ export default class resetpassword extends Component {
       
       <Container className="auth_container">
         <Row>
-          <Col>
+          <Col className="bg">
             {" "}
             <img
               src={loginbg}
               className="signupbg"
-              alt="sign up Background"
+              alt="reset Background"
             ></img>
           </Col>
           <Col className="auth-inner-col">

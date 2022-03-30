@@ -607,7 +607,7 @@ export default class course extends Component {
                 <td>{course.course_code}</td>
                 <td>{course.roomNumber}</td>
                 <td>{this.displayTime(course.meeting_Dates)}</td>
-                <td>{course.type === "Canvas" ? "Campus" : "Online"}</td>
+                <td>{course.course_format}</td>
                 <td scope="col">
                   <Button
                     variant="primary"
