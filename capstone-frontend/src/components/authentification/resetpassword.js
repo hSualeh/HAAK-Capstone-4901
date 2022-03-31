@@ -50,10 +50,9 @@ export default class resetpassword extends Component {
 
       // Call Userfront.resetPassword()
       updatePassword(this.state.user, this.state.password).then(() => {
-        // Update successful.
+        console.log("Password has been reset!");
       }).catch((error) => {
-        // An error ocurred
-        // ...
+        console.log("Reset Failed!");
       });
     }
 
