@@ -21,19 +21,19 @@ export default class resetpassword extends Component {
       passwordVerify: "",
       alertMessage: ""
     };
-    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleInput = this.handleInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.setAlertMessage = this.setAlertMessage.bind(this);
   }
 
   // Whenever an input changes value, change the corresponding state variable
-  handleInputChange(event) {
+ /* handleInputChange(event) {
     event.preventDefault();
     const target = event.target;
     this.setState({
       [target.name]: target.value
     });
-  }
+  } */
 
   handleSubmit(event) {
     event.preventDefault();
@@ -62,13 +62,19 @@ export default class resetpassword extends Component {
     }
 
   handleInput = (e) => {
+    e.preventDefault();
     const name = e.target.name;
 
     const value = e.target.value;
 
+    const target = e.target;
+
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
-  
+
+    this.setState({
+      [target.name]: target.value
+    });
   };
 
 
@@ -138,7 +144,7 @@ export default class resetpassword extends Component {
                     placeholder="Password"
                     name="loginPassword"
                     value={this.state.password}
-                    onChange={this.handleInputChange}
+                    onChange={this.handleInput}
                     required
                   />
                   <br></br>
@@ -148,7 +154,7 @@ export default class resetpassword extends Component {
                     placeholder="Password"
                     name="loginPassword"
                     value={this.state.passwordVerify}
-                    onChange={this.handleInputChange}
+                    onChange={this.handleInput}
                     required
                   />
 
