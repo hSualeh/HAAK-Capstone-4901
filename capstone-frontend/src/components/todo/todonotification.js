@@ -102,13 +102,13 @@ export default class todonotification extends Component {
                     <td>
                       <strong className="me-auto">Start Date:</strong>
                     </td>
-                    <td>{todo.startDate}</td>
+                    <td>sss</td>
                   </tr>
                   <tr>
                     <td>
                       <strong className="me-auto">End Date :</strong>
                     </td>
-                    <td>{todo.endDate}</td>
+                    <td>ddd</td>
                   </tr>
                   <tr>
                     <td>

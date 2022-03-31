@@ -311,7 +311,7 @@ export default class todo extends Component  {
        
     }
     catch(error){
-console.log("PRoblem updating tasks")
+console.log("PRoblem updating tasks"+error)
 
     }
      }

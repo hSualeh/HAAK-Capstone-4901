@@ -75,7 +75,7 @@ export default class todo extends Component {
                       <i class="fa fa-bullhorn" aria-hidden="true"></i> Due soon…
                      
                       </p>
-                      <Todonotification></Todonotification>
+                    
                     </Alert>
                     <Todo user={this.state.user}> </Todo>
                   </div>

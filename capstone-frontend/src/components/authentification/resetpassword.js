@@ -148,6 +148,7 @@ export default class resetpassword extends Component {
                     required
                   />
                   <br></br>
+                  
                   <Form.Label> Reenter New Password</Form.Label>
                   <Form.Control
                     type="password"
