@@ -148,6 +148,9 @@ export default class resetpassword extends Component {
                     required
                   />
                   <br></br>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="formBasicPassword2" onSubmit={this.handleSubmit}>
                   <Form.Label> Reenter New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -157,9 +160,9 @@ export default class resetpassword extends Component {
                     onChange={this.handleInput}
                     required
                   />
-
+                  </Form.Group>
                   
-                </Form.Group>
+                
                 <Form.Group className="mb-3">
                
              
