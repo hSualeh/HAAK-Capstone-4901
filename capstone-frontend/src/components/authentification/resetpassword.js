@@ -50,10 +50,9 @@ export default class resetpassword extends Component {
 
       // Call Userfront.resetPassword()
       updatePassword(this.state.user, this.state.password).then(() => {
-        // Update successful.
+        console.log("Password has been reset!");
       }).catch((error) => {
-        // An error ocurred
-        // ...
+        console.log("Reset Failed!");
       });
     }
 
@@ -81,6 +80,7 @@ export default class resetpassword extends Component {
 
   resetpassword = () => {
   getAuth();
+  /*
   if(this.state.email != "")
   {
     console.log(this.state.email)
@@ -98,7 +98,7 @@ export default class resetpassword extends Component {
   }
   else{
     this.setState({showError : true,success : false,listErrors:"Email is required!"});
-  }
+  }*/
   
   };
 
@@ -142,32 +142,34 @@ export default class resetpassword extends Component {
                   <Form.Control
                     type="password"
                     placeholder="Password"
-                    name="loginPassword"
+                    name="password"
                     value={this.state.password}
                     onChange={this.handleInput}
                     required
                   />
                   <br></br>
-                  
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="formBasicPassword2" onSubmit={this.handleSubmit}>
                   <Form.Label> Reenter New Password</Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
-                    name="loginPassword"
+                    name="passwordVerify"
                     value={this.state.passwordVerify}
                     onChange={this.handleInput}
                     required
                   />
-
+                  </Form.Group>
                   
-                </Form.Group>
+                
                 <Form.Group className="mb-3">
                
              
               
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Button variant="primary" type="button" onClick={this.resetpassword}>
+                  <Button variant="primary" type="button" onClick={this.handleSubmit}>
                     Reset Password Now
                   </Button>
                 </Form.Group>
