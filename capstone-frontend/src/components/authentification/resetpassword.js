@@ -2,12 +2,9 @@ import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
 import { Link,Navigate } from "react-router-dom";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
-
-
-
 
 
 export default class resetpassword extends Component {
@@ -19,9 +16,50 @@ export default class resetpassword extends Component {
       user: null,
       showError: false,
       success : false,
-      listErrors : ""
+      listErrors : "",
+      password: "",
+      passwordVerify: "",
+      alertMessage: ""
     };
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.setAlertMessage = this.setAlertMessage.bind(this);
   }
+
+  // Whenever an input changes value, change the corresponding state variable
+  handleInputChange(event) {
+    event.preventDefault();
+    const target = event.target;
+    this.setState({
+      [target.name]: target.value
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    //Userfront.init("demo1234");
+
+    // Reset the alert to empty
+    this.setAlertMessage();
+    
+    // Verify that the passwords match
+    if (this.state.password !== this.state.passwordVerify) {
+      return this.setAlertMessage("Passwords must match");
+    }
+
+      // Call Userfront.resetPassword()
+      updatePassword(this.state.user, this.state.password).then(() => {
+        // Update successful.
+      }).catch((error) => {
+        // An error ocurred
+        // ...
+      });
+    }
+
+    setAlertMessage(message) {
+      this.setState({ alertMessage: message });
+    }
 
   handleInput = (e) => {
     const name = e.target.name;
@@ -30,8 +68,10 @@ export default class resetpassword extends Component {
 
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
-  };
   
+  };
+
+
 
   resetpassword = () => {
   getAuth();
@@ -57,6 +97,8 @@ export default class resetpassword extends Component {
   };
 
 
+
+
   render() {
    
     return (
@@ -74,6 +116,7 @@ export default class resetpassword extends Component {
           <Col className="auth-inner-col">
             {" "}
             <div className="auth-inner">
+            <Alert message={this.state.alertMessage} />
               <Form>
                 <h3>Reset Password</h3>
                 <Alert show={this.state.showError} variant="danger">
@@ -87,14 +130,15 @@ export default class resetpassword extends Component {
                 {(this.state.user) &&(
           <Navigate to="/dashboard" replace={true} />
         )}
-
-                <Form.Group className="mb-3" controlId="formBasicPassword">
+  
+                <Form.Group className="mb-3" controlId="formBasicPassword" onSubmit={this.handleSubmit}>
                   <Form.Label>Enter New Password</Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
                     name="loginPassword"
-                    onChange={this.handleInput}
+                    value={this.state.password}
+                    onChange={this.handleInputChange}
                     required
                   />
                   <br></br>
@@ -103,7 +147,8 @@ export default class resetpassword extends Component {
                     type="password"
                     placeholder="Password"
                     name="loginPassword"
-                    onChange={this.handleInput}
+                    value={this.state.passwordVerify}
+                    onChange={this.handleInputChange}
                     required
                   />
 
