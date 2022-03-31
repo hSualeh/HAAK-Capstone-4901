@@ -142,7 +142,7 @@ export default class resetpassword extends Component {
                   <Form.Control
                     type="password"
                     placeholder="Password"
-                    name="loginPassword"
+                    name="password"
                     value={this.state.password}
                     onChange={this.handleInput}
                     required
@@ -155,7 +155,7 @@ export default class resetpassword extends Component {
                   <Form.Control
                     type="password"
                     placeholder="Password"
-                    name="loginPassword"
+                    name="passwordVerify"
                     value={this.state.passwordVerify}
                     onChange={this.handleInput}
                     required
