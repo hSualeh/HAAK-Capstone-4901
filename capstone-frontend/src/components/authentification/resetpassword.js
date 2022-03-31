@@ -81,6 +81,7 @@ export default class resetpassword extends Component {
 
   resetpassword = () => {
   getAuth();
+  /*
   if(this.state.email != "")
   {
     console.log(this.state.email)
@@ -98,7 +99,7 @@ export default class resetpassword extends Component {
   }
   else{
     this.setState({showError : true,success : false,listErrors:"Email is required!"});
-  }
+  }*/
   
   };
 
@@ -169,7 +170,7 @@ export default class resetpassword extends Component {
               
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Button variant="primary" type="button" onClick={this.resetpassword}>
+                  <Button variant="primary" type="button" onClick={this.handleSubmit}>
                     Reset Password Now
                   </Button>
                 </Form.Group>
