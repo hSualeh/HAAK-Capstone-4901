@@ -1,64 +1,64 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
-import { Link,Navigate } from "react-router-dom";
-import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
+import { Link, Navigate } from "react-router-dom";
+import {getAuth, confirmPasswordReset, verifyPasswordResetCode} from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
 
-
 export default class resetpassword extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       email: "",
-      user: null,
       showError: false,
-      success : false,
-      listErrors : "",
+      success: false,
+      listErrors: "",
       password: "",
       passwordVerify: "",
-      alertMessage: ""
+      alertMessage: "",
+      passwordChanged: false,
+      oobCode: "",
+      expired: false,
     };
     this.handleInput = this.handleInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.setAlertMessage = this.setAlertMessage.bind(this);
   }
 
-  // Whenever an input changes value, change the corresponding state variable
- /* handleInputChange(event) {
-    event.preventDefault();
-    const target = event.target;
-    this.setState({
-      [target.name]: target.value
-    });
-  } */
-
   handleSubmit(event) {
     event.preventDefault();
 
-    //Userfront.init("demo1234");
-
-    // Reset the alert to empty
-    this.setAlertMessage();
-    
     // Verify that the passwords match
     if (this.state.password !== this.state.passwordVerify) {
-      return this.setAlertMessage("Passwords must match");
+      this.setState({ showError: true, alertMessage: "Passwords must match" });
+      return;
     }
-
-      // Call Userfront.resetPassword()
-      updatePassword(auth.currentUser, this.state.password).then(() => {
-        console.log("Password has been reset!");
-      }).catch((error) => {
-        console.log("Reset Failed!"+error);
+    if (!this.state.password || this.state.password === "") {
+      this.setState({
+        showError: true,
+        alertMessage: "Passwords cannot be blank!",
       });
+      return;
     }
 
-    setAlertMessage(message) {
-      this.setState({ alertMessage: message });
-    }
+    confirmPasswordReset(auth, this.state.oobCode, this.state.password)
+      .then((res) => {
+        this.setState({
+          showError: false,
+          alertMessage: "Password changed successfully!",
+          passwordChanged: true,
+        });
+      })
+      .catch((err) => {
+        console.log("err", err);
+        this.setState({ showError: true, alertMessage: err.message });
+      });
+  }
+
+  setAlertMessage(message) {
+    this.setState({ alertMessage: message });
+  }
 
   handleInput = (e) => {
     e.preventDefault();
@@ -72,43 +72,28 @@ export default class resetpassword extends Component {
     // console.log("Name: " + name + "value:" + value);
 
     this.setState({
-      [target.name]: target.value
+      [target.name]: target.value,
     });
   };
 
-
-
-  resetpassword = () => {
-  getAuth();
-  /*
-  if(this.state.email != "")
-  {
-    console.log(this.state.email)
-    sendPasswordResetEmail(auth,this.state.email)
-    .then(() => {
-      this.setState({success : true,showError : false});
-      console.log("Email is successfully sent!");
-    })
-    .catch((error) => {
-      console.log("Email failed!");
-      this.setState({showError : true,success : false,listErrors:"Email failed!"});
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
+  componentDidMount() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
+    if (oobCode) {
+      verifyPasswordResetCode(auth, oobCode)
+        .then((email_val) => {
+          console.log("email" + email_val);
+          this.setState({ email: email_val });
+          this.setState({ oobCode: oobCode });
+        })
+        .catch((err) => {
+          this.setState({ expired: true });
+        });
+    }
   }
-  else{
-    this.setState({showError : true,success : false,listErrors:"Email is required!"});
-  }*/
-  
-  };
-
-
-
 
   render() {
-   
     return (
-      
       <Container className="auth_container">
         <Row>
           <Col className="bg">
@@ -121,23 +106,37 @@ export default class resetpassword extends Component {
           </Col>
           <Col className="auth-inner-col">
             {" "}
-            <div className="auth-inner">
-            <Alert message={this.state.alertMessage} />
+            <div
+              className="auth-inner"
+              style={
+                this.state.expired ? { display: "block" } : { display: "none" }
+              }
+            >
+              The link is expired try another time
+              <Link to="/forgetpassword">Forget password</Link>
+            </div>
+            <div
+              className="auth-inner"
+              style={
+                !this.state.expired ? { display: "block" } : { display: "none" }
+              }
+            >
               <Form>
                 <h3>Reset Password</h3>
                 <Alert show={this.state.showError} variant="danger">
-                  {this.state.listErrors}
-                
+                  {this.state.alertMessage}
+               
                 </Alert>
-                <Alert show={this.state.success} variant="success">
-                Password is successfully changed
-                 
+                <Alert show={this.state.passwordChanged} variant="success">
+                {this.state.alertMessage}
+                Click here to <Link to="/">Sign In</Link>
                 </Alert>
-                {(this.state.user) &&(
-          <Navigate to="/dashboard" replace={true} />
-        )}
-  
-                <Form.Group className="mb-3" controlId="formBasicPassword" onSubmit={this.handleSubmit}>
+             
+                <Form.Group className="mb-3">
+                  <Form.Label> for {this.state.email}</Form.Label>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label>Enter New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -148,9 +147,9 @@ export default class resetpassword extends Component {
                     required
                   />
                   <br></br>
-                  </Form.Group>
+                </Form.Group>
 
-                  <Form.Group className="mb-3" controlId="formBasicPassword2" onSubmit={this.handleSubmit}>
+                <Form.Group className="mb-3" controlId="formBasicPassword2">
                   <Form.Label> Reenter New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -160,21 +159,19 @@ export default class resetpassword extends Component {
                     onChange={this.handleInput}
                     required
                   />
-                  </Form.Group>
-                  
-                
-                <Form.Group className="mb-3">
-               
-             
-              
                 </Form.Group>
+
+                <Form.Group className="mb-3"></Form.Group>
                 <Form.Group className="mb-3">
-                  <Button variant="primary" type="button" onClick={this.handleSubmit}>
+                  <Button
+                    variant="primary"
+                    type="button"
+                    onClick={this.handleSubmit}
+                  >
                     Reset Password Now
                   </Button>
                 </Form.Group>
               </Form>
-              
             </div>
           </Col>
         </Row>
