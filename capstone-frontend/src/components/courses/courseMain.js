@@ -59,6 +59,7 @@ export default class profilemain extends Component {
               <Breadcrumb currentpage="Courses" />
 
               <div className="content">
+                
                 <Course/>
               </div>
             </main>

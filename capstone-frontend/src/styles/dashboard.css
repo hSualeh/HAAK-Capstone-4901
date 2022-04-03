@@ -144,3 +144,11 @@ margin: 10px;
   {
     background: #183149;
   }
+
+  .mycourses .tab-pane
+  {
+    padding: 19px;
+    border-left: 1px solid #dfe2e6;
+    border-right: 1px solid #dfe2e6;
+    border-bottom: 1px solid #dfe2e6;
+  }

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
-import { Button } from "react-bootstrap";
+import { Button,Tab,Tabs } from "react-bootstrap";
 
 import { onAuthStateChanged,signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
@@ -29,7 +29,7 @@ export default class profilemain extends Component {
 
   render() {
     return (
-      <div>
+      <div className="mycourses">
         <nav className="navbar bg-light p-3">
           <div className="d-flex col-12 col-md-3 col-lg-2 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
             <img src={logo} className="logo" alt="Portal logo"></img>
@@ -59,7 +59,15 @@ export default class profilemain extends Component {
        
        <hr></hr>
               <div className="">
-                <Timetable user={this.state.user}></Timetable>
+              <Tabs defaultActiveKey="courses" id="uncontrolled-tab">
+        <Tab eventKey="courses" title="My courses Schedule">
+        <Timetable user={this.state.user}></Timetable>
+          </Tab>
+          <Tab eventKey="assignments" title="My Assignments Schedule">
+          <Timetable user={this.state.user}></Timetable>
+          </Tab>
+          </Tabs>
+              
               </div>
             </main>
           </div>
