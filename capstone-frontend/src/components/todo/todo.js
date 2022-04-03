@@ -295,6 +295,7 @@ export default class todo extends Component  {
               notes: this.state.data[i].notes,
               startDate: this.state.data[i].startDate,
               endDate: this.state.data[i].endDate,
+              status:this.state.data[i].status
             };
       
             updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
