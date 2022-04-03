@@ -69,14 +69,11 @@ export default class todo extends Component {
               <div className="tasks_container">
                 <div className="card">
                   <div className="card-body">
-                    <Alert variant="danger">
-                      <Alert.Heading>Notification</Alert.Heading>
-                      <p Style="text-align: left;">
-                      <i class="fa fa-bullhorn" aria-hidden="true"></i> Due soon…
-                     
-                      </p>
+                  
+                     <Todonotification user={this.state.user}></Todonotification>
                     
-                    </Alert>
+                    
+                   
                     <Todo user={this.state.user}> </Todo>
                   </div>
                 </div>

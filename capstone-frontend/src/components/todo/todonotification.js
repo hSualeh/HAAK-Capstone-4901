@@ -1,6 +1,6 @@
 //summary of todos list inn the last 24 hrs
 import React, { Component } from "react";
-import { ListGroup, Badge, Modal, Form, Row, Col } from "react-bootstrap";
+import { ListGroup, Badge, Modal, Form, Row, Col,Alert } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { auth } from "../firebase-config";
@@ -16,6 +16,7 @@ export default class todonotification extends Component {
       showHide: false,
       listAlltodos: [],
       user: this.props.user,
+      showNotification:false
     };
   }
   componentDidMount() {
@@ -25,7 +26,7 @@ export default class todonotification extends Component {
     });
   }
   getAlltodoData = () => {
-    console.log(this.state.user?.email);
+    //console.log(this.state.user?.email);
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user?.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
@@ -54,14 +55,16 @@ export default class todonotification extends Component {
   }
   sortTasks = (listtodos) => {
     let currentime = format(new Date(), "yyyy/MM/dd");
-    console.log(currentime);
-    let list_todo = listtodos.filter(
-      (x) => format(new Date(x.endDate), "yyyy/MM/dd") === currentime
-    );
+    let list_todo =[];
+    try{
+      list_todo = listtodos.filter(
+        (x) => format(new Date(x.endDate), "yyyy/MM/dd") === currentime
+      );
+    }
+    catch(error){
+      console.log(error)
+    }
 
-    /*.filter(
-      (x) => x.status === 0
-    )*/
     return list_todo;
   };
 
@@ -70,15 +73,23 @@ export default class todonotification extends Component {
   }
   render() {
     const listtodos_uns = this.state.listAlltodos;
-    const listtodos = this.sortTasks(listtodos_uns);
+ const listtodos = this.sortTasks(listtodos_uns);
 
     return (
+     
+      <Alert variant="danger" show={Object.getOwnPropertyNames(listtodos).length>1}>
+         {this.list_todo}
+      <Alert.Heading>  <i class="fa fa-bullhorn" aria-hidden="true"></i> Due soon…</Alert.Heading>
+    
       <ul>
+       
         {listtodos.map((todo) => (
           <li Style="text-align: left;">
            <a   onClick={() => this.openModal(todo.id, "detail")}
                         Style="cursor: pointer;text-decoration:underline;"> {todo.title} </a>
-           due on {format(new Date(todo.endDate), "yyyy/MM/dd")}
+                       {todo.endDate}
+                      
+           {/* due on {format(new Date(todo.endDate), "yyyy/MM/dd")} */}
             <Modal
               show={
                 this.state.openedDialog === todo.id &&
@@ -128,6 +139,7 @@ export default class todonotification extends Component {
           </li>
         ))}
       </ul>
+      </Alert>
     );
   }
 }
