@@ -11,7 +11,7 @@ import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
 
-import { styled } from "@mui/material/styles";
+import { styled, alpha } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
@@ -48,6 +48,9 @@ import Close from "@mui/icons-material/Close";
 import CalendarToday from "@mui/icons-material/CalendarToday";
 import Create from "@mui/icons-material/Create";
 import todoContainer from "./todoContainer.js";
+
+import { format } from "date-fns";
+
 const PREFIX = "todo";
 const appointments = [];
 
@@ -62,6 +65,10 @@ const classes = {
   icon: `${PREFIX}-icon`,
   textField: `${PREFIX}-textField`,
   addButton: `${PREFIX}-addButton`,
+  todayCell: `${PREFIX}-todayCell`,
+  weekendCell: `${PREFIX}-weekendCell`,
+  today: `${PREFIX}-today`,
+  weekend: `${PREFIX}-weekend`,
 };
 
 const StyledDiv = styled("div")(({ theme }) => ({
@@ -113,6 +120,73 @@ const StyledFab = styled(Fab)(({ theme }) => ({
   },
 }));
 
+const StyledWeekViewTimeTableCell = styled(WeekView.TimeTableCell)(
+  ({ theme }) => ({
+    [`&.${classes.todayCell}`]: {
+      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+      "&:hover": {
+        backgroundColor: alpha(theme.palette.primary.main, 0.14),
+      },
+
+      "&:focus": {
+        backgroundColor: alpha(theme.palette.primary.main, 0.16),
+      },
+    },
+
+    [`&.${classes.weekendCell}`]: {
+      backgroundColor: alpha(theme.palette.action.disabledBackground, 0.04),
+      "&:hover": {
+        backgroundColor: alpha(theme.palette.action.disabledBackground, 0.04),
+      },
+      "&:focus": {
+        backgroundColor: alpha(theme.palette.action.disabledBackground, 0.04),
+      },
+    },
+  })
+);
+
+const StyledWeekViewDayScaleCell = styled(WeekView.DayScaleCell)(
+  ({ theme }) => ({
+    [`&.${classes.today}`]: {
+      backgroundColor: alpha(theme.palette.primary.main, 0.16),
+    },
+    [`&.${classes.weekend}`]: {
+      backgroundColor: alpha(theme.palette.action.disabledBackground, 0.06),
+    },
+  })
+);
+
+const TimeTableCell = (props) => {
+  const { startDate } = props;
+  const date = new Date(startDate);
+
+  if (date.getDate() === new Date().getDate()) {
+    return (
+      <StyledWeekViewTimeTableCell {...props} className={classes.todayCell} />
+    );
+  }
+  if (date.getDay() === 0 || date.getDay() === 6) {
+    return (
+      <StyledWeekViewTimeTableCell {...props} className={classes.weekendCell} />
+    );
+  }
+  return <StyledWeekViewTimeTableCell {...props} />;
+};
+
+const DayScaleCell = (props) => {
+  const { startDate, today } = props;
+
+  if (today) {
+    return <StyledWeekViewDayScaleCell {...props} className={classes.today} />;
+  }
+  if (startDate.getDay() === 0 || startDate.getDay() === 6) {
+    return (
+      <StyledWeekViewDayScaleCell {...props} className={classes.weekend} />
+    );
+  }
+  return <StyledWeekViewDayScaleCell {...props} />;
+};
+
 const Appointment = ({ children, style, ...restProps }) => (
   <Appointments.Appointment
     {...restProps}
@@ -126,7 +200,7 @@ const Appointment = ({ children, style, ...restProps }) => (
     {children}
   </Appointments.Appointment>
 );
-
+/*
 const TextEditor = (props) => {
   if (props.type === "multilineTextEditor") {
     return null;
@@ -169,7 +243,7 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
     </AppointmentForm.BasicLayout>
   );
 };
-
+*/
 export default class todo extends Component {
   constructor(props) {
     super(props);
@@ -306,10 +380,11 @@ export default class todo extends Component {
         );
       }
       if (deleted !== undefined) {
+        this.setDeletedAppointmentId(deleted);
+        this.toggleConfirmationVisible();
+        //data = data.filter((appointment) => appointment.id !== deleted);
         //this.setDeletedAppointmentId(deleted);
-        data = data.filter((appointment) => appointment.id !== deleted);
-        return data;
-        //this.toggleConfirmationVisible();
+        //return { data };
       }
       return { data, addedAppointment: {} };
     });
@@ -329,30 +404,23 @@ export default class todo extends Component {
       this.getUserTasks();
     });
   }
+
   getUserTasks = () => {
     if (this.state.user == null) {
       return;
     }
-
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
-      if (dt != null) {
-        /*
+      if (dt != undefined) {
         console.log(dt);
-        const i = 0;
-        while (i < dt.length) {
-          delete dt[i].status;
-          i++;
-        }
-        console.log(dt);
-        */
         this.setState({ data: dt });
       } else {
         this.isNodata = true;
       }
     });
   };
+
   componentDidUpdate() {
     this.appointmentForm.update();
     this.update(); // updating database
@@ -361,6 +429,17 @@ export default class todo extends Component {
   dataExists(data) {
     if (data === undefined) {
       return "N/A";
+    } else {
+      return data;
+    }
+  }
+
+  dateExists(data) {
+    if (data === undefined) {
+      let currentime = format(new Date(), "yyyy/MM/dd");
+      return currentime;
+      //return undefined;
+      return data;
     } else {
       return data;
     }
@@ -378,8 +457,9 @@ export default class todo extends Component {
           notes: this.dataExists(this.state.data[i].notes),
           startDate: this.state.data[i].startDate,
           endDate: this.state.data[i].endDate,
-          //status: "Incomplete",
+          //status: this.dataExists(this.state.data[i].status),
         };
+        console.log(userData);
         updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
           userData;
         i++;
@@ -389,10 +469,10 @@ export default class todo extends Component {
           //console.log("Data saved successfully!");
         })
         .catch((error) => {
-          //console.log(error);
+          console.log(error);
         });
     } catch (error) {
-      console.log("Problem updating tasks" + error);
+      //console.log("Problem updating tasks" + error);
     }
   }
 
@@ -416,7 +496,12 @@ export default class todo extends Component {
               onEditingAppointmentChange={this.onEditingAppointmentChange}
               onAddedAppointmentChange={this.onAddedAppointmentChange}
             />
-            <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+            <WeekView
+              startDayHour={startDayHour}
+              endDayHour={endDayHour}
+              timeTableCellComponent={TimeTableCell}
+              dayScaleCellComponent={DayScaleCell}
+            />
             <MonthView />
             <DayView />
             <EditRecurrenceMenu />
@@ -430,9 +515,9 @@ export default class todo extends Component {
             <DateNavigator />
             <ViewSwitcher />
             <AppointmentForm
-              basicLayoutComponent={BasicLayout}
-              textEditorComponent={TextEditor}
-              //overlayComponent={this.appointmentForm}
+              //basicLayoutComponent={BasicLayout}
+              //textEditorComponent={TextEditor}
+              overlayComponent={this.appointmentForm}
               visible={editingFormVisible}
               onVisibilityChange={this.toggleEditingFormVisibility}
             />
