@@ -17,6 +17,7 @@ import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
   Toolbar,
+  DateNavigator,
   ViewSwitcher,
   MonthView,
   WeekView,
@@ -25,8 +26,8 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   DragDropProvider,
+  AllDayPannel,
   EditRecurrenceMenu,
-  AllDayPanel,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { connectProps } from "@devexpress/dx-react-core";
 import DateTimePicker from "@mui/lab/DateTimePicker";
@@ -111,6 +112,64 @@ const StyledFab = styled(Fab)(({ theme }) => ({
     right: theme.spacing(4),
   },
 }));
+
+const Appointment = ({ children, style, ...restProps }) => (
+  <Appointments.Appointment
+    {...restProps}
+    style={{
+      ...style,
+      backgroundColor: "#F29154",
+      borderRadius: "10px",
+      color: "black",
+    }}
+  >
+    {children}
+  </Appointments.Appointment>
+);
+
+const TextEditor = (props) => {
+  if (props.type === "multilineTextEditor") {
+    return null;
+  }
+  return <AppointmentForm.TextEditor {...props} />;
+};
+
+const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
+  const onLocationChange = (nextValue) => {
+    onFieldChange({ location: nextValue });
+  };
+  const onNotesChange = (nextValue) => {
+    onFieldChange({ notes: nextValue });
+  };
+  const onStatusChange = (nextValue) => {
+    onFieldChange({ status: nextValue });
+  };
+  return (
+    <AppointmentForm.BasicLayout
+      appointmentData={appointmentData}
+      onFieldChange={onFieldChange}
+      {...restProps}
+    >
+      <AppointmentForm.TextEditor
+        value={appointmentData.location}
+        onValueChange={onLocationChange}
+        placeholder="Location"
+      />
+      <AppointmentForm.TextEditor
+        value={appointmentData.notes}
+        onValueChange={onNotesChange}
+        placeholder="Notes"
+      />
+
+      <AppointmentForm.TextEditor
+        value={appointmentData.status}
+        onValueChange={onStatusChange}
+        placeholder="Status"
+      />
+    </AppointmentForm.BasicLayout>
+  );
+};
+
 export default class todo extends Component {
   constructor(props) {
     super(props);
@@ -215,13 +274,12 @@ export default class todo extends Component {
     this.setState((state) => {
       const { data, deletedAppointmentId } = state;
 
-      /*
       remove(
         ref(
           getDatabase(),
           "/todo/" + this.state.user?.uid + "/" + deletedAppointmentId
         )
-      );*/
+      );
 
       const nextData = data.filter(
         (appointment) => appointment.id !== deletedAppointmentId
@@ -248,8 +306,10 @@ export default class todo extends Component {
         );
       }
       if (deleted !== undefined) {
-        this.setDeletedAppointmentId(deleted);
-        this.toggleConfirmationVisible();
+        //this.setDeletedAppointmentId(deleted);
+        data = data.filter((appointment) => appointment.id !== deleted);
+        return data;
+        //this.toggleConfirmationVisible();
       }
       return { data, addedAppointment: {} };
     });
@@ -270,11 +330,23 @@ export default class todo extends Component {
     });
   }
   getUserTasks = () => {
-    console.log(this.state.user?.email);
-    const starCountRef = ref(getDatabase(), "todo/" + this.state.user?.uid);
+    if (this.state.user == null) {
+      return;
+    }
+
+    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
       if (dt != null) {
+        /*
+        console.log(dt);
+        const i = 0;
+        while (i < dt.length) {
+          delete dt[i].status;
+          i++;
+        }
+        console.log(dt);
+        */
         this.setState({ data: dt });
       } else {
         this.isNodata = true;
@@ -306,9 +378,8 @@ export default class todo extends Component {
           notes: this.dataExists(this.state.data[i].notes),
           startDate: this.state.data[i].startDate,
           endDate: this.state.data[i].endDate,
-          status: "Incomplete",
+          //status: "Incomplete",
         };
-
         updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
           userData;
         i++;
@@ -348,18 +419,20 @@ export default class todo extends Component {
             <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
             <MonthView />
             <DayView />
-            <AllDayPanel />
             <EditRecurrenceMenu />
-            <Appointments />
+            <Appointments appointmentComponent={Appointment} />
             <AppointmentTooltip
               showOpenButton
               showCloseButton
               showDeleteButton
             />
             <Toolbar />
+            <DateNavigator />
             <ViewSwitcher />
             <AppointmentForm
-              overlayComponent={this.appointmentForm}
+              basicLayoutComponent={BasicLayout}
+              textEditorComponent={TextEditor}
+              //overlayComponent={this.appointmentForm}
               visible={editingFormVisible}
               onVisibilityChange={this.toggleEditingFormVisibility}
             />

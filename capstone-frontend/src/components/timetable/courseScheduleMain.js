@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
-import { Button,Tab,Tabs } from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 
-import { onAuthStateChanged,signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
@@ -54,20 +54,21 @@ export default class profilemain extends Component {
           <div className="row">
             <Navside></Navside>
             <main className="profile content">
-              <Breadcrumb  currentpage="Courses"/>
-              <h3 Style="text-align: left;"><i class="fa fa-bars" aria-hidden="true"></i> Courses Calendar</h3>
-       
-       <hr></hr>
+              <Breadcrumb currentpage="Courses" />
+              <h3 Style="text-align: left;">
+                <i class="fa fa-bars" aria-hidden="true"></i> Courses Calendar
+              </h3>
+
+              <hr></hr>
               <div className="">
-              <Tabs defaultActiveKey="courses" id="uncontrolled-tab">
-        <Tab eventKey="courses" title="My courses Schedule">
-        <Timetable user={this.state.user}></Timetable>
-          </Tab>
-          <Tab eventKey="assignments" title="My Assignments Schedule">
-          <Timetable user={this.state.user}></Timetable>
-          </Tab>
-          </Tabs>
-              
+                <Tabs defaultActiveKey="courses" id="uncontrolled-tab">
+                  <Tab eventKey="courses" title="My courses Schedule">
+                    <Timetable user={this.state.user}></Timetable>
+                  </Tab>
+                  <Tab eventKey="assignments" title="My Assignments Schedule">
+                    <Timetable user={this.state.user}></Timetable>
+                  </Tab>
+                </Tabs>
               </div>
             </main>
           </div>
