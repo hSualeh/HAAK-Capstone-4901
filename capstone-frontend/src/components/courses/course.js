@@ -597,11 +597,10 @@ export default class course extends Component {
           <tbody>
             {listCourses.map((course) => (
               <tr key={course.id}>
-                <td scope="row">{course.id}</td>
+                <td scope="row">{course.name}</td>
                 <td>
-                  <Link to={`/assignments/` + course.id}>{course.name}</Link>
+                  <Link to={`/assignments/` + course.id}>Assignments</Link>
                 </td>
-                <td>{course.course_code}</td>
                 <td>{course.roomNumber}</td>
                 <td>{this.displayTime(course.meeting_Dates)}</td>
                 <td>{course.course_format}</td>
