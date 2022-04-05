@@ -3,7 +3,7 @@ import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
 import { Button } from "react-bootstrap";
 
-import { getDatabase, ref, onValue, update } from "firebase/database";
+import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
@@ -46,7 +46,7 @@ import Notes from "@mui/icons-material/Notes";
 import Close from "@mui/icons-material/Close";
 import CalendarToday from "@mui/icons-material/CalendarToday";
 import Create from "@mui/icons-material/Create";
-import todoContainer from "./todoContainer.js"
+import todoContainer from "./todoContainer.js";
 const PREFIX = "todo";
 const appointments = [];
 
@@ -111,7 +111,7 @@ const StyledFab = styled(Fab)(({ theme }) => ({
     right: theme.spacing(4),
   },
 }));
-export default class todo extends Component  {
+export default class todo extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -168,7 +168,7 @@ export default class todo extends Component  {
           });
         }
       };
-  
+
       return {
         visible: editingFormVisible,
         appointmentData: currentAppointment,
@@ -214,6 +214,15 @@ export default class todo extends Component  {
   commitDeletedAppointment() {
     this.setState((state) => {
       const { data, deletedAppointmentId } = state;
+
+      /*
+      remove(
+        ref(
+          getDatabase(),
+          "/todo/" + this.state.user?.uid + "/" + deletedAppointmentId
+        )
+      );*/
+
       const nextData = data.filter(
         (appointment) => appointment.id !== deletedAppointmentId
       );
@@ -256,22 +265,17 @@ export default class todo extends Component  {
 
   componentDidMount() {
     onAuthStateChanged(auth, (currentUser) => {
-    
-      this.setState({user:currentUser});
-      console.log(this.state.user)
+      this.setState({ user: currentUser });
       this.getUserTasks();
     });
-   
   }
   getUserTasks = () => {
     console.log(this.state.user?.email);
-    const starCountRef = ref(getDatabase(), "todo/"+this.state.user?.uid);
+    const starCountRef = ref(getDatabase(), "todo/" + this.state.user?.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
       if (dt != null) {
-       
         this.setState({ data: dt });
-        console.log(dt);
       } else {
         this.isNodata = true;
       }
@@ -280,136 +284,128 @@ export default class todo extends Component  {
   componentDidUpdate() {
     this.appointmentForm.update();
     this.update(); // updating database
-   
+  }
+
+  dataExists(data) {
+    if (data === undefined) {
+      return "N/A";
+    } else {
+      return data;
+    }
   }
 
   update() {
     const updates = {};
     var i = 0;
-    try{
-        while (i < this.state.data.length) {
-            const userData = {
-              id: this.state.data[i].id,
-              title: this.state.data[i].title,
-              location: this.state.data[i].location,
-              notes: this.state.data[i].notes,
-              startDate: this.state.data[i].startDate,
-              endDate: this.state.data[i].endDate,
-              status:this.state.data[i].status
-            };
-      
-            updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
-              userData;
-            i++;
-          }
-          update(ref(getDatabase()), updates)
-            .then(() => {
-             console.log("Data saved successfully!")
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-       
-    }
-    catch(error){
-console.log("PRoblem updating tasks"+error)
+    try {
+      while (i < this.state.data.length) {
+        const userData = {
+          id: this.state.data[i].id,
+          title: this.dataExists(this.state.data[i].title),
+          location: this.dataExists(this.state.data[i].location),
+          notes: this.dataExists(this.state.data[i].notes),
+          startDate: this.state.data[i].startDate,
+          endDate: this.state.data[i].endDate,
+          status: "Incomplete",
+        };
 
+        updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
+          userData;
+        i++;
+      }
+      update(ref(getDatabase()), updates)
+        .then(() => {
+          //console.log("Data saved successfully!");
+        })
+        .catch((error) => {
+          //console.log(error);
+        });
+    } catch (error) {
+      console.log("Problem updating tasks" + error);
     }
-     }
+  }
 
   render() {
     const {
       currentDate,
-     confirmationVisible,
+      confirmationVisible,
       editingFormVisible,
       startDayHour,
       endDayHour,
     } = this.state;
     const data = this.state.data;
-   
+
     return (
       <div>
+        <Paper>
+          <Scheduler data={data} height={660}>
+            <ViewState currentDate={currentDate} />
+            <EditingState
+              onCommitChanges={this.commitChanges}
+              onEditingAppointmentChange={this.onEditingAppointmentChange}
+              onAddedAppointmentChange={this.onAddedAppointmentChange}
+            />
+            <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+            <MonthView />
+            <DayView />
+            <AllDayPanel />
+            <EditRecurrenceMenu />
+            <Appointments />
+            <AppointmentTooltip
+              showOpenButton
+              showCloseButton
+              showDeleteButton
+            />
+            <Toolbar />
+            <ViewSwitcher />
+            <AppointmentForm
+              overlayComponent={this.appointmentForm}
+              visible={editingFormVisible}
+              onVisibilityChange={this.toggleEditingFormVisibility}
+            />
+            <DragDropProvider />
+          </Scheduler>
 
-              <Paper>
-                  <Scheduler data={data} height={660}>
-                    <ViewState currentDate={currentDate} />
-                    <EditingState
-                      onCommitChanges={this.commitChanges}
-                      onEditingAppointmentChange={
-                        this.onEditingAppointmentChange
-                      }
-                      onAddedAppointmentChange={this.onAddedAppointmentChange}
-                    />
-                    <WeekView
-                      startDayHour={startDayHour}
-                      endDayHour={endDayHour}
-                    />
-                    <MonthView />
-                    <DayView />
-                    <AllDayPanel />
-                    <EditRecurrenceMenu />
-                    <Appointments />
-                    <AppointmentTooltip
-                      showOpenButton
-                      showCloseButton
-                      showDeleteButton
-                    />
-                    <Toolbar />
-                    <ViewSwitcher />
-                    <AppointmentForm
-                      overlayComponent={this.appointmentForm}
-                      visible={editingFormVisible}
-                      onVisibilityChange={this.toggleEditingFormVisibility}
-                    />
-                    <DragDropProvider />
-                  </Scheduler>
+          <Dialog open={confirmationVisible} onClose={this.cancelDelete}>
+            <DialogTitle>Delete Appointment</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete this appointment?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={this.toggleConfirmationVisible}
+                color="primary"
+                variant="outlined"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={this.commitDeletedAppointment}
+                color="secondary"
+                variant="outlined"
+              >
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
 
-                  <Dialog
-                    open={confirmationVisible}
-                    onClose={this.cancelDelete}
-                  >
-                    <DialogTitle>Delete Appointment</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText>
-                        Are you sure you want to delete this appointment?
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        onClick={this.toggleConfirmationVisible}
-                        color="primary"
-                        variant="outlined"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={this.commitDeletedAppointment}
-                        color="secondary"
-                        variant="outlined"
-                      >
-                        Delete
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-
-                  <StyledFab
-                    color="secondary"
-                    className={classes.addButton}
-                    onClick={() => {
-                      this.setState({ editingFormVisible: true });
-                      this.onEditingAppointmentChange(undefined);
-                      this.onAddedAppointmentChange({
-                        startDate: new Date(currentDate).setHours(startDayHour),
-                        endDate: new Date(currentDate).setHours(
-                          startDayHour + 1
-                        ),
-                      });
-                    }}
-                  >
-                    <AddIcon />
-                  </StyledFab>
-                </Paper>
-            
+          <StyledFab
+            color="secondary"
+            className={classes.addButton}
+            onClick={() => {
+              this.setState({ editingFormVisible: true });
+              this.onEditingAppointmentChange(undefined);
+              this.onAddedAppointmentChange({
+                startDate: new Date(currentDate).setHours(startDayHour),
+                endDate: new Date(currentDate).setHours(startDayHour + 1),
+              });
+            }}
+          >
+            <AddIcon />
+          </StyledFab>
+        </Paper>
       </div>
     );
   }

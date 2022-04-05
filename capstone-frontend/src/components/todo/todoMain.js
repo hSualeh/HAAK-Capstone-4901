@@ -69,11 +69,7 @@ export default class todo extends Component {
               <div className="tasks_container">
                 <div className="card">
                   <div className="card-body">
-                  
-                     <Todonotification user={this.state.user}></Todonotification>
-                    
-                    
-                   
+                    {/*<Todonotification user={this.state.user}></Todonotification>*/}
                     <Todo user={this.state.user}> </Todo>
                   </div>
                 </div>

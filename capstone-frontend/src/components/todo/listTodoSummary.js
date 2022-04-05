@@ -1,7 +1,7 @@
 //This component will be used in the dashboard overview
 //summary of todos list
 import React, { Component } from "react";
-import { ListGroup, Badge, Modal, Form ,Row,Col} from "react-bootstrap";
+import { ListGroup, Badge, Modal, Form, Row, Col } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { auth } from "../firebase-config";
@@ -10,14 +10,13 @@ import { Link } from "react-router-dom";
 export default class listTodoSummary extends Component {
   constructor(props) {
     super(props);
-   
+
     this.state = {
       openedDialog: -1,
       actionType: "",
       showHide: false,
       listAlltodos: [],
       user: this.props.user,
- 
     };
   }
   componentDidMount() {
@@ -27,39 +26,35 @@ export default class listTodoSummary extends Component {
     });
   }
   getAlltodoData = () => {
-    console.log(this.state.user?.email);
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user?.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
       if (dt != null) {
         this.setState({ listAlltodos: dt });
-       
       } else {
         this.isNodata = true;
       }
     });
   };
-  updatestatus  = (id,todoData,checked) =>  {
-  console.log("change status" + id);
-    todoData.status = (checked==0 ? 1:0);
-    console.log(todoData)
-    
+  updatestatus = (id, todoData, checked) => {
+    console.log("change status" + id);
+    todoData.status = checked == 0 ? 1 : 0;
+    console.log(todoData);
+
     const updates = {};
-    if(this.state.user?.uid !="")
-    {
-      console.log("/todo/" + this.state.user?.uid+"/"+id);
-      updates["/todo/" + this.state.user?.uid+"/"+id] = todoData;
+    if (this.state.user?.uid != "") {
+      console.log("/todo/" + this.state.user?.uid + "/" + id);
+      updates["/todo/" + this.state.user?.uid + "/" + id] = todoData;
 
       update(ref(getDatabase()), updates)
         .then(() => {
-         console.log("Data saved successfully!");
+          console.log("Data saved successfully!");
         })
         .catch((error) => {
           console.log(error);
         });
     }
-    
-  }
+  };
   openModal = (course, actionType) => {
     this.setState({
       openedDialog: course,
@@ -90,8 +85,7 @@ export default class listTodoSummary extends Component {
   };
 
   handleSelect(iscomplete) {
-   
-    this.setState({ complete:iscomplete });
+    this.setState({ complete: iscomplete });
   }
   render() {
     const listtodos_uns = this.state.listAlltodos;
@@ -110,24 +104,32 @@ export default class listTodoSummary extends Component {
                 >
                   <div className="ms-2 me-auto">
                     <div className="fw-bold">
-                  
                       {" "}
                       <a
                         onClick={() => this.openModal(todo.id, "detail")}
                         Style="cursor: pointer;"
                       >
-                        {todo.title} 
+                        {todo.title}
                       </a>
                     </div>
                     <Row>
-                    <Col sm="3">
-                   
+                      <Col sm="3">
                         {" "}
-                        <Form.Check type="switch" id="custom-switch"  checked={todo.status == 1 ? 'checked':''} onClick={() => this.updatestatus(todo.id,todo,todo.status)}/>
+                        <Form.Check
+                          type="switch"
+                          id="custom-switch"
+                          checked={todo.status == 1 ? "checked" : ""}
+                          onClick={() =>
+                            this.updatestatus(todo.id, todo, todo.status)
+                          }
+                        />
                       </Col>
                       <Col sm="9">
                         {" "}
-                        <Badge bg={todo.status == 1 ? 'success' : 'light'} text={todo.status == 1 ? '' : 'dark'}>
+                        <Badge
+                          bg={todo.status == 1 ? "success" : "light"}
+                          text={todo.status == 1 ? "" : "dark"}
+                        >
                           <i
                             class="fa fa-clock-o"
                             aria-hidden="true"
@@ -136,7 +138,6 @@ export default class listTodoSummary extends Component {
                           {format(new Date(todo.endDate), "yyyy/MM/dd")}
                         </Badge>
                       </Col>
-                    
                     </Row>
                   </div>
                   <Modal
@@ -188,7 +189,9 @@ export default class listTodoSummary extends Component {
                 </ListGroup.Item>
               ))}
             </ListGroup>
-            <Link className="more-link" to ="/tasks" >More</Link>
+            <Link className="more-link" to="/tasks">
+              More
+            </Link>
           </div>
         </div>
       </div>
