@@ -576,13 +576,12 @@ export default class course extends Component {
         <table className="table">
           <thead>
             <tr>
+              <th scope="col" className="t-col-3">
+                Course Name
+              </th>
               <th scope="col" className="t-col-0">
                 Assignments
               </th>
-              <th scope="col" className="t-col-3">
-                Name
-              </th>
-              
               <th scope="col" className="t-col-1">
                 Room Number
               </th>
