@@ -358,7 +358,7 @@ export default class todo extends Component {
       const nextData = data.filter(
         (appointment) => appointment.id !== deletedAppointmentId
       );
-
+      //this.update();
       return { data: nextData, deletedAppointmentId: null };
     });
     this.toggleConfirmationVisible();
@@ -412,7 +412,8 @@ export default class todo extends Component {
     const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
-      if (dt != undefined) {
+      if (dt != null) {
+        console.log("From Firebase");
         console.log(dt);
         this.setState({ data: dt });
       } else {
@@ -459,6 +460,7 @@ export default class todo extends Component {
           endDate: this.state.data[i].endDate,
           //status: this.dataExists(this.state.data[i].status),
         };
+        console.log("Read From Calendar");
         console.log(userData);
         updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
           userData;
