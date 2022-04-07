@@ -7,6 +7,7 @@
   float: left;
   text-align: left;
   margin-bottom: 15px;
+  font-weight: bold;
 }
 
 .assignment-function {
@@ -48,4 +49,7 @@
 
 .required{
   color: red;
+}
+.assign{
+  margin-top: 30px;
 }

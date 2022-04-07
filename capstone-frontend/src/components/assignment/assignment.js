@@ -485,7 +485,7 @@ export default class assignment extends Component {
     const listAssignment = this.state.listAssignment;
 
     return (
-      <div className="content">
+      <div className="content assign">
         <div className="content">
           <div className="assignment-intro">
             Couse Name :{" "}
@@ -509,7 +509,7 @@ export default class assignment extends Component {
               Back
             </Link>
           </div>
-          <Table className="table" responsive="sm">
+          <Table className="table assign-table" responsive="sm">
             <thead>
               <tr>
                 <th scope="col" className="t-col-id">

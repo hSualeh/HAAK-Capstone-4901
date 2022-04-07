@@ -59,7 +59,9 @@ export default class profilemain extends Component {
               <Breadcrumb currentpage="Courses" />
 
               <div className="content">
-                
+              <h3 Style="text-align: left;">
+                <i class="fa fa-bars" aria-hidden="true"></i> Manage Courses
+              </h3>
                 <Course/>
               </div>
             </main>

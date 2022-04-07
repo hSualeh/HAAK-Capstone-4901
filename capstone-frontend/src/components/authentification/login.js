@@ -44,7 +44,7 @@ export default class login extends Component {
         console.log("error" + error.message);
         if (
           error.code === "auth/invalid-email" ||
-          error.code === "auth/user-not-found"
+          error.code === "auth/user-not-found" || error.code === "auth/wrong-password"
         ) {
           message =
             "Sorry, we couldn't find user with that credentials.Please try again";

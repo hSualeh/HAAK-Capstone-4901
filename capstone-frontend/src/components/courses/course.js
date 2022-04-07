@@ -573,7 +573,7 @@ export default class course extends Component {
             ) : null}
           </div>
         </div>
-        <table className="table">
+        <table className="table course-table" responsive="sm"> 
           <thead>
             <tr>
               <th scope="col" className="t-col-3">
@@ -591,7 +591,7 @@ export default class course extends Component {
               <th scope="col" className="t-col-1">
                 Course format
               </th>
-              <th scope="col" className="t-col-1"></th>
+              <th scope="col" className="t-col-1">Action</th>
             </tr>
           </thead>
           <tbody>
