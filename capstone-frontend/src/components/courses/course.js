@@ -26,7 +26,7 @@ export default class course extends Component {
       fMDates: "",
       fMTime: "",
       fMFDates: "",
-      fMFTime: "",      
+      fMFTime: "",
       fCourseCode: "",
       user: null,
       profileError: [],
@@ -573,9 +573,12 @@ export default class course extends Component {
             ) : null}
           </div>
         </div>
-        <table className="table course-table" responsive="sm"> 
+        <table className="table course-table" responsive="sm">
           <thead>
             <tr>
+              <th scope="col" className="t-col-3" style={{ display: "none" }}>
+                ID
+              </th>
               <th scope="col" className="t-col-3">
                 Course Name
               </th>
@@ -591,12 +594,17 @@ export default class course extends Component {
               <th scope="col" className="t-col-1">
                 Course format
               </th>
-              <th scope="col" className="t-col-1">Action</th>
+              <th scope="col" className="t-col-1">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
             {listCourses.map((course) => (
               <tr key={course.id}>
+                <td scope="row" style={{ display: "none" }}>
+                  {course.id}
+                </td>
                 <td scope="row">{course.name}</td>
                 <td>
                   <Link to={`/assignments/` + course.id}>Assignments</Link>

@@ -68,14 +68,14 @@ export default class profile extends Component {
   findFormErrors = () => {
     const newErrors = [];
     // Email errors
-    if (!this.state.f_name || this.state.f_name === "")
-      newErrors.push("First Name cannot be blank!");
+    // if (!this.state.f_name || this.state.f_name === "")
+    //   newErrors.push("First Name cannot be blank!");
 
-    if (!this.state.l_name || this.state.l_name === "")
-      newErrors.push("Last Name cannot be blank!");
+    // if (!this.state.l_name || this.state.l_name === "")
+    //   newErrors.push("Last Name cannot be blank!");
 
-    if (!this.state.dep_name || this.state.dep_name === "")
-      newErrors.push("Department cannot be blank!");
+    // if (!this.state.dep_name || this.state.dep_name === "")
+    //   newErrors.push("Department cannot be blank!");
 
     return newErrors;
   };
