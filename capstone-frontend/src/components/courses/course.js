@@ -573,17 +573,14 @@ export default class course extends Component {
             ) : null}
           </div>
         </div>
-        <table className="table">
+        <table className="table course-table" responsive="sm"> 
           <thead>
             <tr>
-              <th scope="col" className="t-col-0">
-                ID
-              </th>
               <th scope="col" className="t-col-3">
-                Name
+                Course Name
               </th>
-              <th scope="col" className="t-col-1">
-                Course Code
+              <th scope="col" className="t-col-0">
+                Assignments
               </th>
               <th scope="col" className="t-col-1">
                 Room Number
@@ -594,17 +591,16 @@ export default class course extends Component {
               <th scope="col" className="t-col-1">
                 Course format
               </th>
-              <th scope="col" className="t-col-1"></th>
+              <th scope="col" className="t-col-1">Action</th>
             </tr>
           </thead>
           <tbody>
             {listCourses.map((course) => (
               <tr key={course.id}>
-                <td scope="row">{course.id}</td>
+                <td scope="row">{course.name}</td>
                 <td>
-                  <Link to={`/assignments/` + course.id}>{course.name}</Link>
+                  <Link to={`/assignments/` + course.id}>Assignments</Link>
                 </td>
-                <td>{course.course_code}</td>
                 <td>{course.roomNumber}</td>
                 <td>{this.displayTime(course.meeting_Dates)}</td>
                 <td>{course.course_format}</td>
