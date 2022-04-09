@@ -59,7 +59,7 @@ export default class dashboard extends Component {
 
               <div className="row my-4">
                 <div className="row my-4">
-                  {/*<ListTodoSummary user={this.state.user}></ListTodoSummary>*/}
+                  {<ListTodoSummary user={this.state.user}></ListTodoSummary>}
                   <ListCoursesSummary
                     user={this.state.user}
                   ></ListCoursesSummary>

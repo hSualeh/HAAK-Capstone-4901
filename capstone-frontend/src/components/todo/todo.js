@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
-import { Button } from "react-bootstrap";
+import { Button, Form, Row, Col, Badge } from "react-bootstrap";
 
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -157,9 +157,7 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
   const onNotesChange = (nextValue) => {
     onFieldChange({ notes: nextValue });
   };
-  const onStatusChange = (nextValue) => {
-    onFieldChange({ status: nextValue });
-  };
+
   return (
     <AppointmentForm.BasicLayout
       appointmentData={appointmentData}
@@ -177,11 +175,45 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
         placeholder="Notes"
       />
 
-      <AppointmentForm.TextEditor
-        value={appointmentData.status}
-        onValueChange={onStatusChange}
-        placeholder="Status"
-      />
+      <Row>
+        <Col>
+          <Form.Check
+            type="switch"
+            id="custom-switch"
+            onClick={() => {
+              const updates = {};
+
+              if (appointmentData.status === 0) {
+                console.log("Set to complete");
+                appointmentData.status = 1;
+
+                /*
+                const updates = [];
+                updates[
+                  "/todo/" + this.state.user?.uid + "/" + appointmentData.id
+                ] = appointmentData;
+
+                update(ref(getDatabase()), updates);*/
+              } else {
+                console.log("Set to incomplete");
+                appointmentData.status = 0;
+              }
+
+              //update(ref(getDatabase()), updates);
+            }}
+          />
+        </Col>
+        <Col sm="9">
+          {" "}
+          <Badge
+            bg={appointmentData.status === 1 ? "success" : "light"}
+            text={appointmentData.status === 1 ? "" : "dark"}
+          >
+            <i class="fa fa-clock-o" aria-hidden="true" title="detail"></i>
+            {"Task Status"}
+          </Badge>
+        </Col>
+      </Row>
     </AppointmentForm.BasicLayout>
   );
 };
@@ -318,6 +350,9 @@ export default class todo extends Component {
         const updates = {};
         if (data[startingAddedId].title === undefined) {
           data[startingAddedId].title = "N/A";
+        }
+        if (data[startingAddedId].status === undefined) {
+          data[startingAddedId].status = 0;
         }
         updates["/todo/" + this.state.user?.uid + "/" + startingAddedId] =
           data[startingAddedId];
