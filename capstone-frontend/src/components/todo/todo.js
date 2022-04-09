@@ -1,15 +1,10 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
-import logo from "../../img/logo.PNG";
 import { Button } from "react-bootstrap";
 
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
-import Navside from "../navbar/navside";
-
-import UserProfileDropDown from "../home/userProfileDropDown";
-import Breadcrumb from "../home/breadcrumb";
 
 import { styled, alpha } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
@@ -26,30 +21,18 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   DragDropProvider,
-  AllDayPannel,
+  AllDayPanel,
   EditRecurrenceMenu,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { connectProps } from "@devexpress/dx-react-core";
-import DateTimePicker from "@mui/lab/DateTimePicker";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import AdapterMoment from "@mui/lab/AdapterMoment";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
-import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import TextField from "@mui/material/TextField";
-import LocationOn from "@mui/icons-material/LocationOn";
-import Notes from "@mui/icons-material/Notes";
-import Close from "@mui/icons-material/Close";
-import CalendarToday from "@mui/icons-material/CalendarToday";
-import Create from "@mui/icons-material/Create";
 import todoContainer from "./todoContainer.js";
-
-import { format } from "date-fns";
 
 const PREFIX = "todo";
 const appointments = [];
@@ -70,47 +53,6 @@ const classes = {
   today: `${PREFIX}-today`,
   weekend: `${PREFIX}-weekend`,
 };
-
-const StyledDiv = styled("div")(({ theme }) => ({
-  [`& .${classes.icon}`]: {
-    margin: theme.spacing(2, 0),
-    marginRight: theme.spacing(2),
-  },
-  [`& .${classes.header}`]: {
-    overflow: "hidden",
-    paddingTop: theme.spacing(0.5),
-  },
-  [`& .${classes.textField}`]: {
-    width: "100%",
-  },
-  [`& .${classes.content}`]: {
-    padding: theme.spacing(2),
-    paddingTop: 0,
-  },
-  [`& .${classes.closeButton}`]: {
-    float: "right",
-  },
-  [`& .${classes.picker}`]: {
-    marginRight: theme.spacing(2),
-    "&:last-child": {
-      marginRight: 0,
-    },
-    width: "50%",
-  },
-  [`& .${classes.wrapper}`]: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: theme.spacing(1, 0),
-  },
-  [`& .${classes.buttonGroup}`]: {
-    display: "flex",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 2),
-  },
-  [`& .${classes.button}`]: {
-    marginLeft: theme.spacing(2),
-  },
-}));
 
 const StyledFab = styled(Fab)(({ theme }) => ({
   [`&.${classes.addButton}`]: {
@@ -200,7 +142,7 @@ const Appointment = ({ children, style, ...restProps }) => (
     {children}
   </Appointments.Appointment>
 );
-/*
+
 const TextEditor = (props) => {
   if (props.type === "multilineTextEditor") {
     return null;
@@ -243,7 +185,7 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
     </AppointmentForm.BasicLayout>
   );
 };
-*/
+
 export default class todo extends Component {
   constructor(props) {
     super(props);
@@ -358,10 +300,10 @@ export default class todo extends Component {
       const nextData = data.filter(
         (appointment) => appointment.id !== deletedAppointmentId
       );
-      //this.update();
+
+      this.toggleConfirmationVisible();
       return { data: nextData, deletedAppointmentId: null };
     });
-    this.toggleConfirmationVisible();
   }
 
   commitChanges({ added, changed, deleted }) {
@@ -371,6 +313,16 @@ export default class todo extends Component {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
+
+        //console.log(data[startingAddedId]);
+        const updates = {};
+        if (data[startingAddedId].title === undefined) {
+          data[startingAddedId].title = "N/A";
+        }
+        updates["/todo/" + this.state.user?.uid + "/" + startingAddedId] =
+          data[startingAddedId];
+
+        update(ref(getDatabase()), updates);
       }
       if (changed) {
         data = data.map((appointment) =>
@@ -378,13 +330,11 @@ export default class todo extends Component {
             ? { ...appointment, ...changed[appointment.id] }
             : appointment
         );
+        // remember to add the functionality that the database gets updated as well
       }
       if (deleted !== undefined) {
-        this.setDeletedAppointmentId(deleted);
         this.toggleConfirmationVisible();
-        //data = data.filter((appointment) => appointment.id !== deleted);
-        //this.setDeletedAppointmentId(deleted);
-        //return { data };
+        this.setDeletedAppointmentId(deleted);
       }
       return { data, addedAppointment: {} };
     });
@@ -405,6 +355,10 @@ export default class todo extends Component {
     });
   }
 
+  componentDidUpdate() {
+    this.appointmentForm.update();
+  }
+
   getUserTasks = () => {
     if (this.state.user == null) {
       return;
@@ -413,70 +367,12 @@ export default class todo extends Component {
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
       if (dt != null) {
-        console.log("From Firebase");
-        console.log(dt);
         this.setState({ data: dt });
       } else {
         this.isNodata = true;
       }
     });
   };
-
-  componentDidUpdate() {
-    this.appointmentForm.update();
-    this.update(); // updating database
-  }
-
-  dataExists(data) {
-    if (data === undefined) {
-      return "N/A";
-    } else {
-      return data;
-    }
-  }
-
-  dateExists(data) {
-    if (data === undefined) {
-      let currentime = format(new Date(), "yyyy/MM/dd");
-      return currentime;
-      //return undefined;
-      return data;
-    } else {
-      return data;
-    }
-  }
-
-  update() {
-    const updates = {};
-    var i = 0;
-    try {
-      while (i < this.state.data.length) {
-        const userData = {
-          id: this.state.data[i].id,
-          title: this.dataExists(this.state.data[i].title),
-          location: this.dataExists(this.state.data[i].location),
-          notes: this.dataExists(this.state.data[i].notes),
-          startDate: this.state.data[i].startDate,
-          endDate: this.state.data[i].endDate,
-          //status: this.dataExists(this.state.data[i].status),
-        };
-        console.log("Read From Calendar");
-        console.log(userData);
-        updates["/todo/" + this.state.user?.uid + "/" + this.state.data[i].id] =
-          userData;
-        i++;
-      }
-      update(ref(getDatabase()), updates)
-        .then(() => {
-          //console.log("Data saved successfully!");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      //console.log("Problem updating tasks" + error);
-    }
-  }
 
   render() {
     const {
@@ -497,6 +393,7 @@ export default class todo extends Component {
               onCommitChanges={this.commitChanges}
               onEditingAppointmentChange={this.onEditingAppointmentChange}
               onAddedAppointmentChange={this.onAddedAppointmentChange}
+              update={this.update}
             />
             <WeekView
               startDayHour={startDayHour}
@@ -508,6 +405,7 @@ export default class todo extends Component {
             <DayView />
             <EditRecurrenceMenu />
             <Appointments appointmentComponent={Appointment} />
+            <AllDayPanel />
             <AppointmentTooltip
               showOpenButton
               showCloseButton
@@ -517,9 +415,9 @@ export default class todo extends Component {
             <DateNavigator />
             <ViewSwitcher />
             <AppointmentForm
-              //basicLayoutComponent={BasicLayout}
-              //textEditorComponent={TextEditor}
-              overlayComponent={this.appointmentForm}
+              basicLayoutComponent={BasicLayout}
+              textEditorComponent={TextEditor}
+              //overlayComponent={this.appointmentForm}
               visible={editingFormVisible}
               onVisibilityChange={this.toggleEditingFormVisibility}
             />
