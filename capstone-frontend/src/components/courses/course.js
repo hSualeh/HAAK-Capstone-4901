@@ -556,10 +556,10 @@ export default class course extends Component {
 
     return (
       <div className="content">
-        <div className="content">
-          <div className="content course-function">
-            <Button variant="primary" size="sm" onClick={this.handleShowAdd}>
-              Add Course
+        <div className="">
+          <div className="course-function">
+            <Button variant="success" size="sm" onClick={this.handleShowAdd}>
+            <i class="fa fa-plus" aria-hidden="true"></i> Add Course
             </Button>
             {this.state.showSync ? (
               <Button
@@ -568,11 +568,11 @@ export default class course extends Component {
                 className="btn-s"
                 onClick={this.handleSync}
               >
-                Sync with UNT
+                <i class="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
               </Button>
             ) : null}
           </div>
-        </div>
+       
         <table className="table course-table" responsive="sm">
           <thead>
             <tr>
@@ -582,9 +582,7 @@ export default class course extends Component {
               <th scope="col" className="t-col-3">
                 Course Name
               </th>
-              <th scope="col" className="t-col-0">
-                Assignments
-              </th>
+             
               <th scope="col" className="t-col-1">
                 Room Number
               </th>
@@ -594,7 +592,10 @@ export default class course extends Component {
               <th scope="col" className="t-col-1">
                 Course format
               </th>
-              <th scope="col" className="t-col-1">
+              <th scope="col" className="t-col-0">
+              Assignments
+              </th>
+              <th scope="col" className="t-col-1" style={{'text-align':'center'}}>
                 Action
               </th>
             </tr>
@@ -606,20 +607,26 @@ export default class course extends Component {
                   {course.id}
                 </td>
                 <td scope="row">{course.name}</td>
-                <td>
-                  <Link to={`/assignments/` + course.id}>Assignments</Link>
-                </td>
+              
                 <td>{course.roomNumber}</td>
                 <td>{this.displayTime(course.meeting_Dates)}</td>
                 <td>{course.course_format}</td>
-                <td scope="col">
+                <td>
+                <Button
+                    variant="outline-primary"
+                    size="sm" className="btn-assignments">
+                  <Link to={`/assignments/` + course.id}>Assignments</Link>
+                    </Button>
+                </td>
+                <td scope="col"  style={{'text-align':'center'}}>
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={this.handleShowEdit}
+                    onClick={this.handleShowEdit} style={{'margin-right':'5px'}}
                   >
                     <i className="fa fa-edit"></i>
                   </Button>
+                  
                   <Button
                     variant="danger"
                     onClick={this.handleShowConfirm}
@@ -632,6 +639,7 @@ export default class course extends Component {
             ))}
           </tbody>
         </table>
+        </div>
         <>
           <Modal show={this.state.formShow} onHide={this.handleClose} size="lg">
             <Modal.Header closeButton>

@@ -87,7 +87,7 @@ export default class todonotification extends Component {
           <li Style="text-align: left;">
            <a   onClick={() => this.openModal(todo.id, "detail")}
                         Style="cursor: pointer;text-decoration:underline;"> {todo.title} </a>
-                       {todo.endDate}
+                      
                       
            {/* due on {format(new Date(todo.endDate), "yyyy/MM/dd")} */}
             <Modal
@@ -113,13 +113,13 @@ export default class todonotification extends Component {
                     <td>
                       <strong className="me-auto">Start Date:</strong>
                     </td>
-                    <td>sss</td>
+                    <td>{todo.startDate}</td>
                   </tr>
                   <tr>
                     <td>
                       <strong className="me-auto">End Date :</strong>
                     </td>
-                    <td>ddd</td>
+                    <td>{todo.endDate}</td>
                   </tr>
                   <tr>
                     <td>

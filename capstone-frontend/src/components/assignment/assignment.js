@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { Button, Alert, Table, Col, Row } from "react-bootstrap";
+import { Button, Alert, Table, Col, Row,Badge } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
@@ -486,15 +486,16 @@ export default class assignment extends Component {
 
     return (
       <div className="content assign">
-        <div className="content">
+        <div className="">
           <div className="assignment-intro">
-            Couse Name :{" "}
+          <i class="fa fa-bookmark" aria-hidden="true"></i> {" "}
             {this.state.couseData == null ? "" : this.state.couseData.name}
           </div>
           <div className="assignment-function">
-            <Button variant="primary" size="sm" onClick={this.handleShowAdd}>
-              Add
-            </Button>
+          <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
+            <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
+            </Link>
+           
             {this.state.showSync ? (
               <Button
                 variant="primary"
@@ -502,12 +503,13 @@ export default class assignment extends Component {
                 className="btn-s"
                 onClick={this.handleSync}
               >
-                Sync with UNT
+                <i class="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
               </Button>
+              
             ) : null}
-            <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
-              Back
-            </Link>
+           <Button variant="secondary" size="sm"  className="btn-s" onClick={this.handleShowAdd}>
+           <i class="fa fa-plus" aria-hidden="true"></i> Add New Assignment
+            </Button>
           </div>
           <Table className="table assign-table" responsive="sm">
             <thead>
@@ -521,9 +523,7 @@ export default class assignment extends Component {
                 <th scope="col" className="t-col-name">
                   Name
                 </th>
-                <th scope="col" className="t-col-des">
-                  Descriptions
-                </th>
+               
                 <th scope="col" className="t-col-status">
                   Status
                 </th>
@@ -542,23 +542,30 @@ export default class assignment extends Component {
                   <td className="t-col-type">{asgn.type}</td>
                   <td className="t-col-name">{asgn.name}</td>
                   {/* <td className="t-col-des wrapcontent">{ asgn.description }</td> */}
-                  <td className="t-col-des wrapcontent">
+                   {/* <td className="t-col-des wrapcontent">
                     <div
                       dangerouslySetInnerHTML={{ __html: asgn.description }}
                     />
-                  </td>
-                  <td className="t-col-status">{asgn.status}</td>
+                  </td>*/}
+                  <td className="t-col-status"> <Badge bg={asgn.status=='Completed'?'success':'danger'}>{asgn.status}</Badge></td>
                   <td className="t-col-dd">{this.displayTime(asgn.duedate)}</td>
-                  <td className="t-col-func">
+                  <td className="t-col-func" style={{'text-align':'center'}}>
+                    <Button
+                      variant="outline-primary"
+                      size="sm" style={{'margin-right':'5px'}}
+                      onClick={this.handleShowEdit}
+                    >
+                     <i class="fa fa-arrow-right" aria-hidden="true"></i> Detail
+                    </Button>
                     <Button
                       variant="primary"
-                      size="sm"
+                      size="sm" style={{'margin-right':'5px'}}
                       onClick={this.handleShowEdit}
                     >
                       <i className="fa fa-edit"></i>
                     </Button>
                     <Button
-                      variant="danger"
+                      variant="danger" style={{'margin-right':'5px'}}
                       onClick={this.handleShowConfirm}
                       size="sm"
                     >
@@ -574,7 +581,7 @@ export default class assignment extends Component {
           <Modal show={this.state.show} onHide={this.handleClose} size="lg">
             <Modal.Header closeButton>
               <Modal.Title>
-                {this.state.mode ? "Assignment Add" : "Assignment Edit"}
+                {this.state.mode ? "Assignment Add" : "Assignment"}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>

@@ -8,6 +8,7 @@
   text-align: left;
   margin-bottom: 15px;
   font-weight: bold;
+  color:#116df6;
 }
 
 .assignment-function {
@@ -20,23 +21,15 @@
 .t-col-id{
   width: 5%;
 }
-.t-col-type .t-col-status{
-  width: 10%;
-}
-.t-col-des{
-  width: 40%;
-  max-width: 200px;
-}
-.t-col-name{
-  width: 25%;
-}
-.t-col-dd {
-  width: 10%;
-}
-.t-col-func {
+.t-col-type, .t-col-status{
   width: 10%;
 }
 
+
+.t-col-func,.t-col-dd
+{
+  width: 15%;
+}
 .wrapcontent {
   white-space: pre;
   overflow: hidden;
@@ -52,4 +45,8 @@
 }
 .assign{
   margin-top: 30px;
+}
+.assign .table-responsive-sm
+{
+  padding-top: 40px;
 }
