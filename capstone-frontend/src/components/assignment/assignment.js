@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { Button, Alert, Table, Col, Row,Badge } from "react-bootstrap";
+import { Button, Alert, Table, Col, Row, Badge } from "react-bootstrap";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
@@ -51,7 +51,10 @@ export default class assignment extends Component {
   componentWillUnmount() {}
 
   getAllAssignmentData = () => {
-    const starCountRef = ref(getDatabase(), "assignments");
+    const starCountRef = ref(
+      getDatabase(),
+      "assignments/" + this.state.user.uid
+    );
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       let allData = [];
@@ -62,8 +65,7 @@ export default class assignment extends Component {
         for (var key of Object.keys(data)) {
           allData.push(data[key]);
           if (
-            data[key].cid == this.couseID &&
-            data[key].uid == this.state.user.uid
+            data[key].cid == this.couseID
           ) {
             filter.push(data[key]);
           }
@@ -87,7 +89,10 @@ export default class assignment extends Component {
   };
 
   getCourseData = () => {
-    const starCountRef = ref(getDatabase(), "courses/" + this.couseID);
+    const starCountRef = ref(
+      getDatabase(),
+      "courses/" + this.state.user.uid + "/" + this.couseID
+    );
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
@@ -130,12 +135,11 @@ export default class assignment extends Component {
       type: this.state.fType,
       duedate: this.setDueDate(),
       description: this.state.fDescription,
-      uid: this.state.user.uid,
       untid: "",
     };
 
     const updates = {};
-    updates["/assignments/" + cID] = assignmentData;
+    updates["/assignments/" + this.state.user.uid + "/" + cID] = assignmentData;
 
     update(ref(getDatabase()), updates)
       .then(() => {
@@ -156,7 +160,8 @@ export default class assignment extends Component {
     assignmentData.duedate = this.setDueDate();
 
     const updates = {};
-    updates["/assignments/" + this.state.fid] = assignmentData;
+    updates["/assignments/" + this.state.user.uid + "/" + this.state.fid] =
+      assignmentData;
 
     update(ref(getDatabase()), updates)
       .then(() => {
@@ -251,7 +256,10 @@ export default class assignment extends Component {
           .innerText;
     }
 
-    const starCountRef = ref(getDatabase(), "assignments/" + id);
+    const starCountRef = ref(
+      getDatabase(),
+      "assignments/" + this.state.user.uid + "/" + id
+    );
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
@@ -347,7 +355,6 @@ export default class assignment extends Component {
               type: "etc",
               duedate: asgn.due_at,
               description: asgn.description,
-              uid: this.state.user.uid,
               untid: asgn.id,
             };
 
@@ -395,12 +402,18 @@ export default class assignment extends Component {
 
             if (isSkip === false) {
               if (this.isNodata === true) {
-                updates["/assignments/" + 0] = requestData;
+                updates["/assignments/" + this.state.user.uid + "/" + 0] =
+                  requestData;
                 this.maxAssignment = 1;
                 this.isNodata = false;
               } else {
                 requestData.id = this.maxAssignment;
-                updates["/assignments/" + this.maxAssignment] = requestData;
+                updates[
+                  "/assignments/" +
+                    this.state.user.uid +
+                    "/" +
+                    this.maxAssignment
+                ] = requestData;
                 this.maxAssignment++;
               }
             }
@@ -422,7 +435,12 @@ export default class assignment extends Component {
   };
 
   handleDelete = (e) => {
-    remove(ref(getDatabase(), "assignments/" + this.state.fid));
+    remove(
+      ref(
+        getDatabase(),
+        "assignments/" + this.state.user.uid + "/" + this.state.fid
+      )
+    );
 
     e.target.blur();
 
@@ -488,14 +506,14 @@ export default class assignment extends Component {
       <div className="content assign">
         <div className="">
           <div className="assignment-intro">
-          <i class="fa fa-bookmark" aria-hidden="true"></i> {" "}
+            <i className="fa fa-bookmark" aria-hidden="true"></i>{" "}
             {this.state.couseData == null ? "" : this.state.couseData.name}
           </div>
           <div className="assignment-function">
-          <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
-            <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
+            <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
+              <i className="fa fa-chevron-left" aria-hidden="true"></i> Back
             </Link>
-           
+
             {this.state.showSync ? (
               <Button
                 variant="primary"
@@ -503,12 +521,16 @@ export default class assignment extends Component {
                 className="btn-s"
                 onClick={this.handleSync}
               >
-                <i class="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
+                <i className="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
               </Button>
-              
             ) : null}
-           <Button variant="secondary" size="sm"  className="btn-s" onClick={this.handleShowAdd}>
-           <i class="fa fa-plus" aria-hidden="true"></i> Add New Assignment
+            <Button
+              variant="secondary"
+              size="sm"
+              className="btn-s"
+              onClick={this.handleShowAdd}
+            >
+              <i className="fa fa-plus" aria-hidden="true"></i> Add New Assignment
             </Button>
           </div>
           <Table className="table assign-table" responsive="sm">
@@ -523,7 +545,7 @@ export default class assignment extends Component {
                 <th scope="col" className="t-col-name">
                   Name
                 </th>
-               
+
                 <th scope="col" className="t-col-status">
                   Status
                 </th>
@@ -542,30 +564,41 @@ export default class assignment extends Component {
                   <td className="t-col-type">{asgn.type}</td>
                   <td className="t-col-name">{asgn.name}</td>
                   {/* <td className="t-col-des wrapcontent">{ asgn.description }</td> */}
-                   {/* <td className="t-col-des wrapcontent">
+                  {/* <td className="t-col-des wrapcontent">
                     <div
                       dangerouslySetInnerHTML={{ __html: asgn.description }}
                     />
                   </td>*/}
-                  <td className="t-col-status"> <Badge bg={asgn.status=='Completed'?'success':'danger'}>{asgn.status}</Badge></td>
+                  <td className="t-col-status">
+                    {" "}
+                    <Badge
+                      bg={asgn.status == "Completed" ? "success" : "danger"}
+                    >
+                      {asgn.status}
+                    </Badge>
+                  </td>
                   <td className="t-col-dd">{this.displayTime(asgn.duedate)}</td>
-                  <td className="t-col-func" style={{'text-align':'center'}}>
+                  <td className="t-col-func" style={{ "textAlign": "center" }}>
                     <Button
                       variant="outline-primary"
-                      size="sm" style={{'margin-right':'5px'}}
+                      size="sm"
+                      style={{ "margin-right": "5px" }}
                       onClick={this.handleShowEdit}
                     >
-                     <i class="fa fa-arrow-right" aria-hidden="true"></i> Detail
+                      <i className="fa fa-arrow-right" aria-hidden="true"></i>{" "}
+                      Detail
                     </Button>
                     <Button
                       variant="primary"
-                      size="sm" style={{'margin-right':'5px'}}
+                      size="sm"
+                      style={{ "margin-right": "5px" }}
                       onClick={this.handleShowEdit}
                     >
                       <i className="fa fa-edit"></i>
                     </Button>
                     <Button
-                      variant="danger" style={{'margin-right':'5px'}}
+                      variant="danger"
+                      style={{ "margin-right": "5px" }}
                       onClick={this.handleShowConfirm}
                       size="sm"
                     >

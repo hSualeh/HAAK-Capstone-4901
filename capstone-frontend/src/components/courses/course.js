@@ -21,7 +21,6 @@ export default class course extends Component {
       syncData: [],
       fID: "",
       fName: "",
-
       fRNumber: "",
       fMDates: "",
       fMTime: "",
@@ -53,25 +52,17 @@ export default class course extends Component {
   componentWillUnmount() {}
 
   getAllCourseData = () => {
-    const starCountRef = ref(getDatabase(), "courses");
+    const starCountRef = ref(getDatabase(), "courses/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
         let allData = [];
-        let filter = [];
 
         for (var key of Object.keys(data)) {
           allData.push(data[key]);
-
-          const check = data[key].student.filter(
-            (x) => x === this.state.user.uid
-          );
-
-          if (check.length !== 0) {
-            filter.push(data[key]);
-          }
         }
-        this.setState({ listCurCourses: filter });
+
+        this.setState({ listCurCourses: allData });
 
         this.maxCourse =
           Math.max.apply(
@@ -82,8 +73,7 @@ export default class course extends Component {
           ) + 1;
       } else {
         this.isNodata = true;
-        let filter = [];
-        this.setState({ listCurCourses: filter });
+        this.setState({ listCurCourses: [] });
       }
     });
   };
@@ -231,8 +221,6 @@ export default class course extends Component {
         .then(
           function (data) {
             const items = data;
-            console.log(items);
-
             const updates = {};
 
             data.map((courseData) => {
@@ -242,7 +230,6 @@ export default class course extends Component {
                 id: 0,
                 cid: courseData.id,
                 name: courseData.name,
-                student: [],
                 course_code: courseData.course_code,
                 roomNumber: "",
                 meeting_Dates: courseData.start_at + " - " + courseData.end_at,
@@ -255,18 +242,18 @@ export default class course extends Component {
 
               if (fResultCourse.length !== 0) {
                 isSkip = true;
-              } else {
-                requestData.student.push(uid);
-              }
+              } 
 
               if (isSkip === false) {
                 if (isNodata === true) {
-                  updates["/courses/" + 0] = requestData;
+                  updates["/courses/" + uid + "/" + 0] =
+                    requestData;
                   maxCourse = 1;
                   isNodata = false;
                 } else {
                   requestData.id = maxCourse;
-                  updates["/courses/" + maxCourse] = requestData;
+                  updates["/courses/" + uid + "/" + maxCourse] =
+                    requestData;
                   maxCourse++;
                 }
               }
@@ -308,11 +295,10 @@ export default class course extends Component {
       roomNumber: this.state.fRNumber,
       meeting_Dates: this.setMTDate(),
       type: "Manual",
-      student: [this.state.user.uid],
     };
 
     const updates = {};
-    updates["/courses/" + cID] = courseData;
+    updates["/courses/" + this.state.user.uid + "/" + cID] = courseData;
 
     update(ref(getDatabase()), updates)
       .then(() => {
@@ -332,7 +318,8 @@ export default class course extends Component {
     courseData.meeting_Dates = this.setMTDate();
 
     const updates = {};
-    updates["/courses/" + this.state.fID] = courseData;
+    updates["/courses/" + this.state.user.uid + "/" + this.state.fID] =
+      courseData;
 
     update(ref(getDatabase()), updates)
       .then(() => {
@@ -353,7 +340,7 @@ export default class course extends Component {
           .innerText;
     }
 
-    const starCountRef = ref(getDatabase(), "courses/" + id);
+    const starCountRef = ref(getDatabase(), "courses/" + this.state.user.uid + "/" + id);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
@@ -384,7 +371,7 @@ export default class course extends Component {
           .innerText;
     }
 
-    remove(ref(getDatabase(), "courses/" + this.state.fID));
+    remove(ref(getDatabase(), "courses/" + this.state.user.uid + "/" + this.state.fID));
 
     this.removeAllAssignmentData(this.state.fID);
 
@@ -413,10 +400,12 @@ export default class course extends Component {
     this.setState({
       fID: "",
       fName: "",
-      fSection: "",
+      fCourseCode: "",
       fRNumber: "",
       fMDates: "",
-      fSession: "",
+      fMTime: "",
+      fMFDates: "",
+      fMFTime: "",
     });
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
@@ -559,7 +548,7 @@ export default class course extends Component {
         <div className="">
           <div className="course-function">
             <Button variant="success" size="sm" onClick={this.handleShowAdd}>
-            <i class="fa fa-plus" aria-hidden="true"></i> Add Course
+              <i class="fa fa-plus" aria-hidden="true"></i> Add Course
             </Button>
             {this.state.showSync ? (
               <Button
@@ -572,73 +561,80 @@ export default class course extends Component {
               </Button>
             ) : null}
           </div>
-       
-        <table className="table course-table" responsive="sm">
-          <thead>
-            <tr>
-              <th scope="col" className="t-col-3" style={{ display: "none" }}>
-                ID
-              </th>
-              <th scope="col" className="t-col-3">
-                Course Name
-              </th>
-             
-              <th scope="col" className="t-col-1">
-                Room Number
-              </th>
-              <th scope="col" className="t-col-2">
-                Meeting Dates
-              </th>
-              <th scope="col" className="t-col-1">
-                Course format
-              </th>
-              <th scope="col" className="t-col-0">
-              Assignments
-              </th>
-              <th scope="col" className="t-col-1" style={{'text-align':'center'}}>
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {listCourses.map((course) => (
-              <tr key={course.id}>
-                <td scope="row" style={{ display: "none" }}>
-                  {course.id}
-                </td>
-                <td scope="row">{course.name}</td>
-              
-                <td>{course.roomNumber}</td>
-                <td>{this.displayTime(course.meeting_Dates)}</td>
-                <td>{course.course_format}</td>
-                <td>
-                <Button
-                    variant="outline-primary"
-                    size="sm" className="btn-assignments">
-                  <Link to={`/assignments/` + course.id}>Assignments</Link>
-                    </Button>
-                </td>
-                <td scope="col"  style={{'text-align':'center'}}>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={this.handleShowEdit} style={{'margin-right':'5px'}}
-                  >
-                    <i className="fa fa-edit"></i>
-                  </Button>
-                  
-                  <Button
-                    variant="danger"
-                    onClick={this.handleShowConfirm}
-                    size="sm"
-                  >
-                    <i className="fa fa-trash"></i>
-                  </Button>
-                </td>
+
+          <table className="table course-table" responsive="sm">
+            <thead>
+              <tr>
+                <th scope="col" className="t-col-3" style={{ display: "none" }}>
+                  ID
+                </th>
+                <th scope="col" className="t-col-3">
+                  Course Name
+                </th>
+
+                <th scope="col" className="t-col-1">
+                  Room Number
+                </th>
+                <th scope="col" className="t-col-2">
+                  Meeting Dates
+                </th>
+                <th scope="col" className="t-col-1">
+                  Course format
+                </th>
+                <th scope="col" className="t-col-0">
+                  Assignments
+                </th>
+                <th
+                  scope="col"
+                  className="t-col-1"
+                  style={{ "text-align": "center" }}
+                >
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {listCourses.map((course) => (
+                <tr key={course.id}>
+                  <td scope="row" style={{ display: "none" }}>
+                    {course.id}
+                  </td>
+                  <td scope="row">{course.name}</td>
+
+                  <td>{course.roomNumber}</td>
+                  <td>{this.displayTime(course.meeting_Dates)}</td>
+                  <td>{course.course_format}</td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="btn-assignments"
+                    >
+                      <Link to={`/assignments/` + course.id}>Assignments</Link>
+                    </Button>
+                  </td>
+                  <td scope="col" style={{ "text-align": "center" }}>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={this.handleShowEdit}
+                      style={{ "margin-right": "5px" }}
+                    >
+                      <i className="fa fa-edit"></i>
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      onClick={this.handleShowConfirm}
+                      size="sm"
+                    >
+                      <i className="fa fa-trash"></i>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <>
           <Modal show={this.state.formShow} onHide={this.handleClose} size="lg">

@@ -1,5 +1,5 @@
 .assignment {
-  width: 82%!important;
+  width: 82% !important;
   min-height: 800px;
 }
 
@@ -8,27 +8,30 @@
   text-align: left;
   margin-bottom: 15px;
   font-weight: bold;
-  color:#116df6;
+  color: #116df6;
 }
 
 .assignment-function {
   float: right;
 }
 
-.btn-s{
+.btn-s {
   margin-left: 5px;
 }
-.t-col-id{
+.t-col-id {
   width: 5%;
 }
-.t-col-type, .t-col-status{
+.t-col-type {
   width: 10%;
 }
 
+.t-col-status {
+  width: 10%;
+}
 
-.t-col-func,.t-col-dd
-{
-  width: 15%;
+.t-col-func,
+.t-col-dd {
+  width: 18%;
 }
 .wrapcontent {
   white-space: pre;
@@ -36,17 +39,16 @@
   text-overflow: ellipsis;
 }
 
-.txt{
+.txt {
   min-height: 80px !important;
 }
 
-.required{
+.required {
   color: red;
 }
-.assign{
+.assign {
   margin-top: 30px;
 }
-.assign .table-responsive-sm
-{
+.assign .table-responsive-sm {
   padding-top: 40px;
 }
