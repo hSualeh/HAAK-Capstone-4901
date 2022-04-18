@@ -37,9 +37,9 @@ class assignmentNotificationByCourse extends Component {
 
 
     getAllAssignmentData = () => {
-        const starCountRef = ref(getDatabase(), "assignments");
+        const starCountRef = ref(getDatabase(), "assignments/"+ this.state.user.uid);
         let courseID = this.props.courseid;
-        let uid = this.state.user.uid;
+     console.log("hhh"+courseID);
         onValue(starCountRef, (snapshot) => {
           const data = snapshot.val();
           let allData = [];
@@ -49,7 +49,7 @@ class assignmentNotificationByCourse extends Component {
            
             for (var key of Object.keys(data)) {
               allData.push(data[key]);
-              if (data[key].cid == courseID && data[key].uid == uid && data[key].status == "Not completed") {
+              if (data[key].cid == courseID && data[key].status == "Not completed") {
                 filter.push(data[key]);
               }
             }

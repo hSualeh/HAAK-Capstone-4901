@@ -29,7 +29,7 @@ export default class listCoursesSummary extends Component {
   }
   getAllCourseData = () => {
     console.log(this.props.user);
-    const starCountRef = ref(getDatabase(), "courses");
+    const starCountRef = ref(getDatabase(), "courses/"+ this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
       if (data != null) {
@@ -55,8 +55,32 @@ export default class listCoursesSummary extends Component {
   handleModalShowHide() {
     this.setState({ showHide: !this.state.showHide });
   }
+  getAllAssignmentData = () => {
+        const starCountRef = ref(getDatabase(), "assignments/"+ this.state.user.uid);
+        let courseID = this.props.courseid;
+     console.log("hhh"+courseID);
+        onValue(starCountRef, (snapshot) => {
+          const data = snapshot.val();
+          let allData = [];
+          let filter = [];
+    
+          if (data != null) {
+           
+            for (var key of Object.keys(data)) {
+              allData.push(data[key]);
+              if (data[key].cid == courseID && data[key].status == "Not completed") {
+                filter.push(data[key]);
+              }
+            }
+        this.setState({ listAssignment: filter });
+          } else {
+          
+            this.setState({ listAssignment: filter });
+          }
+        });
+      };
   showNotificationForCourse = (courseID) => {
-    const starCountRef = ref(getDatabase(), "assignments");
+    const starCountRef = ref(getDatabase(), "assignments/"+ this.state.user.uid);
     let uid = this.state.user.uid;
     let showbell = false;
     onValue(starCountRef, (snapshot) => {
@@ -68,7 +92,6 @@ export default class listCoursesSummary extends Component {
           allData.push(data[key]);
           if (
             data[key].cid == courseID &&
-            data[key].uid == uid &&
             data[key].status == "Not completed"
           ) {
             showbell = true;
@@ -80,18 +103,14 @@ export default class listCoursesSummary extends Component {
   };
   render() {
     let listCourses = this.state.listAllCourses;
-    let showbell = this.state.showbell;
-    const filterCourses = listCourses.filter(
-      (x) => x.student.findIndex((y) => y === this.state.user?.uid) !== -1
-    );
-
+  
     return (
       <div className="courseSum col-4">
         <div className="card">
           <h5 className="card-header">Courses</h5>
           <div className="card-body">
             <ListGroup as="ol" numbered>
-              {filterCourses.map((course) => (
+              {listCourses.map((course) => (
                 <ListGroup.Item
                   as=""
                   className="d-flex justify-content-between align-items-start"
