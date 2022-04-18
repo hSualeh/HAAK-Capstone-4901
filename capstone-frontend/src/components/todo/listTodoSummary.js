@@ -105,40 +105,61 @@ export default class listTodoSummary extends Component {
                   <div className="ms-2 me-auto">
                     <div className="fw-bold">
                       {" "}
+               
                       <a
                         onClick={() => this.openModal(todo.id, "detail")}
                         Style="cursor: pointer;"
                       >
-                        {todo.title}
+                           { todo.title}
                       </a>
+                   
+                  
+                     
                     </div>
+                   
+                     
+                      {" "}
+                     
+                        <Row>
+                      {format(new Date(todo.endDate), "yyyy/MM/dd") <= format(new Date(), "yyyy/MM/dd") &&  todo.status == 0? 
+                      
+                         <Col sm="4">
+                        <Badge pill
+                        bg="danger">Due Date</Badge></Col>: ""} 
+
+
+                         <Col sm="4">
+                        {(
+                             <Badge pill
+                              bg={todo.status == 1 ? "success" : "secondary"}
+                            >
+                              <i
+                                class="fa fa-clock-o"
+                                aria-hidden="true"
+                                title="detail"
+                              ></i>
+                              {format(new Date(todo.endDate), "yyyy/MM/dd")}
+                            </Badge>
+                          )}
+                        
+                      
+                      
+                     
+                        </Col>
+                    </Row>
                     <Row>
-                      <Col sm="3">
-                        {" "}
-                        <Form.Check
+                      <Col sm="12">
+                      <Form.Check
+                      title = "Complete"
                           type="switch"
                           id="custom-switch"
                           checked={todo.status == 1 ? "checked" : ""}
                           onClick={() =>
                             this.updatestatus(todo.id, todo, todo.status)
                           }
-                        />
-                      </Col>
-                      <Col sm="9">
-                        {" "}
-                        <Badge
-                          bg={todo.status == 1 ? "success" : "light"}
-                          text={todo.status == 1 ? "" : "dark"}
-                        >
-                          <i
-                            class="fa fa-clock-o"
-                            aria-hidden="true"
-                            title="detail"
-                          ></i>
-                          {format(new Date(todo.endDate), "yyyy/MM/dd")}
-                        </Badge>
-                      </Col>
-                    </Row>
+                          label="Mark as complete" style={{color:"blue"}}/> 
+                         </Col>
+                      </Row>
                   </div>
                   <Modal
                     show={
