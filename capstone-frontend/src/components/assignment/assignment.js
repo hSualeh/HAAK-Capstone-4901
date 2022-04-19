@@ -64,9 +64,7 @@ export default class assignment extends Component {
         this.isNodata = false;
         for (var key of Object.keys(data)) {
           allData.push(data[key]);
-          if (
-            data[key].cid == this.couseID
-          ) {
+          if (data[key].cid == this.couseID) {
             filter.push(data[key]);
           }
         }
@@ -506,12 +504,12 @@ export default class assignment extends Component {
       <div className="content assign">
         <div className="">
           <div className="assignment-intro">
-            <i className="fa fa-bookmark" aria-hidden="true"></i>{" "}
+            <i class="fa fa-bookmark" aria-hidden="true"></i>{" "}
             {this.state.couseData == null ? "" : this.state.couseData.name}
           </div>
           <div className="assignment-function">
             <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
-              <i className="fa fa-chevron-left" aria-hidden="true"></i> Back
+              <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
             </Link>
 
             {this.state.showSync ? (
@@ -521,7 +519,8 @@ export default class assignment extends Component {
                 className="btn-s"
                 onClick={this.handleSync}
               >
-                <i className="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
+                <i className="fa fa-upload" aria-hidden="true"></i> Sync with
+                Canvas
               </Button>
             ) : null}
             <Button
@@ -530,7 +529,7 @@ export default class assignment extends Component {
               className="btn-s"
               onClick={this.handleShowAdd}
             >
-              <i className="fa fa-plus" aria-hidden="true"></i> Add New Assignment
+              <i class="fa fa-plus" aria-hidden="true"></i> Add New Assignment
             </Button>
           </div>
           <Table className="table assign-table" responsive="sm">
@@ -578,14 +577,14 @@ export default class assignment extends Component {
                     </Badge>
                   </td>
                   <td className="t-col-dd">{this.displayTime(asgn.duedate)}</td>
-                  <td className="t-col-func" style={{ "textAlign": "center" }}>
+                  <td className="t-col-func" style={{ "text-align": "center" }}>
                     <Button
                       variant="outline-primary"
                       size="sm"
                       style={{ "margin-right": "5px" }}
                       onClick={this.handleShowEdit}
                     >
-                      <i className="fa fa-arrow-right" aria-hidden="true"></i>{" "}
+                      <i class="fa fa-arrow-right" aria-hidden="true"></i>{" "}
                       Detail
                     </Button>
                     <Button

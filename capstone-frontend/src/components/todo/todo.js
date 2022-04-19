@@ -62,6 +62,9 @@ const StyledFab = styled(Fab)(({ theme }) => ({
   },
 }));
 
+/*
+Creates style for the calender that sets weekends and current date to uniquely identifiable colors
+*/
 const StyledWeekViewTimeTableCell = styled(WeekView.TimeTableCell)(
   ({ theme }) => ({
     [`&.${classes.todayCell}`]: {
@@ -149,7 +152,10 @@ const TextEditor = (props) => {
   }
   return <AppointmentForm.TextEditor {...props} />;
 };
-
+/*
+Used to add additional or modify fields with the calenders appointment management window.
+Additional fields should be added after basic layout as this contains the time select functions.
+*/
 const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
   const onLocationChange = (nextValue) => {
     onFieldChange({ location: nextValue });
@@ -184,6 +190,7 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
               const updates = {};
 
               if (appointmentData.status === 0) {
+                // onclick function to alter appointment status
                 console.log("Set to complete");
                 appointmentData.status = 1;
 
@@ -318,11 +325,18 @@ export default class todo extends Component {
     this.setState({ confirmationVisible: !confirmationVisible });
   }
 
+  /*
+Partitioned away from the commit changes function as there is a possibility that the
+user changes their mind and cancles the changes to their todo item.
+In addition to removing the appointment from the local array it also updates the
+firebase database to match.
+*/
   commitDeletedAppointment() {
     this.setState((state) => {
       const { data, deletedAppointmentId } = state;
 
       remove(
+        // removing from firebase
         ref(
           getDatabase(),
           "/todo/" + this.state.user?.uid + "/" + deletedAppointmentId
@@ -330,6 +344,7 @@ export default class todo extends Component {
       );
 
       const nextData = data.filter(
+        // removing from local array
         (appointment) => appointment.id !== deletedAppointmentId
       );
 
@@ -337,7 +352,10 @@ export default class todo extends Component {
       return { data: nextData, deletedAppointmentId: null };
     });
   }
-
+  /*
+Handles the adding, updating, and deleting of appointments to the local and database appointment arrays.
+Is only called upon state changes to tthe data stored within this.state
+*/
   commitChanges({ added, changed, deleted }) {
     this.setState((state) => {
       let { data } = state;
@@ -346,7 +364,7 @@ export default class todo extends Component {
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
 
-        //console.log(data[startingAddedId]);
+        // setting default values for any created tasks, note these should be appended to if additional items are added to the appointment object
         const updates = {};
         if (data[startingAddedId].title === undefined) {
           data[startingAddedId].title = "N/A";
@@ -357,7 +375,7 @@ export default class todo extends Component {
         updates["/todo/" + this.state.user?.uid + "/" + startingAddedId] =
           data[startingAddedId];
 
-        update(ref(getDatabase()), updates);
+        update(ref(getDatabase()), updates); // adding the newly added appointment to the database
       }
       if (changed) {
         data = data.map((appointment) =>
@@ -394,17 +412,22 @@ export default class todo extends Component {
     this.appointmentForm.update();
   }
 
+  /*
+Retrieves Users Current todo items from the firebase database.
+Is run on mounting of the component and stores retrieved tasks in the
+global appointments array for further use.
+*/
   getUserTasks = () => {
     if (this.state.user == null) {
       return;
     }
-    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid);
+    const starCountRef = ref(getDatabase(), "todo/" + this.state.user.uid); // retrieves todo items from database
     onValue(starCountRef, (snapshot) => {
       const dt = snapshot.val();
       if (dt != null) {
         this.setState({ data: dt });
       } else {
-        this.isNodata = true;
+        this.isNodata = true; // note the database may have no tasks therefor noData is set to true for error handling elsewhere
       }
     });
   };
