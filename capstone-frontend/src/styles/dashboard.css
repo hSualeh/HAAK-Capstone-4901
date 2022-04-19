@@ -169,3 +169,11 @@ margin: 10px;
    
     text-decoration: none!important;
   }
+  .due_span
+  {
+    font-weight: bold;
+  }
+  .fw-bold a
+  {
+    text-decoration: underline!important;
+  }
