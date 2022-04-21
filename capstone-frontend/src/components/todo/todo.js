@@ -216,7 +216,7 @@ const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
             bg={appointmentData.status === 1 ? "success" : "light"}
             text={appointmentData.status === 1 ? "" : "dark"}
           >
-            <i class="fa fa-clock-o" aria-hidden="true" title="detail"></i>
+            <i className="fa fa-clock-o" aria-hidden="true" title="detail"></i>
             {"Task Status"}
           </Badge>
         </Col>

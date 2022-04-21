@@ -553,7 +553,7 @@ export default class course extends Component {
         <div className="">
           <div className="course-function">
             <Button variant="success" size="sm" onClick={this.handleShowAdd}>
-              <i class="fa fa-plus" aria-hidden="true"></i> Add Course
+              <i className="fa fa-plus" aria-hidden="true"></i> Add Course
             </Button>
             {this.state.showSync ? (
               <Button
@@ -562,7 +562,7 @@ export default class course extends Component {
                 className="btn-s"
                 onClick={this.handleSync}
               >
-                <i class="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
+                <i className="fa fa-upload" aria-hidden="true"></i> Sync with Canvas
               </Button>
             ) : null}
           </div>

@@ -79,7 +79,7 @@ export default class todonotification extends Component {
      
       <Alert variant="danger" show={Object.getOwnPropertyNames(listtodos).length>1}>
          {this.list_todo}
-      <Alert.Heading>  <i class="fa fa-bullhorn" aria-hidden="true"></i> Due soon…</Alert.Heading>
+      <Alert.Heading>  <i className="fa fa-bullhorn" aria-hidden="true"></i> Due soon…</Alert.Heading>
     
       <ul>
        

@@ -101,7 +101,7 @@ export default class listCoursesSummary extends Component {
                   {this.showNotificationForCourse(course.id) ? (
                     <div>
                       <i
-                        class="fa fa-bell"
+                        className="fa fa-bell"
                         aria-hidden="true"
                         title="notifications"
                         onClick={() =>
@@ -131,7 +131,7 @@ export default class listCoursesSummary extends Component {
                     </div>
                   ) : null}
                   <i
-                    class="fa fa-cog"
+                    className="fa fa-cog"
                     aria-hidden="true"
                     title="setting"
                     onClick={() => this.openModal(course.cid, "detail")}
