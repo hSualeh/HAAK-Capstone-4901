@@ -172,7 +172,7 @@ export default class listCoursesSummary extends Component {
                           <td>
                             <strong className="me-auto">Meeting Date :</strong>
                           </td>
-                          <td>{course.meeting_Dates}</td>
+                          <td>{course.start_date} - {course.end_date}</td>
                         </tr>
                         <tr>
                           <td>
@@ -182,21 +182,9 @@ export default class listCoursesSummary extends Component {
                         </tr>
                         <tr>
                           <td>
-                            <strong className="me-auto">Times :</strong>
+                            <strong className="me-auto">Course format :</strong>
                           </td>
-                          <td>{course.Times}</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong className="me-auto">Section :</strong>
-                          </td>
-                          <td>{course.section}</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong className="me-auto">Session :</strong>
-                          </td>
-                          <td>{course.session}</td>
+                          <td>{course.course_format}</td>
                         </tr>
                         <tr>
                           <td>

@@ -27,6 +27,7 @@ export default class course extends Component {
       fMFDates: "",
       fMFTime: "",
       fCourseCode: "",
+      fCFormat:"",
       user: null,
       profileError: [],
       showError: false,
@@ -37,6 +38,7 @@ export default class course extends Component {
       showConfirm: false,
       showMessage: false,
       message: "",
+  
     };
   }
 
@@ -154,21 +156,17 @@ export default class course extends Component {
     if (!this.state.fName || this.state.fName === "")
       newErrors.push("Name cannot be blank!");
 
-    if (!this.state.fRNumber || this.state.fRNumber === "")
-      newErrors.push("Room Number cannot be blank!");
-
+   
     if (
-      !this.state.fMDates ||
-      this.state.fMDates === "" ||
-      !this.state.fMTime ||
-      this.state.fMTime === "" ||
-      !this.state.fMFDates ||
-      this.state.fMFDates === "" ||
-      !this.state.fMFTime ||
-      this.state.fMFTime === ""
-    )
-      newErrors.push("Meeting Date cannot be blank!");
-    else {
+      this.state.fMDates ||
+      this.state.fMDates !== "" ||
+      this.state.fMTime ||
+      this.state.fMTime !== "" ||
+      this.state.fMFDates ||
+      this.state.fMFDates !== "" ||
+      this.state.fMFTime ||
+      this.state.fMFTime !== ""
+    ){
       var startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
       var endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
 
@@ -176,9 +174,7 @@ export default class course extends Component {
         newErrors.push("Start Date is greater then End Date!");
       }
     }
-    if (!this.state.fCourseCode || this.state.fCourseCode === "")
-      newErrors.push("Session cannot be blank!");
-
+  
     return newErrors;
   };
 
@@ -232,8 +228,11 @@ export default class course extends Component {
                 name: courseData.name,
                 course_code: courseData.course_code,
                 roomNumber: "",
-                meeting_Dates: courseData.start_at + " - " + courseData.end_at,
+                course_format:courseData.course_format,
+                startDate: courseData.start_at ,
+                endDate:courseData.end_at,
                 type: "Canvas",
+                AllDay:false
               };
 
               const fResultCourse = listCourses.filter(
@@ -293,7 +292,9 @@ export default class course extends Component {
       name: this.state.fName,
       course_code: this.state.fCourseCode,
       roomNumber: this.state.fRNumber,
-      meeting_Dates: this.setMTDate(),
+      startDate: this.setMTDate(),//TODO
+      EndDate: this.setMTDate(),//TODO
+      course_format:this.state.fCFormat,
       type: "Manual",
     };
 
@@ -308,15 +309,17 @@ export default class course extends Component {
         console.log(error);
       });
   }
-
+//This function send request to firebase API to update a course with the new given information
   updateCourse() {
     let courseData = this.state.courseData;
 
     courseData.name = this.state.fName;
     courseData.course_code = this.state.fCourseCode;
     courseData.roomNumber = this.state.fRNumber;
-    courseData.meeting_Dates = this.setMTDate();
-
+    courseData.course_format = this.state.fCFormat;
+    //TODO : update start date and end date
+    courseData.startDate = this.setMTDate();
+    courseData.endDate = this.setMTDate();
     const updates = {};
     updates["/courses/" + this.state.user.uid + "/" + this.state.fID] =
       courseData;
@@ -349,9 +352,10 @@ export default class course extends Component {
           fName: data.name,
           fCourseCode: data.course_code,
           fRNumber: data.roomNumber,
+          fCFormat:data.course_format
         });
 
-        this.getMTDate(data.meeting_Dates);
+        //this.getMTDate(data.startDate);//TODO
 
         this.setState({ courseData: data });
       }
@@ -406,6 +410,7 @@ export default class course extends Component {
       fMTime: "",
       fMFDates: "",
       fMFTime: "",
+      fCFormat:""
     });
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
@@ -602,7 +607,7 @@ export default class course extends Component {
                   <td scope="row">{course.name}</td>
 
                   <td>{course.roomNumber}</td>
-                  <td>{this.displayTime(course.meeting_Dates)}</td>
+                  <td>{this.displayTime(course.startDate)}</td>
                   <td>{course.course_format}</td>
                   <td>
                     <Button
@@ -669,7 +674,7 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Course Code:<text className="required">(*)</text>{" "}
+                  Course Code:{" "}
                 </Form.Label>
                 <Col sm="9">
                   <Form.Control
@@ -683,7 +688,7 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Room Number:<text className="required">(*)</text>{" "}
+                  Room Number:{" "}
                 </Form.Label>
                 <Col sm="9">
                   <Form.Control
@@ -697,7 +702,21 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Meeting Start Date:<text className="required">(*)</text>{" "}
+                  Course Format:{" "}
+                </Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                    type="text"
+                    name="fCFormat"
+                    onChange={this.handleInput}
+                    value={this.state.fCFormat}
+                    placeholder="course format input"
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Meeting Start Date:{" "}
                 </Form.Label>
                 <Col sm="3">
                   <Form.Control
@@ -718,7 +737,7 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Meeting End Date:<text className="required">(*)</text>{" "}
+                  Meeting End Date:{" "}
                 </Form.Label>
                 <Col sm="3">
                   <Form.Control
