@@ -228,7 +228,7 @@ export default class course extends Component {
                 name: courseData.name,
                 course_code: courseData.course_code,
                 roomNumber: "",
-                course_format:courseData.course_format,
+                course_format:"",
                 startDate: courseData.start_at ,
                 endDate:courseData.end_at,
                 type: "Canvas",
@@ -316,7 +316,7 @@ export default class course extends Component {
     courseData.name = this.state.fName;
     courseData.course_code = this.state.fCourseCode;
     courseData.roomNumber = this.state.fRNumber;
-    courseData.course_format = this.state.fCFormat;
+    courseData.course_format = "";
     //TODO : update start date and end date
     courseData.startDate = this.setMTDate();
     courseData.endDate = this.setMTDate();
