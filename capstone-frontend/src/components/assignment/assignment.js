@@ -505,7 +505,7 @@ export default class assignment extends Component {
         <div className="">
           <div className="assignment-intro">
             <i className="fa fa-bookmark" aria-hidden="true"></i>{" "}
-            {this.state.couseData == null ? "" : this.state.couseData.name}
+            {this.state.couseData == null ? "" : this.state.couseData.title}
           </div>
           <div className="assignment-function">
             <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
@@ -758,3 +758,4 @@ export default class assignment extends Component {
     );
   }
 }
+
