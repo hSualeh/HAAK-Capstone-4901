@@ -102,7 +102,7 @@ export default class todonotification extends Component {
               </Modal.Header>
 
               <Modal.Body>
-                <table responsive>
+                <table>
                   <tr>
                     <td>
                       <strong className="me-auto"> Title :</strong>

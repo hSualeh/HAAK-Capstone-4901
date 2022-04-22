@@ -27,6 +27,10 @@ export default class listCoursesSummary extends Component {
       this.getAllCourseData();
     });
   }
+  /*
+  This function send a request to the firebase database to 
+  get the list of courses of the current user and save the data in a state "data"
+  */
   getAllCourseData = () => {
     const starCountRef = ref(getDatabase(), "/courses/" + this.state.user?.uid);
     onValue(starCountRef, (snapshot) => {
@@ -38,6 +42,9 @@ export default class listCoursesSummary extends Component {
       }
     });
   };
+  /*
+  Change the state to trigger open modal
+  */
   openModal = (course, actionType) => {
     this.setState({
       openedDialog: course,
@@ -54,7 +61,10 @@ export default class listCoursesSummary extends Component {
   handleModalShowHide() {
     this.setState({ showHide: !this.state.showHide });
   }
-
+/*
+This function check if a given course has any non completed assignments
+return true is there is some assignments incompleted
+*/
   showNotificationForCourse = (courseID) => {
     const starCountRef = ref(getDatabase(), "assignments");
     let uid = this.state.user.uid;
@@ -95,7 +105,7 @@ export default class listCoursesSummary extends Component {
                   className="d-flex justify-content-between align-items-start"
                 >
                   <div className="ms-2 me-auto">
-                    <div className="fw-bold">{course.name}</div>
+                    <div className="fw-bold">{course.title}</div>
                   </div>
 
                   {this.showNotificationForCourse(course.id) ? (
@@ -166,7 +176,7 @@ export default class listCoursesSummary extends Component {
                           <td>
                             <strong className="me-auto">Course Name :</strong>
                           </td>
-                          <td>{course.name}</td>
+                          <td>{course.title}</td>
                         </tr>
                         <tr>
                           <td>
