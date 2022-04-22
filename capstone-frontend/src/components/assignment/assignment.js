@@ -504,12 +504,12 @@ export default class assignment extends Component {
       <div className="content assign">
         <div className="">
           <div className="assignment-intro">
-            <i class="fa fa-bookmark" aria-hidden="true"></i>{" "}
-            {this.state.couseData == null ? "" : this.state.couseData.name}
+            <i className="fa fa-bookmark" aria-hidden="true"></i>{" "}
+            {this.state.couseData == null ? "" : this.state.couseData.title}
           </div>
           <div className="assignment-function">
             <Link className="btn-s btn btn-primary btn-sm" to={`/courses/`}>
-              <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
+              <i className="fa fa-chevron-left" aria-hidden="true"></i> Back
             </Link>
 
             {this.state.showSync ? (
@@ -529,7 +529,7 @@ export default class assignment extends Component {
               className="btn-s"
               onClick={this.handleShowAdd}
             >
-              <i class="fa fa-plus" aria-hidden="true"></i> Add New Assignment
+              <i className="fa fa-plus" aria-hidden="true"></i> Add New Assignment
             </Button>
           </div>
           <Table className="table assign-table" responsive="sm">
@@ -584,7 +584,7 @@ export default class assignment extends Component {
                       style={{ "margin-right": "5px" }}
                       onClick={this.handleShowEdit}
                     >
-                      <i class="fa fa-arrow-right" aria-hidden="true"></i>{" "}
+                      <i className="fa fa-arrow-right" aria-hidden="true"></i>{" "}
                       Detail
                     </Button>
                     <Button
@@ -758,3 +758,4 @@ export default class assignment extends Component {
     );
   }
 }
+

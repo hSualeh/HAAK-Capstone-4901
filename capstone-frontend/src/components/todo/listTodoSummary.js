@@ -131,7 +131,7 @@ export default class listTodoSummary extends Component {
                           text={todo.status == 1 ? "" : "dark"}
                         >
                           <i
-                            class="fa fa-clock-o"
+                            className="fa fa-clock-o"
                             aria-hidden="true"
                             title="detail"
                           ></i>

@@ -37,14 +37,10 @@ export default class navside extends Component {
               </Link>
             </li>
            
-            <li className="nav-item">
-            <Link className="nav-link" to ="/tasks">
-              <i className="fa fa-comments" aria-hidden="true"></i><span className="ml-2">Discussion Room</span>
-              </Link>
-            </li>
+           
             <li className="nav-item">
             <Link className="nav-link" to ="/profile/1">
-              <i className="fa fa-cog" aria-hidden="true"></i><span className="ml-2">Profile Settings</span>
+              <i className="fa fa-cog" aria-hidden="true"></i><span className="ml-2"> Settings</span>
               </Link>
             </li>
           </ul>

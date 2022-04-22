@@ -62,7 +62,7 @@ export default class todo extends Component {
             <main className="profile content">
               <Breadcrumb currentpage="TODO" />
               <h3 Style="text-align: left;">
-                <i class="fa fa-bars" aria-hidden="true"></i> Manage Tasks
+                <i className="fa fa-bars" aria-hidden="true"></i> Manage Tasks
               </h3>
 
               <hr></hr>

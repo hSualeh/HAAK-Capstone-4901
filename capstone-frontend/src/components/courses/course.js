@@ -28,6 +28,7 @@ export default class course extends Component {
       fMFTime: "",
       fCourseCode: "",
       fCFormat: "",
+      fAllDay: false,
       user: null,
       profileError: [],
       showError: false,
@@ -153,17 +154,13 @@ export default class course extends Component {
     const newErrors = [];
     // Email errors
     if (!this.state.fName || this.state.fName === "")
-      newErrors.push("Name cannot be blank!");
+      newErrors.push("Title cannot be blank!");
 
     if (
-      this.state.fMDates ||
-      this.state.fMDates !== "" ||
-      this.state.fMTime ||
-      this.state.fMTime !== "" ||
-      this.state.fMFDates ||
-      this.state.fMFDates !== "" ||
-      this.state.fMFTime ||
-      this.state.fMFTime !== ""
+      (this.state.fMDates || this.state.fMDates !== "") &&
+      (this.state.fMTime || this.state.fMTime !== "") &&
+      (this.state.fMFDates || this.state.fMFDates !== "") &&
+      (this.state.fMFTime || this.state.fMFTime !== "")
     ) {
       var startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
       var endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
@@ -284,13 +281,14 @@ export default class course extends Component {
 
     const courseData = {
       id: cID,
-      name: this.state.fName,
+      title: this.state.fName,
       course_code: this.state.fCourseCode,
       roomNumber: this.state.fRNumber,
-      startDate: this.setMTDate(), //TODO
-      EndDate: this.setMTDate(), //TODO
+      startDate: this.setMTDate(true),
+      endDate: this.setMTDate(false),
       course_format: this.state.fCFormat,
       type: "Manual",
+      allDay: false,
     };
 
     const updates = {};
@@ -308,13 +306,14 @@ export default class course extends Component {
   updateCourse() {
     let courseData = this.state.courseData;
 
-    courseData.name = this.state.fName;
+    courseData.title = this.state.fName;
     courseData.course_code = this.state.fCourseCode;
     courseData.roomNumber = this.state.fRNumber;
-    courseData.course_format = "";
-    //TODO : update start date and end date
-    courseData.startDate = this.setMTDate();
-    courseData.endDate = this.setMTDate();
+    courseData.course_format = this.state.fCFormat;
+    courseData.allDay = this.state.fAllDay;
+    courseData.startDate = this.setMTDate(true);
+    courseData.endDate = this.setMTDate(false);
+
     const updates = {};
     updates["/courses/" + this.state.user.uid + "/" + this.state.fID] =
       courseData;
@@ -347,13 +346,14 @@ export default class course extends Component {
       if (data != null) {
         this.setState({
           fID: id,
-          fName: data.name,
+          fName: data.title,
           fCourseCode: data.course_code,
           fRNumber: data.roomNumber,
           fCFormat: data.course_format,
+          fAllDay: data.allDay,
         });
 
-        //this.getMTDate(data.startDate);//TODO
+        this.getMTDate(data);
 
         this.setState({ courseData: data });
       }
@@ -396,7 +396,9 @@ export default class course extends Component {
 
     const value = e.target.value;
 
-    this.setState({ [name]: value });
+    if (name === "fAllDay") {
+      this.setState({ [name]: !this.state.fAllDay });
+    } else this.setState({ [name]: value });
   };
 
   handleShowMsg(msg) {
@@ -414,52 +416,77 @@ export default class course extends Component {
       fMFDates: "",
       fMFTime: "",
       fCFormat: "",
+      fAllDay: false,
     });
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
   };
 
-  setMTDate() {
-    var startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
-    var endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
+  setMTDate(isStart) {
+    var startTime = "";
+    var endTime = "";
 
-    return startTime.toISOString() + " - " + endTime.toISOString();
-  }
-
-  getMTDate(meetingTime) {
-    const atime = meetingTime.split(" ");
-    let endTime = "";
-    var startTime = new Date(atime[0]);
-    var eTime = new Date();
-
-    if (atime[2] === "null") {
-      endTime = "";
-    } else {
-      endTime = "1";
-      var eTime = new Date(atime[2]);
+    if (
+      (this.state.fMDates || this.state.fMDates !== "") &&
+      (this.state.fMTime || this.state.fMTime !== "")
+    ) {
+      startTime = new Date(this.state.fMDates + " " + this.state.fMTime);
     }
 
-    const sMonth = startTime.getMonth() + 1 + "";
-    const sDate = startTime.getDate() + "";
-    const sHours = startTime.getHours() + "";
-    const sMin = startTime.getMinutes() + "";
+    if (
+      (this.state.fMFDates || this.state.fMFDates !== "") &&
+      (this.state.fMFTime || this.state.fMFTime !== "")
+    ) {
+      endTime = new Date(this.state.fMFDates + " " + this.state.fMFTime);
+    }
 
-    this.setState({
-      fMDates:
-        startTime.getFullYear() +
-        "-" +
-        sMonth.padStart(2, 0) +
-        "-" +
-        sDate.padStart(2, 0),
-      fMTime: sHours.padStart(2, 0) + ":" + sMin.padStart(2, 0),
-    });
+    if (isStart) {
+      return startTime === "" ? "" : startTime.toISOString();
+    } else {
+      return endTime === "" ? "" : endTime.toISOString();
+    }
+  }
 
-    if (endTime === "") {
+  getMTDate(data) {
+    if (
+      data.startDate === "null" ||
+      data.startDate == "" ||
+      typeof data.startDate === "undefined"
+    ) {
+      this.setState({
+        fMDates: "",
+        fMTime: "",
+      });
+    } else {
+      var startTime = new Date(data.startDate);
+      const sMonth = startTime.getMonth() + 1 + "";
+      const sDate = startTime.getDate() + "";
+      const sHours = startTime.getHours() + "";
+      const sMin = startTime.getMinutes() + "";
+
+      this.setState({
+        fMDates:
+          startTime.getFullYear() +
+          "-" +
+          sMonth.padStart(2, 0) +
+          "-" +
+          sDate.padStart(2, 0),
+        fMTime: sHours.padStart(2, 0) + ":" + sMin.padStart(2, 0),
+      });
+    }
+
+    if (
+      data.endDate === "null" ||
+      data.endDate == "" ||
+      typeof data.endDate === "undefined"
+    ) {
       this.setState({
         fMFDates: "",
         fMFTime: "",
       });
     } else {
+      var eTime = new Date(data.endDate);
+
       const eMonth = eTime.getMonth() + 1 + "";
       const eDate = eTime.getDate() + "";
       const eHours = eTime.getHours() + "";
@@ -477,32 +504,42 @@ export default class course extends Component {
     }
   }
 
-  displayTime(time) {
-    const atime = time.split(" ");
+  displayTime(data) {
     let endTime = "";
-    var startTime = new Date(atime[0]);
     var strStart = "";
 
-    const sMonth = startTime.getMonth() + 1 + "";
-    const sDate = startTime.getDate() + "";
-    const sHours = startTime.getHours() + "";
-    const sMin = startTime.getMinutes() + "";
+    if (
+      data.startDate === "null" ||
+      data.startDate == "" ||
+      typeof data.startDate === "undefined"
+    ) {
+      strStart = "No Start Time";
+    } else {
+      var startTime = new Date(data.startDate);
+      const sMonth = startTime.getMonth() + 1 + "";
+      const sDate = startTime.getDate() + "";
+      const sHours = startTime.getHours() + "";
+      const sMin = startTime.getMinutes() + "";
 
-    strStart =
-      startTime.getFullYear() +
-      "-" +
-      sMonth.padStart(2, 0) +
-      "-" +
-      sDate.padStart(2, 0).padStart(2, 0) +
-      " " +
-      sHours.padStart(2, 0) +
-      ":" +
-      sMin.padStart(2, 0);
-
-    if (atime[2] === "null") {
+      strStart =
+        startTime.getFullYear() +
+        "-" +
+        sMonth.padStart(2, 0) +
+        "-" +
+        sDate.padStart(2, 0).padStart(2, 0) +
+        " " +
+        sHours.padStart(2, 0) +
+        ":" +
+        sMin.padStart(2, 0);
+    }
+    if (
+      data.endDate === "null" ||
+      data.endDate == "" ||
+      typeof data.endDate === "undefined"
+    ) {
       endTime = "No End Time";
     } else {
-      var eTime = new Date(atime[2]);
+      var eTime = new Date(data.endDate);
 
       const eMonth = eTime.getMonth() + 1 + "";
       const eDate = eTime.getDate() + "";
@@ -525,7 +562,10 @@ export default class course extends Component {
   }
 
   removeAllAssignmentData(couseID) {
-    const starCountRef = ref(getDatabase(), "assignments");
+    const starCountRef = ref(
+      getDatabase(),
+      "assignments/" + this.state.user.uid
+    );
     let filter = [];
 
     onValue(starCountRef, (snapshot) => {
@@ -533,10 +573,7 @@ export default class course extends Component {
 
       if (data != null) {
         for (var key of Object.keys(data)) {
-          if (
-            data[key].cid == couseID &&
-            data[key].uid == this.state.user.uid
-          ) {
+          if (data[key].cid == couseID) {
             filter.push(data[key]);
           }
         }
@@ -544,7 +581,9 @@ export default class course extends Component {
     });
 
     filter.map((asgn) => {
-      remove(ref(getDatabase(), "assignments/" + asgn.id));
+      remove(
+        ref(getDatabase(), "assignments/" + this.state.user.uid + "/" + asgn.id)
+      );
     });
   }
 
@@ -578,18 +617,19 @@ export default class course extends Component {
                   ID
                 </th>
                 <th scope="col" className="t-col-3">
-                  Course Name
+                  Title
                 </th>
 
                 <th scope="col" className="t-col-1">
                   Room Number
                 </th>
                 <th scope="col" className="t-col-2">
-                  Meeting Dates
+                  Meeting Days
                 </th>
-                <th scope="col" className="t-col-1">
+                {/*
+                </tr>{<th scope="col" className="t-col-1">
                   Course format
-                </th>
+                </th>*/}
                 <th scope="col" className="t-col-0">
                   Assignments
                 </th>
@@ -608,11 +648,12 @@ export default class course extends Component {
                   <td scope="row" style={{ display: "none" }}>
                     {course.id}
                   </td>
-                  <td scope="row">{course.name}</td>
+                  <td scope="row">{course.title.substring(0, 21) + "..."}</td>
 
                   <td>{course.roomNumber}</td>
-                  <td>{this.displayTime(course.startDate)}</td>
-                  <td>{course.course_format}</td>
+                  <td>M T W TH F S SU</td>
+                  {/*<td>{this.displayTime(course)}</td>
+                  <td>{course.course_format}</td>*/}
                   <td>
                     <Button
                       variant="outline-primary"
@@ -664,7 +705,7 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Name:<text className="required">(*)</text>{" "}
+                  Course Name:<text className="required">(*)</text>{" "}
                 </Form.Label>
                 <Col sm="9">
                   <Form.Control
@@ -672,7 +713,7 @@ export default class course extends Component {
                     name="fName"
                     onChange={this.handleInput}
                     value={this.state.fName}
-                    placeholder="Name input"
+                    placeholder="Course name"
                   />
                 </Col>
               </Form.Group>
@@ -686,21 +727,7 @@ export default class course extends Component {
                     name="fCourseCode"
                     onChange={this.handleInput}
                     value={this.state.fCourseCode}
-                    placeholder="Course Code input"
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">
-                  Room Number:{" "}
-                </Form.Label>
-                <Col sm="9">
-                  <Form.Control
-                    type="text"
-                    name="fRNumber"
-                    onChange={this.handleInput}
-                    value={this.state.fRNumber}
-                    placeholder="Room Number input"
+                    placeholder="Course Code"
                   />
                 </Col>
               </Form.Group>
@@ -714,15 +741,29 @@ export default class course extends Component {
                     name="fCFormat"
                     onChange={this.handleInput}
                     value={this.state.fCFormat}
-                    placeholder="course format input"
+                    placeholder="Course format"
                   />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Meeting Start Date:{" "}
+                  Room Number:{" "}
                 </Form.Label>
-                <Col sm="3">
+                <Col sm="6">
+                  <Form.Control
+                    type="text"
+                    name="fRNumber"
+                    onChange={this.handleInput}
+                    value={this.state.fRNumber}
+                    placeholder="Room Number"
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Semester Start / End Dates:{" "}
+                </Form.Label>
+                <Col sm="4">
                   <Form.Control
                     type="date"
                     name="fMDates"
@@ -730,20 +771,7 @@ export default class course extends Component {
                     value={this.state.fMDates}
                   />
                 </Col>
-                <Col sm="2">
-                  <Form.Control
-                    type="time"
-                    name="fMTime"
-                    onChange={this.handleInput}
-                    value={this.state.fMTime}
-                  />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">
-                  Meeting End Date:{" "}
-                </Form.Label>
-                <Col sm="3">
+                <Col sm="4">
                   <Form.Control
                     type="date"
                     name="fMFDates"
@@ -751,7 +779,44 @@ export default class course extends Component {
                     value={this.state.fMFDates}
                   />
                 </Col>
-                <Col sm="2">
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Meeting Days:{" "}
+                </Form.Label>
+                <Col sm="1">Sun</Col>
+                <Col sm="1">Mon</Col>
+                <Col sm="1">Tue</Col>
+                <Col sm="1">Wed</Col>
+                <Col sm="1">Thur</Col>
+                <Col sm="1">Fri</Col>
+                <Col sm="1">Sat</Col>
+                <Col sm="3" style={{ alignSelf: "center" }}>
+                  <Form>
+                    <Form.Check
+                      type="switch"
+                      id="custom-switch"
+                      label="No Meeting"
+                      name="fNoMeeting"
+                      onChange={this.handleInput}
+                      checked={this.state.fAllDay}
+                    />
+                  </Form>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Meeting Start / End Times:{" "}
+                </Form.Label>
+                <Col sm="4">
+                  <Form.Control
+                    type="time"
+                    name="fMTime"
+                    onChange={this.handleInput}
+                    value={this.state.fMTime}
+                  />
+                </Col>
+                <Col sm="4">
                   <Form.Control
                     type="time"
                     name="fMFTime"

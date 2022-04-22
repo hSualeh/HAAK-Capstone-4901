@@ -3,10 +3,10 @@ import "../../styles/dashboard.css";
 import logo from "../../img/logo.PNG";
 import { Button } from "react-bootstrap";
 
-import { onAuthStateChanged,signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import Navside from "../navbar/navside";
-import Course from "../courses/course"
+import Course from "../courses/course";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
 import "../../styles/course.css";
@@ -59,10 +59,11 @@ export default class profilemain extends Component {
               <Breadcrumb currentpage="Courses" />
 
               <div className="content">
-              <h3 Style="text-align: left;">
-                <i class="fa fa-bars" aria-hidden="true"></i> Manage Courses
-              </h3>
-                <Course/>
+                <h3 Style="text-align: left;">
+                  <i className="fa fa-bars" aria-hidden="true"></i> Manage
+                  Courses
+                </h3>
+                <Course />
               </div>
             </main>
           </div>

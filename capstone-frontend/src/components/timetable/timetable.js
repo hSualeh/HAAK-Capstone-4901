@@ -138,13 +138,18 @@ const DayScaleCell = (props) => {
   }
   return <StyledWeekViewDayScaleCell {...props} />;
 };
-
+function randomNumber(min, max) { 
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+} 
+const coursescolor=['red','blue','green','black','orange']
 const Appointment = ({ children, style, ...restProps }) => (
   <Appointments.Appointment
     {...restProps}
     style={{
       ...style,
-      backgroundColor: "#F29154",
+      backgroundColor:coursescolor[randomNumber(0,4)],
       borderRadius: "10px",
       color: "black",
     }}
