@@ -219,18 +219,18 @@ export default class course extends Component {
 
               let requestData = {
                 id: 0,
-                cid: courseData.id,
                 title: courseData.name,
                 course_code: courseData.course_code,
-                roomNumber: "",
-                startDate: "",
-                endDate: "",
+                course_format: "",
+                roomNumber: "", // not given by canvas api
+                startDate: new Date(), // not given by canvas api
+                endDate: new Date(), // not given by canvas api
                 rRule: "", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
                 type: "Canvas",
-                AllDay: "false",
+                allDay: "true",
               };
               const fResultCourse = listCourses.filter(
-                (x) => x.cid === courseData.id
+                (x) => x.course_code === courseData.course_code
               );
 
               if (fResultCourse.length !== 0) {
@@ -284,11 +284,12 @@ export default class course extends Component {
       title: this.state.fName,
       course_code: this.state.fCourseCode,
       roomNumber: this.state.fRNumber,
-      startDate: this.setMTDate(true),
-      endDate: this.setMTDate(false),
+      startDate: new Date(), //this.setMTDate(true),
+      endDate: new Date(), //this.setMTDate(false),
       course_format: this.state.fCFormat,
       type: "Manual",
       allDay: false,
+      rRule: "",
     };
 
     const updates = {};
