@@ -61,7 +61,7 @@ export default class listCoursesSummary extends Component {
   handleModalShowHide() {
     this.setState({ showHide: !this.state.showHide });
   }
-/*
+  /*
 This function check if a given course has any non completed assignments
 return true is there is some assignments incompleted
 */
@@ -105,7 +105,9 @@ return true is there is some assignments incompleted
                   className="d-flex justify-content-between align-items-start"
                 >
                   <div className="ms-2 me-auto">
-                    <div className="fw-bold">{course.title}</div>
+                    <div className="fw-bold">
+                      {course.title.substring(0, 21) + "..."}
+                    </div>
                   </div>
 
                   {this.showNotificationForCourse(course.id) ? (
@@ -182,7 +184,9 @@ return true is there is some assignments incompleted
                           <td>
                             <strong className="me-auto">Meeting Date :</strong>
                           </td>
-                          <td>{course.start_date} - {course.end_date}</td>
+                          <td>
+                            {course.start_date} - {course.end_date}
+                          </td>
                         </tr>
                         <tr>
                           <td>

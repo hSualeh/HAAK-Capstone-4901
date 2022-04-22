@@ -372,6 +372,12 @@ Is only called upon state changes to tthe data stored within this.state
         if (data[startingAddedId].status === undefined) {
           data[startingAddedId].status = 0;
         }
+        if (data[startingAddedId].startDate === undefined) {
+          data[startingAddedId].startDate = new Date();
+        }
+        if (data[startingAddedId].endDate === undefined) {
+          data[startingAddedId].endDate = new Date();
+        }
         updates["/todo/" + this.state.user?.uid + "/" + startingAddedId] =
           data[startingAddedId];
 

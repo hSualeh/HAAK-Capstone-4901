@@ -227,7 +227,7 @@ export default class course extends Component {
                 startDate: courseData.start_at,
                 endDate: courseData.end_at,
                 type: "Canvas",
-                allDay: false,
+                allDay: true,
               };
 
               const fResultCourse = listCourses.filter(
@@ -625,11 +625,12 @@ export default class course extends Component {
                   Room Number
                 </th>
                 <th scope="col" className="t-col-2">
-                  Meeting Dates
+                  Meeting Days
                 </th>
-                <th scope="col" className="t-col-1">
+                {/*
+                </tr>{<th scope="col" className="t-col-1">
                   Course format
-                </th>
+                </th>*/}
                 <th scope="col" className="t-col-0">
                   Assignments
                 </th>
@@ -648,11 +649,12 @@ export default class course extends Component {
                   <td scope="row" style={{ display: "none" }}>
                     {course.id}
                   </td>
-                  <td scope="row">{course.title}</td>
+                  <td scope="row">{course.title.substring(0, 21) + "..."}</td>
 
                   <td>{course.roomNumber}</td>
-                  <td>{this.displayTime(course)}</td>
-                  <td>{course.course_format}</td>
+                  <td>M T W TH F S SU</td>
+                  {/*<td>{this.displayTime(course)}</td>
+                  <td>{course.course_format}</td>*/}
                   <td>
                     <Button
                       variant="outline-primary"
@@ -704,7 +706,7 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Title:<text className="required">(*)</text>{" "}
+                  Course Name:<text className="required">(*)</text>{" "}
                 </Form.Label>
                 <Col sm="9">
                   <Form.Control
@@ -712,7 +714,7 @@ export default class course extends Component {
                     name="fName"
                     onChange={this.handleInput}
                     value={this.state.fName}
-                    placeholder="Title input"
+                    placeholder="Course name"
                   />
                 </Col>
               </Form.Group>
@@ -726,7 +728,7 @@ export default class course extends Component {
                     name="fCourseCode"
                     onChange={this.handleInput}
                     value={this.state.fCourseCode}
-                    placeholder="Course Code input"
+                    placeholder="Course Code"
                   />
                 </Col>
               </Form.Group>
@@ -740,7 +742,7 @@ export default class course extends Component {
                     name="fCFormat"
                     onChange={this.handleInput}
                     value={this.state.fCFormat}
-                    placeholder="Course format input"
+                    placeholder="Course format"
                   />
                 </Col>
               </Form.Group>
@@ -754,16 +756,49 @@ export default class course extends Component {
                     name="fRNumber"
                     onChange={this.handleInput}
                     value={this.state.fRNumber}
-                    placeholder="Room Number input"
+                    placeholder="Room Number"
                   />
                 </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Semester Start / End Dates:{" "}
+                </Form.Label>
+                <Col sm="4">
+                  <Form.Control
+                    type="date"
+                    name="fMDates"
+                    onChange={this.handleInput}
+                    value={this.state.fMDates}
+                  />
+                </Col>
+                <Col sm="4">
+                  <Form.Control
+                    type="date"
+                    name="fMFDates"
+                    onChange={this.handleInput}
+                    value={this.state.fMFDates}
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="3">
+                  Meeting Days:{" "}
+                </Form.Label>
+                <Col sm="1">Sun</Col>
+                <Col sm="1">Mon</Col>
+                <Col sm="1">Tue</Col>
+                <Col sm="1">Wed</Col>
+                <Col sm="1">Thur</Col>
+                <Col sm="1">Fri</Col>
+                <Col sm="1">Sat</Col>
                 <Col sm="3" style={{ alignSelf: "center" }}>
                   <Form>
                     <Form.Check
                       type="switch"
                       id="custom-switch"
-                      label="All Day"
-                      name="fAllDay"
+                      label="No Meeting"
+                      name="fNoMeeting"
                       onChange={this.handleInput}
                       checked={this.state.fAllDay}
                     />
@@ -772,17 +807,9 @@ export default class course extends Component {
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="3">
-                  Meeting Start Date:{" "}
+                  Meeting Start / End Times:{" "}
                 </Form.Label>
-                <Col sm="3">
-                  <Form.Control
-                    type="date"
-                    name="fMDates"
-                    onChange={this.handleInput}
-                    value={this.state.fMDates}
-                  />
-                </Col>
-                <Col sm="2">
+                <Col sm="4">
                   <Form.Control
                     type="time"
                     name="fMTime"
@@ -790,20 +817,7 @@ export default class course extends Component {
                     value={this.state.fMTime}
                   />
                 </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">
-                  Meeting End Date:{" "}
-                </Form.Label>
-                <Col sm="3">
-                  <Form.Control
-                    type="date"
-                    name="fMFDates"
-                    onChange={this.handleInput}
-                    value={this.state.fMFDates}
-                  />
-                </Col>
-                <Col sm="2">
+                <Col sm="4">
                   <Form.Control
                     type="time"
                     name="fMFTime"
