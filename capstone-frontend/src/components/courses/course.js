@@ -220,6 +220,7 @@ export default class course extends Component {
               let requestData = {
                 id: 0,
                 title: courseData.name,
+                cid: courseData.id, // used for grabing of assingments from canvas
                 course_code: courseData.course_code,
                 course_format: "",
                 roomNumber: "", // not given by canvas api
