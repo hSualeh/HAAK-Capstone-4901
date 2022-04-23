@@ -529,7 +529,8 @@ export default class assignment extends Component {
               className="btn-s"
               onClick={this.handleShowAdd}
             >
-              <i className="fa fa-plus" aria-hidden="true"></i> Add New Assignment
+              <i className="fa fa-plus" aria-hidden="true"></i> Add New
+              Assignment
             </Button>
           </div>
           <Table className="table assign-table" responsive="sm">
@@ -758,4 +759,3 @@ export default class assignment extends Component {
     );
   }
 }
-
