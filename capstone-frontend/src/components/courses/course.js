@@ -28,6 +28,8 @@ export default class course extends Component {
       fMFTime: "",
       fCourseCode: "",
       fCFormat: "",
+      rRule: "",
+      meetingDays: [],
       fAllDay: false,
       user: null,
       profileError: [],
@@ -226,7 +228,7 @@ export default class course extends Component {
                 roomNumber: "", // not given by canvas api
                 startDate: new Date(), // not given by canvas api
                 endDate: new Date(), // not given by canvas api
-                rRule: "", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
+                rRule: "", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT="+count+";BYDAY=TU,TH", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
                 type: "Canvas",
                 allDay: "true",
               };
@@ -290,7 +292,7 @@ export default class course extends Component {
       course_format: this.state.fCFormat,
       type: "Manual",
       allDay: false,
-      rRule: "",
+      rRule: this.state.rRule,
     };
 
     const updates = {};
@@ -312,6 +314,7 @@ export default class course extends Component {
     courseData.course_code = this.state.fCourseCode;
     courseData.roomNumber = this.state.fRNumber;
     courseData.course_format = this.state.fCFormat;
+    courseData.rRule = this.state.rRule;
     courseData.allDay = this.state.fAllDay;
     courseData.startDate = this.setMTDate(true);
     courseData.endDate = this.setMTDate(false);
@@ -353,6 +356,7 @@ export default class course extends Component {
           fRNumber: data.roomNumber,
           fCFormat: data.course_format,
           fAllDay: data.allDay,
+          rRule: data.rRule,
         });
 
         this.getMTDate(data);
@@ -400,7 +404,28 @@ export default class course extends Component {
 
     if (name === "fAllDay") {
       this.setState({ [name]: !this.state.fAllDay });
-    } else this.setState({ [name]: value });
+    } else if (name == "meetingDays") {
+      let isChecked = e.target.checked;
+      let count = 13; //13 weeks semester
+      let mtDays = this.state.meetingDays;
+     
+      isChecked ? mtDays.push(value) : mtDays.pop(value);
+
+      let rRule_val =
+        "RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=" +
+        count * mtDays.length +
+        ";BYDAY=" +
+        mtDays.join(",");
+      console.log(mtDays);
+      console.log(rRule_val);
+      if (mtDays.length == 0) rRule_val = "";
+      this.setState({ rRule: rRule_val });
+      this.setState({ meetingDays: mtDays });
+      // let rRule = "RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT="+count+";BYDAY="+this.state.meetingDays
+      // this.setState({ [rRule]: value});
+    } else {
+      this.setState({ [name]: value });
+    }
   };
 
   handleShowMsg(msg) {
@@ -670,7 +695,7 @@ export default class course extends Component {
                       variant="primary"
                       size="sm"
                       onClick={this.handleShowEdit}
-                      style={{ "margin-right": "5px" }}
+                      style={{ marginRight: "5px" }}
                     >
                       <i className="fa fa-edit"></i>
                     </Button>
@@ -783,16 +808,74 @@ export default class course extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="3">
-                  Meeting Days:{" "}
-                </Form.Label>
-                <Col sm="1">Sun</Col>
-                <Col sm="1">Mon</Col>
-                <Col sm="1">Tue</Col>
-                <Col sm="1">Wed</Col>
-                <Col sm="1">Thur</Col>
-                <Col sm="1">Fri</Col>
-                <Col sm="1">Sat</Col>
+                <div className="mb-3">
+                  <Form.Label column sm="3">
+                    Meeting Days:{" "}
+                  </Form.Label>
+                  <Form.Check
+                    inline
+                    label="Sun"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Sun"
+                    onChange={this.handleInput}
+                    value="SU"
+                  />
+                  <Form.Check
+                    inline
+                    label="Mon"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Mon"
+                    onChange={this.handleInput}
+                    value="MO"
+                  />
+                  <Form.Check
+                    inline
+                    label="Tue"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Tue"
+                    onChange={this.handleInput}
+                    value="TU"
+                  />
+                  <Form.Check
+                    inline
+                    label="Wed"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Wed"
+                    onChange={this.handleInput}
+                    value="WE"
+                  />
+                  <Form.Check
+                    inline
+                    label="Thur"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Thur"
+                    onChange={this.handleInput}
+                    value="TH"
+                  />
+                  <Form.Check
+                    inline
+                    label="Fri"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Fri"
+                    onChange={this.handleInput}
+                    value="FR"
+                  />
+                  <Form.Check
+                    inline
+                    label="Sat"
+                    name="meetingDays"
+                    type="checkbox"
+                    id="Sat"
+                    onChange={this.handleInput}
+                    value="SA"
+                  />
+                </div>
                 <Col sm="3" style={{ alignSelf: "center" }}>
                   <Form>
                     <Form.Check
