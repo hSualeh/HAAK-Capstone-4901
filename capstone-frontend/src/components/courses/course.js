@@ -11,9 +11,10 @@ export default class course extends Component {
   constructor(props) {
     super(props);
 
-    this.maxCourse = 0;
+    this.maxCourse = 0; //used to save the total number of courses
     this.isNodata = false;
 
+    //states variables declaration
     this.state = {
       mode: true,
       formShow: false,
@@ -54,7 +55,9 @@ export default class course extends Component {
   }
 
   componentWillUnmount() {}
-
+/* This functions find all the courses 
+of the current user by sending api request to firebase
+and save it in the state named listCurCourses */
   getAllCourseData = () => {
     const starCountRef = ref(getDatabase(), "courses/" + this.state.user.uid);
     onValue(starCountRef, (snapshot) => {
@@ -81,7 +84,9 @@ export default class course extends Component {
       }
     });
   };
-
+/* This functions find the token ( canvas key) 
+of the current user by sending api request to firebase
+and save it in the state named token */
   getUNTToken = () => {
     if (this.state.user == null) {
       return;
@@ -174,7 +179,10 @@ export default class course extends Component {
 
     return newErrors;
   };
-
+/** This function used to check if there is a canvas key for the current user to
+ * be able to import courses from canvas, if the key doesn't exisit it will redirect the
+ * user to the settings page where user need to add his canvas key
+ */
   handleSync = (e) => {
     let listCourses = this.state.listCurCourses;
     let uid = this.state.user.uid;
@@ -270,7 +278,10 @@ export default class course extends Component {
       this.handleShowMsg("Sync successfully!");
     }
   };
-
+  /**
+   * function used to create new course and send post request to firebase
+   * to save the item to the databse
+   */
   createNewCourse() {
     let cID = 0;
 
@@ -291,7 +302,7 @@ export default class course extends Component {
       endDate: new Date(), //this.setMTDate(false),
       course_format: this.state.fCFormat,
       type: "Manual",
-      allDay: false,
+      allDay: (this.state.rRule=="") ? "true" : "false",
       rRule: this.state.rRule,
     };
 
@@ -306,7 +317,9 @@ export default class course extends Component {
         console.log(error);
       });
   }
-  //This function send request to firebase API to update a course with the new given information
+  /**
+   * This function send request to firebase API to update a course with the new given information
+   */
   updateCourse() {
     let courseData = this.state.courseData;
 
@@ -443,7 +456,7 @@ export default class course extends Component {
       fMFDates: "",
       fMFTime: "",
       fCFormat: "",
-      fAllDay: false,
+      fAllDay: "false",
     });
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
@@ -613,7 +626,11 @@ export default class course extends Component {
       );
     });
   }
-
+  checkMeetingDay(rRule,day){
+  let meetingDaysVals= (rRule !="")?rRule.split(";")[3].split("=")[1] : ""; // extract the meeting days TH,TU from the rRule field
+   
+  return meetingDaysVals.includes(day);
+}
   render() {
     const listCourses = this.state.listCurCourses;
 
@@ -678,7 +695,7 @@ export default class course extends Component {
                   <td scope="row">{course.title.substring(0, 21) + "..."}</td>
 
                   <td>{course.roomNumber}</td>
-                  <td>M T W TH F S SU</td>
+                  <td>{(course.rRule !="")?course.rRule.split(";")[3].split("=")[1] : "every Day / Online"}</td>
                   {/*<td>{this.displayTime(course)}</td>
                   <td>{course.course_format}</td>*/}
                   <td>
@@ -820,6 +837,7 @@ export default class course extends Component {
                     id="Sun"
                     onChange={this.handleInput}
                     value="SU"
+                    checked ={this.checkMeetingDay(this.state.rRule,"SU")}
                   />
                   <Form.Check
                     inline
@@ -829,7 +847,9 @@ export default class course extends Component {
                     id="Mon"
                     onChange={this.handleInput}
                     value="MO"
+                    checked ={this.checkMeetingDay(this.state.rRule,"MO")}
                   />
+                
                   <Form.Check
                     inline
                     label="Tue"
@@ -838,6 +858,7 @@ export default class course extends Component {
                     id="Tue"
                     onChange={this.handleInput}
                     value="TU"
+                    checked = {this.checkMeetingDay(this.state.rRule,"TU")}
                   />
                   <Form.Check
                     inline
@@ -847,6 +868,7 @@ export default class course extends Component {
                     id="Wed"
                     onChange={this.handleInput}
                     value="WE"
+                    checked ={this.checkMeetingDay(this.state.rRule,"WE")}
                   />
                   <Form.Check
                     inline
@@ -856,6 +878,7 @@ export default class course extends Component {
                     id="Thur"
                     onChange={this.handleInput}
                     value="TH"
+                    checked = {this.checkMeetingDay(this.state.rRule,"TH")}
                   />
                   <Form.Check
                     inline
@@ -865,6 +888,7 @@ export default class course extends Component {
                     id="Fri"
                     onChange={this.handleInput}
                     value="FR"
+                    checked = {this.checkMeetingDay(this.state.rRule,"FR")}
                   />
                   <Form.Check
                     inline
@@ -874,6 +898,7 @@ export default class course extends Component {
                     id="Sat"
                     onChange={this.handleInput}
                     value="SA"
+                    checked = {this.checkMeetingDay(this.state.rRule,"SA")}
                   />
                 </div>
                 <Col sm="3" style={{ alignSelf: "center" }}>
