@@ -126,9 +126,10 @@ export default class assignment extends Component {
     }
 
     const assignmentData = {
+      allDay: false,
       id: cID,
       cid: this.couseID,
-      name: this.state.fName,
+      title: this.state.fName,
       status: this.state.fStatus,
       type: this.state.fType,
       duedate: this.setDueDate(),
@@ -151,7 +152,7 @@ export default class assignment extends Component {
   updateAssignmentData = () => {
     let assignmentData = this.state.assignmentData;
 
-    assignmentData.name = this.state.fName;
+    assignmentData.title = this.state.fName;
     assignmentData.status = this.state.fStatus;
     assignmentData.type = this.state.fType;
     assignmentData.description = this.state.fDescription;
@@ -263,7 +264,7 @@ export default class assignment extends Component {
       if (data != null) {
         this.setState({
           fid: id,
-          fName: data.name,
+          fName: data.title,
           fStatus: data.status,
           fType: data.type,
           fDescription: data.description,
@@ -344,14 +345,17 @@ export default class assignment extends Component {
 
           result.map((asgn) => {
             let isSkip = false;
+            var hours = new Date(asgn.due_at).getHours();
 
             let requestData = {
+              allDay: false,
               id: 0,
               cid: this.couseID,
-              name: asgn.name,
+              title: asgn.name,
               status: "Not completed",
               type: "etc",
-              duedate: asgn.due_at,
+              startDate: new Date(asgn.due_at).setHours(hours - 1), // figure out how to display as an actual date YYYY-MM-DD-HR-MIN-SEC-Z
+              endDate: asgn.due_at,
               description: asgn.description,
               untid: asgn.id,
             };
@@ -536,9 +540,9 @@ export default class assignment extends Component {
           <Table className="table assign-table" responsive="sm">
             <thead>
               <tr>
-                <th scope="col" className="t-col-id">
+                {/*<th scope="col" className="t-col-id">
                   ID
-                </th>
+            </th>*/}
                 <th scope="col" className="t-col-type">
                   Type
                 </th>
@@ -550,7 +554,7 @@ export default class assignment extends Component {
                   Status
                 </th>
                 <th scope="col" className="t-col-dd">
-                  Due Dates
+                  Due Date
                 </th>
                 <th scope="col" className="t-col-func"></th>
               </tr>
@@ -558,11 +562,11 @@ export default class assignment extends Component {
             <tbody>
               {listAssignment.map((asgn) => (
                 <tr key={asgn.id}>
-                  <th scope="row" className="t-col-id">
+                  {/*<th scope="row" className="t-col-id">
                     {asgn.id}
-                  </th>
+                  </th> */}
                   <td className="t-col-type">{asgn.type}</td>
-                  <td className="t-col-name">{asgn.name}</td>
+                  <td className="t-col-name">{asgn.title}</td>
                   {/* <td className="t-col-des wrapcontent">{ asgn.description }</td> */}
                   {/* <td className="t-col-des wrapcontent">
                     <div
@@ -577,7 +581,7 @@ export default class assignment extends Component {
                       {asgn.status}
                     </Badge>
                   </td>
-                  <td className="t-col-dd">{this.displayTime(asgn.duedate)}</td>
+                  <td className="t-col-dd">{this.displayTime(asgn.endDate)}</td>
                   <td className="t-col-func" style={{ "text-align": "center" }}>
                     <Button
                       variant="outline-primary"

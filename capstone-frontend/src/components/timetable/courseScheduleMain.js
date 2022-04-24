@@ -9,6 +9,8 @@ import Navside from "../navbar/navside";
 import UserProfileDropDown from "../home/userProfileDropDown";
 import Breadcrumb from "../home/breadcrumb";
 import Timetable from "./timetable";
+import AssignmentTable from "./assignmentTable";
+
 export default class profilemain extends Component {
   constructor(props) {
     super(props);
@@ -56,7 +58,8 @@ export default class profilemain extends Component {
             <main className="profile content">
               <Breadcrumb currentpage="Courses" />
               <h3 Style="text-align: left;">
-                <i className="fa fa-bars" aria-hidden="true"></i> Courses Calendar
+                <i className="fa fa-bars" aria-hidden="true"></i> Courses
+                Calendar
               </h3>
 
               <hr></hr>
@@ -66,7 +69,7 @@ export default class profilemain extends Component {
                     <Timetable user={this.state.user}></Timetable>
                   </Tab>
                   <Tab eventKey="assignments" title="My Assignments Schedule">
-                    <Timetable user={this.state.user}></Timetable>
+                    <AssignmentTable user={this.state.user}></AssignmentTable>
                   </Tab>
                 </Tabs>
               </div>
