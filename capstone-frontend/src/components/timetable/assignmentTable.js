@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../../styles/dashboard.css";
-import { Button, Form, Row, Col, Badge } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import { getDatabase, ref, onValue, update, remove } from "firebase/database";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -128,12 +128,12 @@ const DayScaleCell = (props) => {
   }
   return <StyledWeekViewDayScaleCell {...props} />;
 };
-function randomNumber(min, max) {
+/*function randomNumber(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-const coursescolor = ["red", "orange", "green", "light blue", "purple"];
+const coursescolor = ["red", "orange", "green", "light blue", "purple"];*/
 const Appointment = ({ children, style, ...restProps }) => (
   <Appointments.Appointment
     {...restProps}

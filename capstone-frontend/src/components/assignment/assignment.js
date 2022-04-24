@@ -64,7 +64,7 @@ export default class assignment extends Component {
         this.isNodata = false;
         for (var key of Object.keys(data)) {
           allData.push(data[key]);
-          if (data[key].cid == this.couseID) {
+          if (data[key].cid === this.couseID) {
             filter.push(data[key]);
           }
         }
@@ -187,7 +187,7 @@ export default class assignment extends Component {
   handleSubmitForm = (e) => {
     let newErrors = this.findFormErrors();
 
-    if (newErrors.length == 0) {
+    if (newErrors.length === 0) {
       this.setState({
         agnError: newErrors,
         showError: false,
@@ -333,8 +333,8 @@ export default class assignment extends Component {
     )
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Network response was not OK");
           this.isError = true;
+          throw new Error("Network response was not OK");
         }
         return res.json();
       })
@@ -343,7 +343,7 @@ export default class assignment extends Component {
           const listAssignment = this.state.listAssignment;
           const updates = {};
 
-          result.map((asgn) => {
+          result.forEach((asgn) => {
             let isSkip = false;
             var hours = new Date(asgn.due_at).getHours();
 
@@ -576,7 +576,7 @@ export default class assignment extends Component {
                   <td className="t-col-status">
                     {" "}
                     <Badge
-                      bg={asgn.status == "Completed" ? "success" : "danger"}
+                      bg={asgn.status === "Completed" ? "success" : "danger"}
                     >
                       {asgn.status}
                     </Badge>
