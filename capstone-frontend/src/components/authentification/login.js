@@ -1,3 +1,6 @@
+/**
+ * This component handle the login process
+ */
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row, Container } from "react-bootstrap";
@@ -29,7 +32,12 @@ export default class login extends Component {
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
   };
-
+/**
+ * This function help sign in a user using the email and password entered
+ * if the information entered not correct , error will be display and sign in process will not be completed
+ * Input : this.state.loginEmail, this.state.loginPassword
+ * output : this.setState({ user:user });
+ */
   signin = () => {
     setPersistence(auth, browserSessionPersistence)
     .then(() => {
@@ -60,6 +68,7 @@ export default class login extends Component {
     });
     
   };
+
   componentDidMount() {
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });

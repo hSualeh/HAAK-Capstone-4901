@@ -268,7 +268,7 @@ and save it in the state named token */
                 endDate: new Date(), // not given by canvas api
                 rRule: "", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT="+count+";BYDAY=TU,TH", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
                 type: "Canvas",
-                allDay: "true",
+                allDay: true,
               };
               const fResultCourse = listCourses.filter(
                 (x) => x.course_code === courseData.course_code
@@ -332,7 +332,7 @@ and save it in the state named token */
       endDate: new Date(), //this.setMTDate(false),
       course_format: this.state.fCFormat,
       type: "Manual",
-      allDay: (this.state.rRule=="") ? "true" : "false",
+      allDay: (this.state.rRule=="") ? true : false,
       rRule: this.state.rRule,
     };
 
@@ -461,7 +461,7 @@ and save it in the state named token */
       this.setState({ [name]: !this.state.fAllDay });
     } else if (name == "meetingDays") {
       let isChecked = e.target.checked;
-      let count = 13; //13 weeks semester
+      let count = 13; 
       let mtDays = this.state.meetingDays;
      
       isChecked ? mtDays.push(value) : mtDays.pop(value);
@@ -506,7 +506,7 @@ and save it in the state named token */
       fMFDates: "",
       fMFTime: "",
       fCFormat: "",
-      fAllDay: "false",
+      fAllDay: false,
     });
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
@@ -733,9 +733,7 @@ and save it in the state named token */
                   Title
                 </th>
 
-                <th scope="col" className="t-col-1">
-                  Room Number
-                </th>
+            
                 <th scope="col" className="t-col-2">
                   Meeting Days
                 </th>
@@ -762,8 +760,6 @@ and save it in the state named token */
                     {course.id}
                   </td>
                   <td scope="row">{course.title.substring(0, 21) + "..."}</td>
-
-                  <td>{course.roomNumber}</td>
                   <td>{(course.rRule !="")?course.rRule.split(";")[3].split("=")[1] : "every Day / Online"}</td>
                   {/*<td>{this.displayTime(course)}</td>
                   <td>{course.course_format}</td>*/}
@@ -777,6 +773,15 @@ and save it in the state named token */
                     </Button>
                   </td>
                   <td scope="col" style={{ "text-align": "center" }}>
+                  <Button
+                      variant="outline-primary"
+                      size="sm"
+                      style={{ marginRight: "5px" }}
+                      onClick={this.handleShowEdit}
+                    >
+                      <i className="fa fa-arrow-right" aria-hidden="true"></i>{" "}
+                      Detail
+                    </Button>
                     <Button
                       variant="primary"
                       size="sm"
@@ -803,7 +808,7 @@ and save it in the state named token */
           <Modal show={this.state.formShow} onHide={this.handleClose} size="lg">
             <Modal.Header closeButton>
               <Modal.Title>
-                {this.state.mode ? "Couse Add" : "Course Edit"}
+                {this.state.mode ? "Couse Add" : "Course"}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -976,7 +981,7 @@ and save it in the state named token */
                       type="switch"
                       id="custom-switch"
                       label="No Meeting"
-                      name="fNoMeeting"
+                      name="fAllDay"
                       onChange={this.handleInput}
                       checked={this.state.fAllDay}
                     />

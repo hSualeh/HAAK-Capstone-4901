@@ -1,3 +1,7 @@
+/**
+ * This component handle the sign up process
+ * 
+ */
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { Button, Alert, Col, Row,Container } from "react-bootstrap";
@@ -10,6 +14,9 @@ import { Link,Navigate } from "react-router-dom";
 export default class signup extends Component {
   constructor(props) {
     super(props);
+    /**
+     * List of states used in this component
+     */
     this.state = {
       registerEmail: "",
       registerPassword: "",
@@ -20,7 +27,10 @@ export default class signup extends Component {
       user:null
     };
   }
-
+/**
+ * handle the form input fields into states
+ * @param {*} e 
+ */
   handleInput = (e) => {
     const name = e.target.name;
 
@@ -29,12 +39,18 @@ export default class signup extends Component {
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
   };
-
+/**
+ * This function create new account using firebase authentication services
+ *
+ * @param {
+ * } event 
+ * 
+ */
   register = (event) => {
-    let newErrors = this.findFormErrors();
+    let newErrors = this.findFormErrors();//check if there is any error before sending registration request
     this.setState({signError:newErrors});
     console.log(newErrors);
-    if (newErrors.length == 0) {
+    if (newErrors.length == 0) { //if there is no error, create new user
       createUserWithEmailAndPassword(
         auth,
         this.state.registerEmail,
@@ -45,7 +61,7 @@ export default class signup extends Component {
           this.setState({user:user});
 
         })
-        .catch((error) => {
+        .catch((error) => { //display an error if the user exist or if the email is invalid
           console.log(error.code + " " + error.message);
           let errorMessage = "";
           if (
@@ -66,6 +82,11 @@ export default class signup extends Component {
       this.setState({ signError: newErrors, showError: true });
     }
   };
+  /**
+   * This function detect if there is any validation errors in the form
+   * @returns errors[] //list of errors
+   * 
+   */
   findFormErrors = () => {
     const newErrors =[];
     // Email errors
@@ -79,11 +100,7 @@ export default class signup extends Component {
     newErrors.push("Password cannot be blank!");
     else if (this.state.registerPassword.length < 7)
     newErrors.push( "Password cannot be less than 7!");
-
-    //Sprint 2 
-    //Add capslock criteria for password
-    //Hira is responsible for this task.
-
+    //confirm password and password doesn't match
     if (
       typeof this.state.registerPassword !== "undefined" &&
       typeof this.state.confirm_password !== "undefined"
@@ -94,6 +111,11 @@ export default class signup extends Component {
     }
     return newErrors;
   }
+  /**
+   * This function will check if the email entered by the user is valid
+   * @returns True if the email is valid 
+   * 
+   */
   emailValidation(){
     const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     if(!this.state.registerEmail || regex.test(this.state.registerEmail) === false){
