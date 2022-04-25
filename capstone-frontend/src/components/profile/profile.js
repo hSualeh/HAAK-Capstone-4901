@@ -34,6 +34,10 @@ export default class profile extends Component {
       this.getUserProfile();
     });
   }
+/**
+   * Get current user information
+   * @returns user information
+   */
 
   getUserProfile = () => {
     if (this.state.user == null) {
@@ -55,6 +59,10 @@ export default class profile extends Component {
       }
     });
   };
+/**
+   * Handle input event
+   * @param {*} e current input element
+   */
 
   handleInput = (e) => {
     const name = e.target.name;
@@ -64,6 +72,10 @@ export default class profile extends Component {
     this.setState({ [name]: value });
     // console.log("Name: " + name + "value:" + value);
   };
+/**
+   * Form validation
+   * @returns Error list
+   */
 
   findFormErrors = () => {
     const newErrors = [];
@@ -79,6 +91,10 @@ export default class profile extends Component {
 
     return newErrors;
   };
+/**
+   * Cancel event
+   * @param {*} event 
+   */
 
   cancel = (event) => {
     this.setState({ f_name: this.state.saveData.firstName });
@@ -94,6 +110,11 @@ export default class profile extends Component {
       showCancel: true
     });
   };
+/**
+   * Save data into DB
+   * @param {*} event 
+   * @returns 
+   */
 
   update = (event) => {
     let newErrors = this.findFormErrors();
