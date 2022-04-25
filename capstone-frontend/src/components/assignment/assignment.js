@@ -49,6 +49,9 @@ export default class assignment extends Component {
   }
 
   componentWillUnmount() {}
+/**
+   * Get all assignments of a course
+   */
 
   getAllAssignmentData = () => {
     const starCountRef = ref(
@@ -85,6 +88,9 @@ export default class assignment extends Component {
       }
     });
   };
+ /**
+   * Get course information
+   */
 
   getCourseData = () => {
     const starCountRef = ref(
@@ -98,6 +104,10 @@ export default class assignment extends Component {
       }
     });
   };
+ /**
+   * Get UNT token from user information
+   * @returns UNT token
+   */
 
   getUNTToken = () => {
     if (this.state.user == null) {
@@ -113,6 +123,9 @@ export default class assignment extends Component {
       }
     });
   };
+ /**
+   * Add a new assignment into DB
+   */
 
   addAssignmentData = () => {
     let cID = 0;
@@ -148,6 +161,9 @@ export default class assignment extends Component {
         console.log(error);
       });
   };
+  /**
+   * Update a assignment data
+   */
 
   updateAssignmentData = () => {
     let assignmentData = this.state.assignmentData;
@@ -170,10 +186,19 @@ export default class assignment extends Component {
         console.log(error);
       });
   };
+ /**
+   * Display message popup with input message
+   * @param {*} msg Message
+   */
 
   handleShowMsg(msg) {
     this.setState({ message: msg, showMessage: true });
   }
+  /**
+   * Close modal popup
+   * @param {*} e current element
+   */
+
 
   handleClose = (e) => {
     this.setState({
@@ -183,6 +208,10 @@ export default class assignment extends Component {
       showMessage: false,
     });
   };
+  /**
+   * Save data into DB
+   * @param {*} e current element
+   */
 
   handleSubmitForm = (e) => {
     let newErrors = this.findFormErrors();
@@ -212,6 +241,10 @@ export default class assignment extends Component {
 
     this.handleShowMsg("Save successfully!");
   };
+/**
+   * Form validation
+   * @returns error list
+   */
 
   findFormErrors = () => {
     const newErrors = [];
@@ -229,6 +262,10 @@ export default class assignment extends Component {
 
     return newErrors;
   };
+ /**
+   * Show the addition assignment form
+   * @param {*} e current element
+   */
 
   handleShowAdd = (e) => {
     this.setState({
@@ -243,6 +280,10 @@ export default class assignment extends Component {
 
     this.setState({ show: true, mode: true, showError: false });
   };
+/**
+   * Get the target assignmnet information and display in edit popup
+   * @param {*} e current element
+   */
 
   handleShowEdit = (e) => {
     //Load data from table
@@ -277,6 +318,10 @@ export default class assignment extends Component {
     e.target.blur();
     this.setState({ show: true, mode: false, showError: false });
   };
+/**
+   * Handle input event
+   * @param {*} e current input element
+   */
 
   handleInput = (e) => {
     const name = e.target.name;
@@ -285,6 +330,12 @@ export default class assignment extends Component {
 
     this.setState({ [name]: value });
   };
+
+
+  /**
+   * Show delete confirm popup
+   * @param {*} e current element
+   */
 
   handleShowConfirm = (e) => {
     let id = "";
@@ -304,6 +355,10 @@ export default class assignment extends Component {
       message: "Want to delete!",
     });
   };
+/**
+   * Get the assignments of course from API of UNT School
+   * @param {*} e current element
+   */
 
   handleSync = (e) => {
     e.target.blur();
@@ -435,6 +490,10 @@ export default class assignment extends Component {
       this.handleShowMsg("Sync successfully!");
     }
   };
+/**
+   * Delete a assignment from DB
+   * @param {*} e current element
+   */
 
   handleDelete = (e) => {
     remove(
@@ -453,11 +512,21 @@ export default class assignment extends Component {
     this.handleShowMsg("The selected data has been removed!");
   };
 
+
+  /**
+   * Convert the input data to ISO format
+   * @returns Datetime in ISO format
+   */
+
   setDueDate() {
     var startTime = new Date(this.state.fDuedate + " " + this.state.fDuetime);
 
     return startTime.toISOString();
   }
+ /**
+   * Get due time and set to the state variable
+   * @param {*} meetingTime Due datetime
+   */
 
   getDuedate(meetingTime) {
     var startTime = new Date(meetingTime);
@@ -477,6 +546,11 @@ export default class assignment extends Component {
       fDuetime: sHours.padStart(2, 0) + ":" + sMin.padStart(2, 0),
     });
   }
+/**
+   * Display duetime to table
+   * @param {*} time Due time
+   * @returns Due time with format
+   */
 
   displayTime(time) {
     var startTime = new Date(time);
