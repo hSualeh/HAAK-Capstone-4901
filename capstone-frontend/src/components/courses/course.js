@@ -55,6 +55,10 @@ export default class course extends Component {
   }
 
   componentWillUnmount() {}
+    /**
+   * Get list courses from DB
+   */
+
 /* This functions find all the courses 
 of the current user by sending api request to firebase
 and save it in the state named listCurCourses */
@@ -84,6 +88,11 @@ and save it in the state named listCurCourses */
       }
     });
   };
+   /**
+   * Get UNT token from user information
+   * @returns UNT token
+   */
+
 /* This functions find the token ( canvas key) 
 of the current user by sending api request to firebase
 and save it in the state named token */
@@ -99,6 +108,10 @@ and save it in the state named token */
       }
     });
   };
+ /**
+   * Close modal popup
+   * @param {*} e current element
+   */
 
   handleClose = (e) => {
     this.setState({
@@ -108,6 +121,10 @@ and save it in the state named token */
       showMessage: false,
     });
   };
+/**
+   * Show delete confirm popup
+   * @param {*} e current element
+   */
 
   handleShowConfirm = (e) => {
     let id = "";
@@ -127,6 +144,10 @@ and save it in the state named token */
       message: "Want to delete!",
     });
   };
+/**
+   * Save data into DB
+   * @param {*} e current element
+   */
 
   handleSubmitForm = (e) => {
     let newErrors = this.findFormErrors();
@@ -156,6 +177,10 @@ and save it in the state named token */
     this.setState({ formShow: false });
     this.handleShowMsg("Save successfully!");
   };
+/**
+   * Form validation
+   * @returns error list
+   */
 
   findFormErrors = () => {
     const newErrors = [];
@@ -179,6 +204,11 @@ and save it in the state named token */
 
     return newErrors;
   };
+  /**
+   * Get the active courses of student from API of UNT School
+   * @param {*} e current element
+   */
+
 /** This function used to check if there is a canvas key for the current user to
  * be able to import courses from canvas, if the key doesn't exisit it will redirect the
  * user to the settings page where user need to add his canvas key
@@ -344,6 +374,10 @@ and save it in the state named token */
         console.log(error);
       });
   }
+ /**
+   * Get the target course information and display in edit popup
+   * @param {*} e current element
+   */
 
   handleShowEdit = (e) => {
     let id = "";
@@ -380,6 +414,10 @@ and save it in the state named token */
     e.target.blur();
     this.setState({ formShow: true, mode: false, showError: false });
   };
+/**
+   * Delete a course from DB
+   * @param {*} e current element
+   */
 
   handleDelete = (e) => {
     let id = "";
@@ -409,6 +447,10 @@ and save it in the state named token */
 
     this.handleShowMsg("The selected data has been removed!");
   };
+ /**
+   * Handle input event
+   * @param {*} e current input element
+   */
 
   handleInput = (e) => {
     const name = e.target.name;
@@ -440,10 +482,18 @@ and save it in the state named token */
       this.setState({ [name]: value });
     }
   };
+/**
+   * Display message popup with input message
+   * @param {*} msg Message
+   */
 
   handleShowMsg(msg) {
     this.setState({ message: msg, showMessage: true });
   }
+  /**
+   * Show the addition course form
+   * @param {*} e current element
+   */
 
   handleShowAdd = (e) => {
     this.setState({
@@ -461,6 +511,11 @@ and save it in the state named token */
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
   };
+/**
+   * Get user input data and format to ISO format
+   * @param {*} isStart Is start date time input
+   * @returns Datetime in ISO format
+   */
 
   setMTDate(isStart) {
     var startTime = "";
@@ -486,6 +541,10 @@ and save it in the state named token */
       return endTime === "" ? "" : endTime.toISOString();
     }
   }
+ /**
+   * Convert from course data to state variable
+   * @param {*} data Course data
+   */
 
   getMTDate(data) {
     if (
@@ -543,6 +602,11 @@ and save it in the state named token */
       });
     }
   }
+ /**
+   * Get and format datetime
+   * @param {*} data course data
+   * @returns Display string
+   */
 
   displayTime(data) {
     let endTime = "";
@@ -600,6 +664,11 @@ and save it in the state named token */
 
     return strStart + " - " + endTime;
   }
+
+  /**
+   * When user delete a course, also delete the relate assignments
+   * @param {*} couseID Course ID
+   */
 
   removeAllAssignmentData(couseID) {
     const starCountRef = ref(
