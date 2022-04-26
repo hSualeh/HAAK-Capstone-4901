@@ -50,7 +50,7 @@ export default class signup extends Component {
     let newErrors = this.findFormErrors();//check if there is any error before sending registration request
     this.setState({signError:newErrors});
     console.log(newErrors);
-    if (newErrors.length == 0) { //if there is no error, create new user
+    if (newErrors.length === 0) { //if there is no error, create new user
       createUserWithEmailAndPassword(
         auth,
         this.state.registerEmail,
