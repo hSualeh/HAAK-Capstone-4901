@@ -76,7 +76,14 @@ export default class signup extends Component {
     newErrors.push("Password cannot be blank!");
     else if (this.state.registerPassword.length < 7)
     newErrors.push( "Password cannot be less than 7!");
+<<<<<<< Updated upstream
 
+=======
+    else (this.state.registerPassword.length[0].toUpperCase()) //checking for uppercase letter
+    newErrors.push( "Password must contain uppercase!");
+
+    //confirm password and password doesn't match
+>>>>>>> Stashed changes
     if (
       typeof this.state.registerPassword !== "undefined" &&
       typeof this.state.confirm_password !== "undefined"
