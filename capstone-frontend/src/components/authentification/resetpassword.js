@@ -6,6 +6,18 @@ import {getAuth, confirmPasswordReset, verifyPasswordResetCode} from "firebase/a
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
 
+/*
+This function helps the user to retrieve their password by intiating the rest password function.
+
+If the information entered not correct , error will be display and sign in process will not be completed
+
+Input required: User email to send reset password link.
+
+Reset link is sent to users email and the reset link is clicked to access reset pass word form to enter and 
+reenter new password. 
+Submit button is inciated to confirm reseting the new password. 
+*/
+
 export default class resetpassword extends Component {
   constructor(props) {
     super(props);
@@ -30,6 +42,7 @@ export default class resetpassword extends Component {
     event.preventDefault();
 
     // Verify that the passwords match
+    //if user leaves input field blank error is insciated to prompt user to enter password.
     if (this.state.password !== this.state.passwordVerify) {
       this.setState({ showError: true, alertMessage: "Passwords must match" });
       return;
@@ -42,6 +55,7 @@ export default class resetpassword extends Component {
       return;
     }
 
+    //confirmation check for user to identify that password has be reset succefully
     confirmPasswordReset(auth, this.state.oobCode, this.state.password)
       .then((res) => {
         this.setState({
@@ -51,6 +65,7 @@ export default class resetpassword extends Component {
         });
       })
       .catch((err) => {
+        //error handling
         console.log("err", err);
         this.setState({ showError: true, alertMessage: err.message });
       });
