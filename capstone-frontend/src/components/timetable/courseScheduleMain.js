@@ -64,12 +64,12 @@ export default class profilemain extends Component {
 
               <hr></hr>
               <div className="">
-                <Tabs defaultActiveKey="courses" id="uncontrolled-tab">
+                <Tabs defaultActiveKey="courses" id="uncontrolled-tab" mountOnEnter={true}> 
                   <Tab eventKey="courses" title="My courses Schedule">
                     <Timetable user={this.state.user}></Timetable>
                   </Tab>
-                  <Tab eventKey="assignments" title="My Assignments Schedule">
-                    <AssignmentTable user={this.state.user}></AssignmentTable>
+                  <Tab eventKey="assignments" title="My Assignments Schedule" >
+                   <AssignmentTable user={this.state.user}></AssignmentTable>
                   </Tab>
                 </Tabs>
               </div>

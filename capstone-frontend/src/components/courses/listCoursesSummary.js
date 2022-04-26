@@ -185,14 +185,16 @@ return true is there is some assignments incompleted
                             <strong className="me-auto">Meeting Date :</strong>
                           </td>
                           <td>
-                            {course.start_date} - {course.end_date}
+                            {course.startDate} - {course.endDate}
                           </td>
                         </tr>
                         <tr>
                           <td>
                             <strong className="me-auto">Days :</strong>
                           </td>
-                          <td>{course.Days}</td>
+                          <td> {course.rRule != ""
+                      ? course.rRule.split(";")[3].split("=")[1]
+                      : "every Day / Online"}</td>
                         </tr>
                         <tr>
                           <td>

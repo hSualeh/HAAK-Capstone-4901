@@ -356,7 +356,7 @@ export default class assignments extends Component {
   componentDidMount() {
     onAuthStateChanged(auth, (currentUser) => {
       this.setState({ user: currentUser });
-      this.appointmentForm.update();
+     // this.appointmentForm.update();
       this.getUserTasks();
     });
   }
@@ -367,6 +367,7 @@ export default class assignments extends Component {
 
   getUserTasks = () => {
     if (this.state.user == null) {
+      console.log("nul user")
       return;
     }
     const starCountRef = ref(
@@ -396,6 +397,7 @@ export default class assignments extends Component {
 
     return (
       <div>
+       
         <Paper>
           <Scheduler data={data} height={660}>
             <ViewState

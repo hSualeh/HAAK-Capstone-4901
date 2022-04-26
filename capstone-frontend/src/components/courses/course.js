@@ -262,7 +262,7 @@ and save it in the state named token */
                 title: courseData.name,
                 cid: courseData.id, // used for grabing of assingments from canvas
                 course_code: courseData.course_code,
-                course_format: "",
+                course_format: courseData.course_format,
                 roomNumber: "", // not given by canvas api
                 startDate: new Date(), // not given by canvas api
                 endDate: new Date(), // not given by canvas api
