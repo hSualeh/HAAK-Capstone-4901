@@ -6,9 +6,11 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase-config";
 import loginbg from "../../img/login-bg.PNG";
 
-
-
-
+/*
+This function helps the user to retrieve their password by intiating the rest password function.
+if the information entered not correct , error will be display and sign in process will not be completed
+Input required: User email to send reset password link.
+*/
 
 export default class forgetpassword extends Component {
 
@@ -32,7 +34,8 @@ export default class forgetpassword extends Component {
     // console.log("Name: " + name + "value:" + value);
   };
   
-
+//forget password function takes user email input and generates error message when email fails to deliver
+//if user has not entered a valid email the function will throw error msg to force user to enter email.
 forgetpassword = () => {
   getAuth();
   if(this.state.email != "")
@@ -44,6 +47,7 @@ forgetpassword = () => {
       console.log("Email is successfully sent!");
     })
     .catch((error) => {
+      //error handling
       console.log("Email failed!");
       this.setState({showError : true,success : false,listErrors:"Email failed!"});
       const errorCode = error.code;
