@@ -55,11 +55,11 @@ export default class course extends Component {
   }
 
   componentWillUnmount() {}
-    /**
+  /**
    * Get list courses from DB
    */
 
-/* This functions find all the courses 
+  /* This functions find all the courses 
 of the current user by sending api request to firebase
 and save it in the state named listCurCourses */
   getAllCourseData = () => {
@@ -88,12 +88,12 @@ and save it in the state named listCurCourses */
       }
     });
   };
-   /**
+  /**
    * Get UNT token from user information
    * @returns UNT token
    */
 
-/* This functions find the token ( canvas key) 
+  /* This functions find the token ( canvas key) 
 of the current user by sending api request to firebase
 and save it in the state named token */
   getUNTToken = () => {
@@ -108,7 +108,7 @@ and save it in the state named token */
       }
     });
   };
- /**
+  /**
    * Close modal popup
    * @param {*} e current element
    */
@@ -121,7 +121,7 @@ and save it in the state named token */
       showMessage: false,
     });
   };
-/**
+  /**
    * Show delete confirm popup
    * @param {*} e current element
    */
@@ -144,7 +144,7 @@ and save it in the state named token */
       message: "Want to delete!",
     });
   };
-/**
+  /**
    * Save data into DB
    * @param {*} e current element
    */
@@ -177,7 +177,7 @@ and save it in the state named token */
     this.setState({ formShow: false });
     this.handleShowMsg("Save successfully!");
   };
-/**
+  /**
    * Form validation
    * @returns error list
    */
@@ -209,10 +209,10 @@ and save it in the state named token */
    * @param {*} e current element
    */
 
-/** This function used to check if there is a canvas key for the current user to
- * be able to import courses from canvas, if the key doesn't exisit it will redirect the
- * user to the settings page where user need to add his canvas key
- */
+  /** This function used to check if there is a canvas key for the current user to
+   * be able to import courses from canvas, if the key doesn't exisit it will redirect the
+   * user to the settings page where user need to add his canvas key
+   */
   handleSync = (e) => {
     let listCourses = this.state.listCurCourses;
     let uid = this.state.user.uid;
@@ -266,9 +266,10 @@ and save it in the state named token */
                 roomNumber: "", // not given by canvas api
                 startDate: new Date(), // not given by canvas api
                 endDate: new Date(), // not given by canvas api
-                rRule: "", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT="+count+";BYDAY=TU,TH", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
+                rRule:
+                  "RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=13;BYDAY=MO,TU,WE,TH,FR", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT="+count+";BYDAY=TU,TH", //"RRULE:INTERVAL=1;FREQ=WEEKLY;COUNT=5;BYDAY=TU,TH",
                 type: "Canvas",
-                allDay: true,
+                allDay: false,
               };
               const fResultCourse = listCourses.filter(
                 (x) => x.course_code === courseData.course_code
@@ -332,7 +333,7 @@ and save it in the state named token */
       endDate: new Date(), //this.setMTDate(false),
       course_format: this.state.fCFormat,
       type: "Manual",
-      allDay: (this.state.rRule=="") ? true : false,
+      allDay: this.state.rRule == "" ? true : false,
       rRule: this.state.rRule,
     };
 
@@ -374,7 +375,7 @@ and save it in the state named token */
         console.log(error);
       });
   }
- /**
+  /**
    * Get the target course information and display in edit popup
    * @param {*} e current element
    */
@@ -414,7 +415,7 @@ and save it in the state named token */
     e.target.blur();
     this.setState({ formShow: true, mode: false, showError: false });
   };
-/**
+  /**
    * Delete a course from DB
    * @param {*} e current element
    */
@@ -447,7 +448,7 @@ and save it in the state named token */
 
     this.handleShowMsg("The selected data has been removed!");
   };
- /**
+  /**
    * Handle input event
    * @param {*} e current input element
    */
@@ -461,9 +462,9 @@ and save it in the state named token */
       this.setState({ [name]: !this.state.fAllDay });
     } else if (name == "meetingDays") {
       let isChecked = e.target.checked;
-      let count = 13; 
+      let count = 13;
       let mtDays = this.state.meetingDays;
-     
+
       isChecked ? mtDays.push(value) : mtDays.pop(value);
 
       let rRule_val =
@@ -482,7 +483,7 @@ and save it in the state named token */
       this.setState({ [name]: value });
     }
   };
-/**
+  /**
    * Display message popup with input message
    * @param {*} msg Message
    */
@@ -511,7 +512,7 @@ and save it in the state named token */
     e.target.blur();
     this.setState({ formShow: true, mode: true, showError: false });
   };
-/**
+  /**
    * Get user input data and format to ISO format
    * @param {*} isStart Is start date time input
    * @returns Datetime in ISO format
@@ -541,7 +542,7 @@ and save it in the state named token */
       return endTime === "" ? "" : endTime.toISOString();
     }
   }
- /**
+  /*
    * Convert from course data to state variable
    * @param {*} data Course data
    */
@@ -602,7 +603,7 @@ and save it in the state named token */
       });
     }
   }
- /**
+  /**
    * Get and format datetime
    * @param {*} data course data
    * @returns Display string
@@ -695,11 +696,11 @@ and save it in the state named token */
       );
     });
   }
-  checkMeetingDay(rRule,day){
-  let meetingDaysVals= (rRule !="")?rRule.split(";")[3].split("=")[1] : ""; // extract the meeting days TH,TU from the rRule field
-   
-  return meetingDaysVals.includes(day);
-}
+  checkMeetingDay(rRule, day) {
+    let meetingDaysVals = rRule != "" ? rRule.split(";")[3].split("=")[1] : ""; // extract the meeting days TH,TU from the rRule field
+
+    return meetingDaysVals.includes(day);
+  }
   render() {
     const listCourses = this.state.listCurCourses;
 
@@ -733,7 +734,6 @@ and save it in the state named token */
                   Title
                 </th>
 
-            
                 <th scope="col" className="t-col-2">
                   Meeting Days
                 </th>
@@ -760,7 +760,11 @@ and save it in the state named token */
                     {course.id}
                   </td>
                   <td scope="row">{course.title.substring(0, 21) + "..."}</td>
-                  <td>{(course.rRule !="")?course.rRule.split(";")[3].split("=")[1] : "every Day / Online"}</td>
+                  <td>
+                    {course.rRule != ""
+                      ? course.rRule.split(";")[3].split("=")[1]
+                      : "every Day / Online"}
+                  </td>
                   {/*<td>{this.displayTime(course)}</td>
                   <td>{course.course_format}</td>*/}
                   <td>
@@ -773,7 +777,7 @@ and save it in the state named token */
                     </Button>
                   </td>
                   <td scope="col" style={{ "text-align": "center" }}>
-                  <Button
+                    <Button
                       variant="outline-primary"
                       size="sm"
                       style={{ marginRight: "5px" }}
@@ -911,7 +915,7 @@ and save it in the state named token */
                     id="Sun"
                     onChange={this.handleInput}
                     value="SU"
-                    checked ={this.checkMeetingDay(this.state.rRule,"SU")}
+                    checked={this.checkMeetingDay(this.state.rRule, "SU")}
                   />
                   <Form.Check
                     inline
@@ -921,9 +925,9 @@ and save it in the state named token */
                     id="Mon"
                     onChange={this.handleInput}
                     value="MO"
-                    checked ={this.checkMeetingDay(this.state.rRule,"MO")}
+                    checked={this.checkMeetingDay(this.state.rRule, "MO")}
                   />
-                
+
                   <Form.Check
                     inline
                     label="Tue"
@@ -932,7 +936,7 @@ and save it in the state named token */
                     id="Tue"
                     onChange={this.handleInput}
                     value="TU"
-                    checked = {this.checkMeetingDay(this.state.rRule,"TU")}
+                    checked={this.checkMeetingDay(this.state.rRule, "TU")}
                   />
                   <Form.Check
                     inline
@@ -942,7 +946,7 @@ and save it in the state named token */
                     id="Wed"
                     onChange={this.handleInput}
                     value="WE"
-                    checked ={this.checkMeetingDay(this.state.rRule,"WE")}
+                    checked={this.checkMeetingDay(this.state.rRule, "WE")}
                   />
                   <Form.Check
                     inline
@@ -952,7 +956,7 @@ and save it in the state named token */
                     id="Thur"
                     onChange={this.handleInput}
                     value="TH"
-                    checked = {this.checkMeetingDay(this.state.rRule,"TH")}
+                    checked={this.checkMeetingDay(this.state.rRule, "TH")}
                   />
                   <Form.Check
                     inline
@@ -962,7 +966,7 @@ and save it in the state named token */
                     id="Fri"
                     onChange={this.handleInput}
                     value="FR"
-                    checked = {this.checkMeetingDay(this.state.rRule,"FR")}
+                    checked={this.checkMeetingDay(this.state.rRule, "FR")}
                   />
                   <Form.Check
                     inline
@@ -972,7 +976,7 @@ and save it in the state named token */
                     id="Sat"
                     onChange={this.handleInput}
                     value="SA"
-                    checked = {this.checkMeetingDay(this.state.rRule,"SA")}
+                    checked={this.checkMeetingDay(this.state.rRule, "SA")}
                   />
                 </div>
                 <Col sm="3" style={{ alignSelf: "center" }}>

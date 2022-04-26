@@ -389,7 +389,9 @@ Is only called upon state changes to tthe data stored within this.state
             ? { ...appointment, ...changed[appointment.id] }
             : appointment
         );
-        // remember to add the functionality that the database gets updated as well
+        const updates = {};
+        updates["/todo/" + this.state.user?.uid + "/"] = data;
+        update(ref(getDatabase()), updates);
       }
       if (deleted !== undefined) {
         this.toggleConfirmationVisible();

@@ -333,6 +333,9 @@ export default class assignments extends Component {
             ? { ...appointment, ...changed[appointment.id] }
             : appointment
         );
+        const updates = {};
+        updates["/assignments/" + this.state.user?.uid + "/"] = data;
+        update(ref(getDatabase()), updates);
       }
       if (deleted !== undefined) {
         this.toggleConfirmationVisible();

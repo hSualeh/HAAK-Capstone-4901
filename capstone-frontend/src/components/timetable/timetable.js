@@ -359,6 +359,10 @@ export default class courses extends Component {
             ? { ...appointment, ...changed[appointment.id] }
             : appointment
         );
+
+        const updates = {};
+        updates["/courses/" + this.state.user?.uid + "/"] = data;
+        update(ref(getDatabase()), updates);
       }
       if (deleted !== undefined) {
         this.toggleConfirmationVisible();
