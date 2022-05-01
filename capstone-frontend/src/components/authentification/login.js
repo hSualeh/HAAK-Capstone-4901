@@ -83,7 +83,7 @@ export default class login extends Component {
       <Container className="auth_container">
         <Row>
           <Col className="bg">
-            {" "}
+            {" "}  
             <img
               src={loginbg}
               className="signupbg"
