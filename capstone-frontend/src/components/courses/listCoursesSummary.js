@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
 import AssignmentNotificationByCourse from "../assignment/assignmentNotificationByCourse";
+import { format } from "date-fns";
 export default class listCoursesSummary extends Component {
   constructor(props) {
     super(props);
@@ -185,7 +186,7 @@ return true is there is some assignments incompleted
                             <strong className="me-auto">Meeting Date :</strong>
                           </td>
                           <td>
-                            {course.startDate} - {course.endDate}
+                            {format(new Date( course.startDate), "yyyy/MM/dd HH:mm:SS")} - {format(new Date( course.endDate), "yyyy/MM/dd HH:mm:SS")}
                           </td>
                         </tr>
                         <tr>

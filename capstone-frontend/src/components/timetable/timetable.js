@@ -149,7 +149,7 @@ const Appointment = ({ children, style, ...restProps }) => (
     {...restProps}
     style={{
       ...style,
-      backgroundColor: "#F29154", //coursescolor[randomNumber(0, 4)], // should not be a random color
+      backgroundColor: "#42a5f5", //coursescolor[randomNumber(0, 4)], // should not be a random color
       borderRadius: "10px",
       color: "black",
     }}
